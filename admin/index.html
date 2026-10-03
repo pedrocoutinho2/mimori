@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel · Mimori</title>
+<link rel="icon" href="../assets/logo-mimori.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--papel:#FBFAFD;--tinta:#241F2E;--texto2:#6E6480;--titulo:#382B55;--marca:#6E5B98;--marca-escura:#4A396F;--suave:#E7E2F3;--suave2:#EFECF4;--borda:#E3E0E8;--ok:#1F7A4F;--atencao:#8A6A10;--erro:#C4442F;--f-marca:'Grandstander',ui-rounded,system-ui,sans-serif;--f-texto:'Nunito Sans',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--f-texto);font-size:15.5px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--marca);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-marca);color:var(--titulo);margin:0;line-height:1.1}
+h1{font-size:30px}h2{font-size:22px}h3{font-size:18px}
+.sub{margin:4px 0 0;color:var(--texto2)}
+.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:0;border-radius:999px;background:var(--marca);color:#fff;font-family:var(--f-marca);font-weight:700;font-size:15px;text-decoration:none}
+.btn:hover{background:var(--marca-escura)}
+.btn.claro{background:#fff;color:var(--marca-escura);border:1px solid #D0C5E7}
+.btn.perigo{background:#fff;color:var(--erro);border:1px solid #F0C9C1}
+.btn.mini{min-height:36px;padding:0 12px;font-size:14px}
+.campo{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+.campo input,.campo select,.campo textarea{min-height:44px;padding:8px 12px;border-radius:12px;border:1px solid #D0C5E7;background:#fff;font-size:15.5px;font-weight:400}
+.linha{display:flex;gap:12px;flex-wrap:wrap}.linha>*{flex:1 1 160px}
+.card{background:#fff;border:1px solid var(--borda);border-radius:18px}
+.tabela{width:100%;border-collapse:collapse;min-width:860px}
+.tabela th{padding:11px 12px;text-align:left;font-size:13px;color:var(--texto2);border-bottom:1px solid var(--borda);white-space:nowrap}
+.tabela td{padding:10px 12px;border-bottom:1px solid var(--borda);vertical-align:middle}
+.pil{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
+.app{display:flex;min-height:100vh}
+.lado{flex:0 0 232px;background:#fff;border-right:1px solid var(--borda);padding:22px 14px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh}
+.lado nav{display:flex;flex-direction:column;gap:4px}
+.lado nav button{min-height:44px;text-align:left;padding:0 14px;border:0;border-radius:12px;background:transparent;font-family:var(--f-marca);font-weight:700;font-size:15.5px}
+.lado nav button[aria-current=page]{background:var(--suave);color:var(--marca-escura)}
+.corpo{flex:1;min-width:0;padding:28px 36px 60px;display:flex;flex-direction:column;gap:18px}
+.topo-sec{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+.thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--suave2);border:1px solid var(--borda);flex-shrink:0}
+.veu{position:fixed;inset:0;background:rgba(36,31,46,.4);z-index:40}
+.gaveta{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);z-index:50;background:var(--papel);padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;box-shadow:-18px 0 48px rgba(36,31,46,.18)}
+.modal{position:fixed;top:40px;left:50%;transform:translateX(-50%);width:min(640px,94%);max-height:calc(100% - 80px);overflow-y:auto;z-index:50;background:#fff;border-radius:22px;padding:26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 64px rgba(36,31,46,.24)}
+.bloco{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.fotos figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.fotos img,.fotos video{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;background:var(--suave2)}
+.fotos .acoes{display:flex;gap:4px;flex-wrap:wrap}
+.fotos select{height:32px;border-radius:8px;border:1px solid var(--borda);font-size:13px}
+.icone{width:32px;height:32px;border-radius:8px;border:1px solid var(--borda);background:#fff;font-size:14px}
+dl.custo{margin:0;display:grid;grid-template-columns:1fr auto;gap:5px 16px;font-size:14.5px}
+dl.custo dt{color:var(--texto2)}dl.custo dd{margin:0;text-align:right}
+dl.custo .total{color:var(--tinta);font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.kpis .card{padding:16px}.kpis b{display:block;font-family:var(--f-marca);font-size:28px;color:var(--titulo)}
+.barra{height:8px;border-radius:999px;background:var(--suave2);overflow:hidden}.barra i{display:block;height:100%;background:var(--marca);border-radius:999px}
+.grade2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.aviso{padding:10px 14px;border-radius:12px;font-weight:700;font-size:14px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;padding:12px 20px;border-radius:999px;background:var(--tinta);color:#fff;font-weight:700}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login .card{width:min(440px,100%);padding:34px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:820px){.app{flex-direction:column}.lado{position:static;height:auto;flex-basis:auto;flex-direction:row;flex-wrap:wrap;align-items:center}.lado nav{flex-direction:row;flex-wrap:wrap}.corpo{padding:20px 16px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="camada"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* Mesmos valores do index.html. Só a chave anon (pública). Nunca a service_role. */
+const SUPABASE_URL = 'https://ydnanmpqwbjzskovnhyh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkbmFubXBxd2JqenNrb3ZuaHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5Nzk3ODUsImV4cCI6MjEwNjU1NTc4NX0.20qoeSwPAUc5mYBOYQP5Wy2MQixFqyBulxDLsczYufA';
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const brl = (v) => (v == null || isNaN(v) ? '–' : 'R$ ' + Number(v).toFixed(2).replace('.', ','));
+const num = (x) => { const v = parseFloat(String(x == null ? '' : x).replace(',', '.')); return isNaN(v) ? null : v; };
+const slugify = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const fotoUrl = (c) => (!c ? '' : /^https?:/.test(c) ? c : /^assets\//.test(c) ? '../' + c : SUPABASE_URL + '/storage/v1/object/public/produtos/' + c);
+const hoje = () => new Date().toISOString().slice(0, 10);
+
+let sb = null;
+const E = { tela: 'carregando', aba: 'produtos', eu: null, papel: '', cats: [], prods: [], par: null, promos: [], usuarios: [], busca: '', filtroCat: '', ed: null, promo: null, periodo: 30, rel: null, erro: '', toast: '', novaSenha: '', confSenha: '', convite: null };
+let toastT;
+function aviso(t) { E.toast = t; clearTimeout(toastT); toastT = setTimeout(() => { E.toast = ''; desenhaCamada(); }, 2800); desenhaCamada(); }
+
+/* ===== custo e preço ===== */
+function custoDe(g, h, ins) {
+  const P = E.par; if (!P || g == null || h == null) return null;
+  const material = g * P.pla_kg / 1000, maquina = h * P.hora_maquina, refugo = (material + maquina) * P.refugo, mo = P.mao_obra_min / 60 * P.mao_obra_hora;
+  return { material, maquina, refugo, emb: Number(P.embalagem), ins: ins || 0, mo, total: material + maquina + refugo + Number(P.embalagem) + (ins || 0) + mo };
+}
+const lucroDe = (preco, c) => (c ? preco - preco * E.par.taxa_link - c.total : null);
+const situacao = (pr) => (pr.pausada ? 'Pausada' : hoje() < pr.inicio ? 'Agendada' : hoje() > pr.fim ? 'Encerrada' : 'Ativa');
+const atinge = (pr, p) => (pr.alvo_tipo === 'produto' ? pr.alvo_produto === p.id : pr.alvo_tipo === 'categoria' ? pr.alvo_categoria === p.categoria_id : (p.tags || []).indexOf(pr.alvo_tag) >= 0);
+const comDesconto = (pr, preco) => { const v = pr.tipo === 'percentual' ? preco * (1 - pr.valor / 100) : preco - pr.valor; return Math.max(0.9, Math.floor(v - 0.9) + 0.9); };
+const vigente = (p) => { let m = null; E.promos.forEach((pr) => { if (situacao(pr) === 'Ativa' && atinge(pr, p)) { const v = comDesconto(pr, Number(p.preco)); if (!m || v < m.v) m = { v, nome: pr.nome }; } }); return m; };
+const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' : h && l / h < 5 ? 'var(--atencao)' : 'var(--ok)');
+
+/* ===== dados ===== */
+async function carregaTudo() {
+  const [cats, prods, par, promos, usu] = await Promise.all([
+    sb.from('categorias').select('id,slug,nome,ordem').order('ordem'),
+    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_custos(gramas,horas,insumos,fonte)').order('ordem'),
+    sb.from('parametros_custo').select('*').eq('id', 1).single(),
+    sb.from('promocoes').select('*').order('inicio', { ascending: false }),
+    sb.from('painel_usuarios').select('*').order('criado_em')
+  ]);
+  for (const r of [cats, prods, par, promos, usu]) if (r.error) throw r.error;
+  E.cats = cats.data; E.par = par.data; E.promos = promos.data; E.usuarios = usu.data;
+  E.prods = prods.data.map((p) => ({ ...p, custo: Array.isArray(p.produto_custos) ? p.produto_custos[0] : p.produto_custos, fotos: (p.produto_fotos || []).sort((a, b) => a.ordem - b.ordem), videos: (p.produto_videos || []).sort((a, b) => a.ordem - b.ordem), cores: (p.variacoes || []).sort((a, b) => a.ordem - b.ordem).map((v) => v.cor) }));
+}
+const catNome = (id) => (E.cats.find((c) => c.id === id) || {}).nome || '';
+
+/* ===== telas ===== */
+function telaLogin() {
+  return `<div class="login"><form class="card" id="f-login">
+    <img src="../assets/logo-mimori.svg" alt="Mimori" style="height:40px;width:auto;align-self:flex-start">
+    <h1>Painel da loja</h1><p class="sub" style="margin:0">Entre com o e-mail e a senha da sua conta.</p>
+    <label class="campo">E-mail<input type="email" name="email" autocomplete="username" required></label>
+    <label class="campo">Senha<input type="password" name="senha" autocomplete="current-password" required></label>
+    ${E.erro ? `<p role="alert" style="margin:0;color:var(--erro);font-weight:700">${esc(E.erro)}</p>` : ''}
+    <button class="btn" type="submit">Entrar</button>
+    <button class="btn claro" type="button" id="esqueci">Esqueci minha senha</button>
+  </form></div>`;
+}
+function telaCriarSenha() {
+  return `<div class="login"><form class="card" id="f-criar">
+    <img src="../assets/logo-mimori.svg" alt="Mimori" style="height:40px;width:auto;align-self:flex-start">
+    <h1>Crie sua senha</h1><p class="sub" style="margin:0">Pelo menos 10 caracteres, com letras e números.</p>
+    <label class="campo">Nova senha<input type="password" name="s1" autocomplete="new-password" required minlength="10"></label>
+    <label class="campo">Repita a senha<input type="password" name="s2" autocomplete="new-password" required minlength="10"></label>
+    ${E.erro ? `<p role="alert" style="margin:0;color:var(--erro);font-weight:700">${esc(E.erro)}</p>` : ''}
+    <button class="btn" type="submit">Salvar senha e entrar</button></form></div>`;
+}
+function telaApp() {
+  const abas = [['produtos', 'Produtos'], ['promocoes', 'Promoções'], ['relatorios', 'Relatórios']].concat(E.papel === 'admin' ? [['usuarios', 'Usuários']] : []).concat([['conta', 'Minha conta']]);
+  const corpo = { produtos: abaProdutos, promocoes: abaPromocoes, relatorios: abaRelatorios, usuarios: abaUsuarios, conta: abaConta }[E.aba]();
+  return `<div class="app"><aside class="lado"><img src="../assets/logo-mimori.svg" alt="Mimori" style="height:34px;width:auto;align-self:flex-start;margin-left:8px">
+    <nav aria-label="Painel">${abas.map((a) => `<button type="button" data-aba="${a[0]}" aria-current="${E.aba === a[0] ? 'page' : 'false'}">${a[1]}</button>`).join('')}</nav>
+    <div style="margin-top:auto;font-size:13px;color:var(--texto2)">Conectado como<br><b style="color:var(--tinta);word-break:break-all">${esc(E.eu.email)}</b><br><button class="btn claro mini" type="button" id="sair" style="margin-top:8px">Sair</button></div></aside>
+    <main class="corpo">${corpo}</main></div>`;
+}
+function abaProdutos() {
+  const b = E.busca.toLowerCase();
+  const vis = E.prods.filter((p) => (!E.filtroCat || p.categoria_id === E.filtroCat) && (!b || (p.nome + ' ' + (p.sku || '')).toLowerCase().indexOf(b) >= 0));
+  if (!E.prods.length) return `<div><h1>Produtos</h1><p class="sub">O banco ainda está vazio.</p></div><div class="card" style="padding:24px;display:flex;flex-direction:column;gap:12px;max-width:620px"><h2>Importar o catálogo inicial</h2><p style="margin:0">Traz as peças do arquivo do site (preço, descrição, tags, cores, fotos e vídeos) e os pesos e tempos de partida para o cálculo de custo. É para usar uma vez só.</p>${E.importando ? `<p role="status" style="margin:0;font-weight:700">${esc(E.importando)}</p>` : `<button class="btn" type="button" id="importar" style="align-self:flex-start">Importar o catálogo</button>`}</div>`;
+  return `<div class="topo-sec"><div><h1>Produtos</h1><p class="sub">${E.prods.length} produtos, ${E.prods.filter((p) => p.publicado).length} no site</p></div><button class="btn" type="button" data-editar="novo">+ Novo produto</button></div>
+  <div class="linha"><input type="search" id="busca" value="${esc(E.busca)}" placeholder="Buscar por nome ou código" aria-label="Buscar" style="flex:1 1 320px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid #D0C5E7">
+    <select id="filtro-cat" aria-label="Categoria" style="flex:0 0 240px;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid #D0C5E7"><option value="">Todas as categorias</option>${E.cats.map((c) => `<option value="${c.id}" ${E.filtroCat === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></div>
+  <div class="card" style="overflow-x:auto"><table class="tabela"><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Lucro</th><th>Fotos</th><th>No site</th><th><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden">Ações</span></th></tr></thead><tbody>
+  ${vis.map((p) => {
+    const pv = vigente(p), preco = pv ? pv.v : Number(p.preco), c = p.custo ? custoDe(num(p.custo.gramas), num(p.custo.horas), num(p.custo.insumos)) : null, l = lucroDe(preco, c), h = p.custo ? num(p.custo.horas) : null;
+    const reais = p.fotos.filter((f) => f.tipo === 'real').length;
+    const ft = !p.fotos.length ? ['Sem foto', '#FBE3DF', 'var(--erro)'] : reais ? ['Foto real', '#E1F2E8', 'var(--ok)'] : ['Foto do criador', '#FFF4D6', 'var(--atencao)'];
+    return `<tr><td><span style="display:flex;align-items:center;gap:12px">${p.fotos[0] ? `<img class="thumb" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb"></span>'}<span><b style="font-family:var(--f-marca)">${esc(p.nome)}</b><br><small style="color:var(--texto2)">${esc(p.sku || 'sem código')}</small></span></span></td>
+      <td style="color:var(--texto2)">${esc(catNome(p.categoria_id))}</td>
+      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-marca);color:var(--marca)">${brl(preco)}</b>${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
+      <td style="white-space:nowrap"><b style="font-family:var(--f-marca);color:${corLucro(l, h)}">${l == null ? 'sem custo' : brl(l)}</b><br><small style="color:var(--texto2)">${l == null ? 'falta peso e tempo' : Math.round(l / preco * 100) + '% · ' + brl(l / h) + '/h'}</small></td>
+      <td><span class="pil" style="background:${ft[1]};color:${ft[2]}">${ft[0]}</span></td>
+      <td><span class="pil" style="background:${p.publicado ? 'var(--suave)' : 'var(--suave2)'};color:${p.publicado ? 'var(--marca-escura)' : 'var(--texto2)'}">${p.publicado ? 'Publicado' : 'Oculto'}</span></td>
+      <td style="text-align:right"><button class="btn claro mini" type="button" data-editar="${p.id}">Editar</button></td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function custoHTML(ed) {
+  const c = custoDe(num(ed.gramas), num(ed.horas), num(ed.insumos) || 0), preco = num(ed.preco), h = num(ed.horas);
+  if (!c) return '<p style="margin:0;color:var(--texto2)">Preencha peso e tempo do fatiador para calcular o custo.</p>';
+  const l = preco != null ? lucroDe(preco, c) : null;
+  const P = E.par;
+  return `<dl class="custo"><dt>Material</dt><dd>${brl(c.material)}</dd><dt>Máquina</dt><dd>${brl(c.maquina)}</dd><dt>Refugo (${Math.round(P.refugo * 100)}%)</dt><dd>${brl(c.refugo)}</dd><dt>Embalagem</dt><dd>${brl(c.emb)}</dd><dt>Insumos</dt><dd>${brl(c.ins)}</dd><dt>Mão de obra</dt><dd>${brl(c.mo)}</dd>
+    <dt class="total">Custo total</dt><dd class="total">${brl(c.total)}</dd>
+    ${l != null ? `<dt>Preço</dt><dd>${brl(preco)}</dd><dt>Taxa do link (${Math.round(P.taxa_link * 1000) / 10}%)</dt><dd>${brl(preco * P.taxa_link)}</dd><dt class="total">Lucro</dt><dd class="total" style="color:${corLucro(l, h)}">${brl(l)}</dd><dt>Margem</dt><dd>${Math.round(l / preco * 100)}%</dd><dt>Lucro por hora de máquina</dt><dd style="color:${corLucro(l, h)};font-weight:700">${brl(l / h)}</dd>` : ''}</dl>
+    <small style="color:var(--texto2)">PLA ${brl(P.pla_kg)}/kg, hora de máquina ${brl(P.hora_maquina)}, embalagem ${brl(P.embalagem)} por pedido, mão de obra ${brl(P.mao_obra_hora)}/h.</small>`;
+}
+function gavetaProduto() {
+  const ed = E.ed;
+  return `<div class="veu" data-fechar></div><aside class="gaveta" role="dialog" aria-modal="true" aria-labelledby="t-ed"><form id="f-produto" style="display:flex;flex-direction:column;gap:14px">
+    <div class="topo-sec"><h2 id="t-ed">${ed.id ? 'Editar produto' : 'Novo produto'}</h2><button type="button" class="btn claro mini" data-fechar>Fechar</button></div>
+    <label class="campo">Nome<input name="nome" value="${esc(ed.nome)}" required></label>
+    <div class="linha"><label class="campo">Endereço (slug)<input name="slug" value="${esc(ed.slug)}" placeholder="gerado pelo nome"></label><label class="campo">Código (SKU)<input name="sku" value="${esc(ed.sku || '')}"></label></div>
+    <div class="linha"><label class="campo">Categoria<select name="categoria_id">${E.cats.map((c) => `<option value="${c.id}" ${ed.categoria_id === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></label><label class="campo">Preço (R$)<input name="preco" inputmode="decimal" value="${esc(ed.preco)}" required></label></div>
+    <div class="linha"><label class="campo">Selo no card<input name="selo" value="${esc(ed.selo || '')}" placeholder="Ex.: Com luz LED"></label><label class="campo">Tags (vírgula)<input name="tags" value="${esc((ed.tags || []).join(', '))}" placeholder="Fé, Para a mãe, Natal"></label></div>
+    <label class="campo">Cores (vírgula)<input name="cores" value="${esc((ed.cores || []).join(', '))}" placeholder="Branco, Bege, Marrom"></label>
+    <label class="campo">Descrição<textarea name="descricao" rows="9">${esc(ed.descricao || '')}</textarea></label>
+    <div class="bloco"><h3>Custo e lucro</h3>
+      <div class="linha"><label class="campo">Gramas de PLA<input name="gramas" inputmode="decimal" value="${esc(ed.gramas)}"></label><label class="campo">Horas de máquina<input name="horas" inputmode="decimal" value="${esc(ed.horas)}"></label><label class="campo">Insumos (R$)<input name="insumos" inputmode="decimal" value="${esc(ed.insumos)}"></label></div>
+      <label class="campo">De onde vieram peso e tempo<select name="fonte"><option ${ed.fonte === 'fatiador' ? 'selected' : ''} value="fatiador">Print do fatiador</option><option ${ed.fonte !== 'fatiador' ? 'selected' : ''} value="suposição">Suposição (perfil do criador)</option></select></label>
+      <div id="custo-vivo">${custoHTML(ed)}</div></div>
+    ${ed.id ? `<div class="bloco"><h3>Fotos e vídeo</h3><p style="margin:0;font-size:13.5px;color:var(--texto2)">A primeira foto é a capa. Marque se a foto é da peça real.</p>
+      <div class="fotos">${ed.fotos.map((f, i) => `<figure><img src="${esc(fotoUrl(f.caminho))}" alt=""><select data-tipofoto="${f.id}"><option value="real" ${f.tipo === 'real' ? 'selected' : ''}>Real</option><option value="criador" ${f.tipo === 'criador' ? 'selected' : ''}>Criador</option><option value="excecao" ${f.tipo === 'excecao' ? 'selected' : ''}>Exceção</option></select><span class="acoes"><button type="button" class="icone" data-moverfoto="${i}" data-d="-1" aria-label="Mover para a esquerda">←</button><button type="button" class="icone" data-moverfoto="${i}" data-d="1" aria-label="Mover para a direita">→</button><button type="button" class="icone" data-apagarfoto="${f.id}" aria-label="Apagar foto" style="color:var(--erro)">×</button></span></figure>`).join('')}
+      ${ed.videos.map((v) => `<figure><video src="${esc(fotoUrl(v.caminho))}" muted></video><span class="acoes"><button type="button" class="icone" data-apagarvideo="${v.id}" aria-label="Apagar vídeo" style="color:var(--erro)">×</button></span></figure>`).join('')}</div>
+      <label class="btn claro" style="align-self:flex-start">+ Foto ou vídeo<input type="file" id="upload" accept="image/*,video/mp4" multiple hidden></label></div>` : '<p style="margin:0;color:var(--texto2)">Salve o produto para poder subir fotos e vídeo.</p>'}
+    <label style="display:flex;align-items:center;gap:10px;font-weight:700"><input type="checkbox" name="publicado" ${ed.publicado ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--marca)">Mostrar no site</label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--borda);padding-top:12px"><button class="btn" type="submit">Salvar</button><button class="btn claro" type="button" data-fechar>Cancelar</button></div>
+  </form></aside>`;
+}
+function abaPromocoes() {
+  return `<div class="topo-sec"><div><h1>Promoções</h1><p class="sub">Desconto por produto, por categoria ou por tag, com data pra começar e acabar.</p></div><button class="btn" type="button" id="nova-promo">+ Nova promoção</button></div>
+  <div class="card" style="overflow-x:auto"><table class="tabela"><thead><tr><th>Promoção</th><th>Desconto</th><th>Vale para</th><th>Período</th><th>Produtos</th><th>Situação</th><th></th></tr></thead><tbody>
+  ${E.promos.map((pr) => { const s = situacao(pr); const cor = { Ativa: ['#E1F2E8', 'var(--ok)'], Agendada: ['var(--suave)', 'var(--marca-escura)'], Encerrada: ['var(--suave2)', 'var(--texto2)'], Pausada: ['#FFF4D6', 'var(--atencao)'] }[s];
+    const alvo = pr.alvo_tipo === 'produto' ? 'Produto: ' + ((E.prods.find((p) => p.id === pr.alvo_produto) || {}).nome || '') : pr.alvo_tipo === 'categoria' ? 'Categoria: ' + catNome(pr.alvo_categoria) : 'Tag: ' + pr.alvo_tag;
+    const dt = (d) => d.split('-').reverse().join('/');
+    return `<tr><td><b style="font-family:var(--f-marca)">${esc(pr.nome)}</b></td><td style="color:var(--marca);font-weight:700">${pr.tipo === 'percentual' ? Number(pr.valor) + '%' : brl(pr.valor) + ' a menos'}</td><td>${esc(alvo)}</td><td style="white-space:nowrap">${dt(pr.inicio)} a ${dt(pr.fim)}</td><td>${E.prods.filter((p) => atinge(pr, p)).length}</td><td><span class="pil" style="background:${cor[0]};color:${cor[1]}">${s}</span></td>
+      <td style="text-align:right;white-space:nowrap">${s !== 'Encerrada' ? `<button class="btn claro mini" type="button" data-pausar="${pr.id}">${pr.pausada ? 'Retomar' : 'Pausar'}</button>` : ''} <button class="btn perigo mini" type="button" data-apagarpromo="${pr.id}">Apagar</button></td></tr>`; }).join('') || '<tr><td colspan="7" style="color:var(--texto2)">Nenhuma promoção ainda.</td></tr>'}
+  </tbody></table></div><p class="sub">Se duas promoções valem para o mesmo produto, o site usa a de maior desconto. O preço com desconto termina em ,90 e aparece com o preço antigo riscado.</p>`;
+}
+function modalPromo() {
+  const m = E.promo;
+  const opcoes = m.alvo_tipo === 'produto' ? E.prods.map((p) => [p.id, p.nome]) : m.alvo_tipo === 'categoria' ? E.cats.map((c) => [c.id, c.nome]) : [...new Set(E.prods.flatMap((p) => p.tags || []))].sort().map((t) => [t, t]);
+  const rasc = { tipo: m.tipo, valor: num(m.valor) || 0, alvo_tipo: m.alvo_tipo, alvo_produto: m.alvo, alvo_categoria: m.alvo, alvo_tag: m.alvo };
+  const afet = E.prods.filter((p) => atinge(rasc, p));
+  let ruim = 0;
+  const prev = afet.slice(0, 8).map((p) => { const por = comDesconto(rasc, Number(p.preco)); const c = p.custo ? custoDe(num(p.custo.gramas), num(p.custo.horas), num(p.custo.insumos)) : null; const l = lucroDe(por, c); if (l != null && l < 0) ruim++; return `<div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;font-size:14px"><span>${esc(p.nome)}</span><span><s style="color:var(--texto2)">${brl(p.preco)}</s> <b style="color:var(--marca)">${brl(por)}</b></span><b style="color:${corLucro(l, p.custo ? num(p.custo.horas) : null)}">${l == null ? 'sem custo' : 'lucro ' + brl(l)}</b></div>`; }).join('');
+  return `<div class="veu" data-fecharpromo></div><form class="modal" id="f-promo" role="dialog" aria-modal="true" aria-labelledby="t-promo"><h2 id="t-promo">Nova promoção</h2>
+    <label class="campo">Nome<input name="nome" value="${esc(m.nome)}" required placeholder="Ex.: Semana da fé"></label>
+    <div class="linha"><label class="campo">Tipo de desconto<select name="tipo"><option value="percentual" ${m.tipo === 'percentual' ? 'selected' : ''}>Porcentagem (%)</option><option value="valor" ${m.tipo === 'valor' ? 'selected' : ''}>Valor em reais</option></select></label><label class="campo">Desconto<input name="valor" inputmode="decimal" value="${esc(m.valor)}" required></label></div>
+    <div class="linha"><label class="campo">Vale para<select name="alvo_tipo"><option value="produto" ${m.alvo_tipo === 'produto' ? 'selected' : ''}>Um produto</option><option value="categoria" ${m.alvo_tipo === 'categoria' ? 'selected' : ''}>Uma categoria</option><option value="tag" ${m.alvo_tipo === 'tag' ? 'selected' : ''}>Uma tag</option></select></label><label class="campo">Qual<select name="alvo">${opcoes.map((o) => `<option value="${esc(o[0])}" ${String(m.alvo) === String(o[0]) ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select></label></div>
+    <div class="linha"><label class="campo">Começa em<input type="date" name="inicio" value="${esc(m.inicio)}" required></label><label class="campo">Termina em<input type="date" name="fim" value="${esc(m.fim)}" required></label></div>
+    <div class="bloco"><b style="font-family:var(--f-marca)">${afet.length} ${afet.length === 1 ? 'produto entra' : 'produtos entram'} nessa promoção</b>${prev}${ruim ? `<p role="alert" style="margin:0;color:var(--erro);font-weight:700">${ruim} ${ruim === 1 ? 'produto fica' : 'produtos ficam'} com prejuízo.</p>` : ''}</div>
+    <div style="display:flex;gap:10px"><button class="btn" type="submit">Criar promoção</button><button class="btn claro" type="button" data-fecharpromo>Cancelar</button></div></form>`;
+}
+function abaRelatorios() {
+  const r = E.rel;
+  const per = `<div style="display:flex;gap:6px">${[7, 30, 90].map((d) => `<button type="button" class="btn ${E.periodo === d ? '' : 'claro'} mini" data-periodo="${d}">${d} dias</button>`).join('')}</div>`;
+  if (!r) return `<div class="topo-sec"><h1>Relatórios</h1>${per}</div><p>Carregando…</p>`;
+  const barras = (titulo, lista) => `<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:10px"><h3>${titulo}</h3>${lista.length ? lista.map((x) => `<div><div style="display:flex;justify-content:space-between;gap:8px;font-size:14.5px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x[0])}</span><b>${x[1]}</b></div><div class="barra"><i style="width:${Math.round(x[1] / lista[0][1] * 100)}%"></i></div></div>`).join('') : '<p style="margin:0;color:var(--texto2)">Sem dados no período.</p>'}</div>`;
+  const pct = (a, b) => (b ? (Math.round(a / b * 1000) / 10).toString().replace('.', ',') + '%' : '–');
+  return `<div class="topo-sec"><div><h1>Relatórios</h1><p class="sub">Visitas, cliques e o caminho até o pedido no WhatsApp.</p></div>${per}</div>
+    <div class="kpis">${[['Visitas', r.visitas], ['Produtos vistos', r.vistos], ['Adicionados à lista', r.lista], ['Listas enviadas no WhatsApp', r.enviadas], ['Conversão', pct(r.sessEnv, r.sessVis)]].map((k) => `<div class="card"><span style="font-size:13.5px;font-weight:700;color:var(--texto2)">${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>
+    <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px"><h3>Do clique ao pedido (pessoas)</h3>${[['Visitaram o site', r.sessVis], ['Viram um produto', r.sessProd], ['Adicionaram à lista', r.sessLista], ['Enviaram no WhatsApp', r.sessEnv]].map((e, i, a) => `<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:12px;align-items:center"><span>${e[0]}</span><div class="barra" style="height:22px"><i style="width:${r.sessVis ? Math.round(e[1] / r.sessVis * 100) : 0}%"></i></div><span style="text-align:right"><b>${e[1]}</b> ${i ? '<small style="color:var(--texto2)">' + pct(e[1], a[i - 1][1]) + '</small>' : ''}</span></div>`).join('')}</div>
+    <div class="card" style="overflow-x:auto"><div style="padding:16px 16px 0"><h3>Produtos</h3></div><table class="tabela" style="min-width:640px"><thead><tr><th>Produto</th><th>Visitas</th><th>Na lista</th><th>No WhatsApp</th><th>Conversão</th></tr></thead><tbody>${r.produtos.map((p) => `<tr><td><b style="font-family:var(--f-marca)">${esc(p[0])}</b></td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td><td style="color:var(--ok);font-weight:700">${pct(p[3], p[1])}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--texto2)">Sem dados no período.</td></tr>'}</tbody></table></div>
+    <div class="grade2">${barras('Páginas mais vistas', r.paginas)}${barras('De onde vêm as visitas', r.origens)}${barras('Cliques no WhatsApp', r.botoes)}${barras('O que mais buscam', r.buscas)}</div>
+    <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:10px"><h3>Buscas sem resultado</h3><p class="sub" style="margin:0">O que as pessoas procuram e a Mimori ainda não tem.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${r.semResultado.map((b) => `<span class="pil" style="background:#FBE3DF;color:var(--erro)">${esc(b[0])} · ${b[1]}</span>`).join('') || '<span style="color:var(--texto2)">Nenhuma.</span>'}</div></div>`;
+}
+async function carregaRelatorio() {
+  E.rel = null; desenha();
+  const desde = new Date(Date.now() - E.periodo * 864e5).toISOString();
+  const { data, error } = await sb.from('eventos').select('tipo,pagina,produto_id,botao,termo,resultados,origem,sessao').gte('criado_em', desde).limit(20000);
+  if (error) { aviso('Não foi possível ler os eventos: ' + error.message); return; }
+  const conta = (f) => { const m = {}; data.forEach((e) => { const k = f(e); if (k) m[k] = (m[k] || 0) + 1; }); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
+  const sess = (t) => new Set(data.filter((e) => e.tipo === t).map((e) => e.sessao)).size;
+  const nomes = {}; E.prods.forEach((p) => { nomes[p.id] = p.nome; });
+  const porProd = {}; data.forEach((e) => { if (!e.produto_id) return; const x = porProd[e.produto_id] = porProd[e.produto_id] || [nomes[e.produto_id] || 'Produto removido', 0, 0, 0]; if (e.tipo === 'produto_visto') x[1]++; if (e.tipo === 'lista_adicionou') x[2]++; if (e.tipo === 'whatsapp_clique') x[3]++; });
+  const BOT = { lista: 'Enviar a lista', produto: 'Pedir só este', brindes: 'Orçamento de brindes', personalizados: 'Personalizados', busca: 'Busca sem resultado' };
+  E.rel = {
+    visitas: data.filter((e) => e.tipo === 'visita').length, vistos: data.filter((e) => e.tipo === 'produto_visto').length, lista: data.filter((e) => e.tipo === 'lista_adicionou').length, enviadas: data.filter((e) => e.tipo === 'lista_enviou').length,
+    sessVis: sess('visita'), sessProd: sess('produto_visto'), sessLista: sess('lista_adicionou'), sessEnv: sess('lista_enviou'),
+    produtos: Object.values(porProd).sort((a, b) => b[1] - a[1]).slice(0, 15),
+    paginas: conta((e) => (e.tipo === 'visita' ? e.pagina || '/' : null)).slice(0, 6),
+    origens: conta((e) => (e.tipo === 'visita' ? e.origem || 'direto' : null)).slice(0, 6),
+    botoes: conta((e) => (e.tipo === 'whatsapp_clique' ? BOT[e.botao] || e.botao : null)).slice(0, 6),
+    buscas: conta((e) => (e.tipo === 'busca' ? (e.termo || '').toLowerCase() : null)).slice(0, 6),
+    semResultado: conta((e) => (e.tipo === 'busca' && e.resultados === 0 ? (e.termo || '').toLowerCase() : null)).slice(0, 12)
+  };
+  desenha();
+}
+function abaUsuarios() {
+  return `<div class="topo-sec"><div><h1>Usuários</h1><p class="sub">Quem pode entrar no painel e mudar produtos.</p></div><button class="btn" type="button" id="novo-usuario">+ Adicionar usuário</button></div>
+  <div class="card" style="overflow-x:auto"><table class="tabela" style="min-width:640px"><thead><tr><th>Nome</th><th>E-mail</th><th>Acesso</th><th></th></tr></thead><tbody>
+  ${E.usuarios.map((u) => `<tr><td><b style="font-family:var(--f-marca)">${esc(u.nome || '')}</b></td><td style="color:var(--texto2)">${esc(u.email)}</td><td>${u.papel === 'admin' ? 'Administrador' : 'Editor'}</td><td style="text-align:right">${u.user_id !== E.eu.id ? `<button class="btn perigo mini" type="button" data-remover="${esc(u.email)}">Remover acesso</button>` : ''}</td></tr>`).join('')}
+  </tbody></table></div><p class="sub">Quem é adicionado recebe um e-mail para criar a própria senha. Ninguém define a senha de outra pessoa.</p>
+  ${E.convite ? `<div class="veu" data-fecharconvite></div><form class="modal" id="f-convite" role="dialog" aria-modal="true" aria-labelledby="t-conv"><h2 id="t-conv">Adicionar usuário</h2>
+    <label class="campo">Nome<input name="nome" required></label><label class="campo">E-mail<input name="email" type="email" required></label>
+    <label class="campo">Acesso<select name="papel"><option value="editor">Editor: só produtos, promoções e relatórios</option><option value="admin">Administrador: tudo, inclusive usuários</option></select></label>
+    <div style="display:flex;gap:10px"><button class="btn" type="submit">Enviar convite</button><button class="btn claro" type="button" data-fecharconvite>Cancelar</button></div></form>` : ''}`;
+}
+function abaConta() {
+  const n = E.novaSenha, c = E.confSenha;
+  const regras = [['Pelo menos 10 caracteres', n.length >= 10], ['Letras e números', /[a-zA-Z]/.test(n) && /[0-9]/.test(n)], ['As duas senhas iguais', n.length > 0 && n === c]];
+  return `<div><h1>Minha conta</h1><p class="sub">${esc(E.eu.email)}</p></div>
+  <form class="card" id="f-senha" style="padding:24px;display:flex;flex-direction:column;gap:14px;max-width:520px"><h2>Alterar senha</h2>
+    <label class="campo">Nova senha<input type="password" id="s-nova" autocomplete="new-password" value="${esc(n)}"></label>
+    <label class="campo">Repita a nova senha<input type="password" id="s-conf" autocomplete="new-password" value="${esc(c)}"></label>
+    <ul style="margin:0;padding:0;list-style:none;font-size:14px">${regras.map((r) => `<li style="color:${r[1] ? 'var(--ok)' : 'var(--texto2)'};font-weight:600">${r[1] ? '✓' : '•'} ${r[0]}</li>`).join('')}</ul>
+    <button class="btn" type="submit" style="align-self:flex-start">Salvar nova senha</button></form>`;
+}
+
+/* ===== desenho ===== */
+function desenha() {
+  const app = $('#app');
+  if (!SUPABASE_URL || !SUPABASE_ANON) { app.innerHTML = '<div class="login"><div class="card"><h1>Painel da loja</h1><p>Preencha SUPABASE_URL e SUPABASE_ANON no começo deste arquivo e no index.html. Veja o README.</p></div></div>'; return; }
+  const foco = document.activeElement && document.activeElement.id; const pos = foco && document.activeElement.selectionStart;
+  app.innerHTML = E.tela === 'login' ? telaLogin() : E.tela === 'criar-senha' ? telaCriarSenha() : E.tela === 'app' ? telaApp() : '<p style="padding:40px">Carregando…</p>';
+  if (foco && $('#' + foco)) { const el = $('#' + foco); el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) {} }
+  desenhaCamada();
+}
+function desenhaCamada() {
+  let h = '';
+  if (E.tela === 'app' && E.ed) h += gavetaProduto();
+  if (E.tela === 'app' && E.promo) h += modalPromo();
+  if (E.toast) h += `<div class="toast" role="status">${esc(E.toast)}</div>`;
+  const ativo = document.activeElement; const nome = ativo && ativo.name; const pos = ativo && ativo.selectionStart;
+  $('#camada').innerHTML = h;
+  if (nome && ativo.closest && ativo.closest('#camada') === null && $('#camada [name="' + nome + '"]')) { const el = $('#camada [name="' + nome + '"]'); el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) {} }
+}
+
+/* ===== ações ===== */
+async function importaCatalogo() {
+  E.importando = 'Lendo o catálogo…'; desenha();
+  try {
+    const cat = await fetch('../data/catalogo.json', { cache: 'no-cache' }).then((r) => r.json());
+    const mapa = {}; E.cats.forEach((c) => { mapa[c.slug] = c.id; });
+    let n = 0;
+    for (const p of cat.produtos) {
+      const { data, error } = await sb.from('produtos').insert({ slug: p.slug, sku: p.sku || null, nome: p.nome, categoria_id: mapa[p.categoria] || null, preco: p.preco, descricao: p.descricao || '', publicado: p.publicado !== false, ordem: p.ordem || 0, tags: p.tags || [], selo: p.selo || null, a_partir: !!p.aPartir, grupos: p.grupos || [] }).select('id').single();
+      if (error) { if (/duplicate/i.test(error.message)) continue; throw error; }
+      const id = data.id;
+      if ((p.fotos || []).length) await sb.from('produto_fotos').insert(p.fotos.map((f, i) => ({ produto_id: id, caminho: f.src, tipo: f.tipo || 'criador', ordem: i })));
+      if (p.video) await sb.from('produto_videos').insert({ produto_id: id, caminho: p.video, ordem: 0 });
+      if ((p.cores || []).length) await sb.from('variacoes').insert(p.cores.map((c, i) => ({ produto_id: id, cor: c, ordem: i })));
+      n++; E.importando = 'Importando: ' + n + ' de ' + cat.produtos.length + ' peças…'; desenha();
+    }
+    await sb.rpc('aplicar_custos_iniciais');
+    E.importando = ''; await carregaTudo(); desenha(); aviso(n + ' peças importadas.');
+  } catch (e) { E.importando = ''; desenha(); aviso('A importação parou: ' + e.message); }
+}
+async function entrar(email, senha) {
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
+  if (error) { E.erro = 'E-mail ou senha incorretos.'; desenha(); return; }
+  await abreSessao(data.user);
+}
+async function abreSessao(user) {
+  const { data } = await sb.from('painel_usuarios').select('papel').eq('user_id', user.id).maybeSingle();
+  if (!data) { await sb.auth.signOut(); E.tela = 'login'; E.erro = 'Esse e-mail não tem acesso ao painel.'; desenha(); return; }
+  E.eu = user; E.papel = data.papel; E.erro = '';
+  try { await carregaTudo(); } catch (e) { E.tela = 'login'; E.erro = 'Não foi possível carregar os dados: ' + e.message; desenha(); return; }
+  E.tela = 'app'; desenha();
+}
+function edDe(p) {
+  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos }
+    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', fonte: 'suposição', fotos: [], videos: [] };
+}
+async function salvaProduto(f) {
+  const v = Object.fromEntries(new FormData(f));
+  const preco = num(v.preco); if (!v.nome || preco == null) { aviso('Preencha nome e preço.'); return; }
+  const linha = { nome: v.nome.trim(), slug: (v.slug || slugify(v.nome)).trim(), sku: v.sku || null, categoria_id: v.categoria_id, preco, selo: v.selo || null, descricao: v.descricao || '', publicado: !!v.publicado, tags: String(v.tags || '').split(',').map((t) => t.trim()).filter(Boolean) };
+  let id = E.ed.id;
+  const r = id ? await sb.from('produtos').update(linha).eq('id', id) : await sb.from('produtos').insert(linha).select('id').single();
+  if (r.error) { aviso('Não salvou: ' + r.error.message); return; }
+  if (!id) id = r.data.id;
+  const cores = String(v.cores || '').split(',').map((t) => t.trim()).filter(Boolean);
+  await sb.from('variacoes').delete().eq('produto_id', id);
+  if (cores.length) await sb.from('variacoes').insert(cores.map((c, i) => ({ produto_id: id, cor: c, ordem: i })));
+  await sb.from('produto_custos').upsert({ produto_id: id, gramas: num(v.gramas), horas: num(v.horas), insumos: num(v.insumos) || 0, fonte: v.fonte, atualizado_em: new Date().toISOString() });
+  await carregaTudo(); E.ed = E.ed.id ? null : edDe(E.prods.find((p) => p.id === id)); desenha(); aviso('Produto salvo. Já aparece no site.');
+}
+async function sobeArquivos(files) {
+  const ed = E.ed; let ordemF = ed.fotos.length, ordemV = ed.videos.length;
+  for (const file of files) {
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const caminho = ed.slug + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 6) + '.' + ext;
+    const up = await sb.storage.from('produtos').upload(caminho, file, { cacheControl: '31536000', upsert: false });
+    if (up.error) { aviso('Não subiu ' + file.name + ': ' + up.error.message); continue; }
+    if (/^video/.test(file.type)) await sb.from('produto_videos').insert({ produto_id: ed.id, caminho, ordem: ordemV++ });
+    else await sb.from('produto_fotos').insert({ produto_id: ed.id, caminho, tipo: 'real', ordem: ordemF++ });
+  }
+  await carregaTudo(); E.ed = edDe(E.prods.find((p) => p.id === ed.id)); desenha(); aviso('Arquivos enviados.');
+}
+async function reordena(i, d) {
+  const f = E.ed.fotos.slice(); const j = i + d; if (j < 0 || j >= f.length) return;
+  [f[i], f[j]] = [f[j], f[i]];
+  await Promise.all(f.map((x, k) => sb.from('produto_fotos').update({ ordem: k }).eq('id', x.id)));
+  await carregaTudo(); E.ed = edDe(E.prods.find((p) => p.id === E.ed.id)); desenha();
+}
+
+document.addEventListener('submit', async (e) => {
+  e.preventDefault(); const f = e.target;
+  if (f.id === 'f-login') { const v = Object.fromEntries(new FormData(f)); await entrar(v.email.trim(), v.senha); }
+  if (f.id === 'f-criar') { const v = Object.fromEntries(new FormData(f)); if (v.s1 !== v.s2 || v.s1.length < 10 || !/[a-zA-Z]/.test(v.s1) || !/[0-9]/.test(v.s1)) { E.erro = 'A senha precisa ter 10 caracteres, letras e números, e as duas iguais.'; desenha(); return; } const { data, error } = await sb.auth.updateUser({ password: v.s1 }); if (error) { E.erro = error.message; desenha(); return; } history.replaceState({}, '', location.pathname); await abreSessao(data.user); }
+  if (f.id === 'f-produto') await salvaProduto(f);
+  if (f.id === 'f-promo') { const v = Object.fromEntries(new FormData(f)); const valor = num(v.valor); if (!v.nome || !valor || !v.fim) { aviso('Preencha nome, desconto e datas.'); return; }
+    const linha = { nome: v.nome, tipo: v.tipo, valor, alvo_tipo: v.alvo_tipo, alvo_produto: v.alvo_tipo === 'produto' ? v.alvo : null, alvo_categoria: v.alvo_tipo === 'categoria' ? v.alvo : null, alvo_tag: v.alvo_tipo === 'tag' ? v.alvo : null, inicio: v.inicio, fim: v.fim };
+    const r = await sb.from('promocoes').insert(linha); if (r.error) { aviso('Não salvou: ' + r.error.message); return; } E.promo = null; await carregaTudo(); desenha(); aviso('Promoção criada.'); }
+  if (f.id === 'f-convite') { const v = Object.fromEntries(new FormData(f)); const { data, error } = await sb.functions.invoke('painel-usuarios', { body: { acao: 'convidar', email: v.email, nome: v.nome, papel: v.papel } }); if (error || (data && data.erro)) { aviso('Não enviou: ' + ((data && data.erro) || error.message)); return; } E.convite = null; await carregaTudo(); desenha(); aviso('Convite enviado para ' + v.email + '.'); }
+  if (f.id === 'f-senha') { const n = E.novaSenha; if (n.length < 10 || !/[a-zA-Z]/.test(n) || !/[0-9]/.test(n) || n !== E.confSenha) { aviso('A senha ainda não atende às regras.'); return; } const { error } = await sb.auth.updateUser({ password: n }); if (error) { aviso(error.message); return; } E.novaSenha = E.confSenha = ''; desenha(); aviso('Senha alterada.'); }
+});
+document.addEventListener('click', async (e) => {
+  const el = e.target.closest('button,[data-fechar],[data-fecharpromo],[data-fecharconvite]'); if (!el) return; const d = el.dataset;
+  if (el.id === 'esqueci') { const email = ($('#f-login [name=email]') || {}).value; if (!email) { E.erro = 'Digite o seu e-mail primeiro.'; desenha(); return; } await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); aviso('Se o e-mail tiver acesso, enviamos um link para criar uma nova senha.'); }
+  if (el.id === 'importar') await importaCatalogo();
+  if (el.id === 'sair') { await sb.auth.signOut(); E.tela = 'login'; desenha(); }
+  if (d.aba) { E.aba = d.aba; E.ed = E.promo = null; desenha(); if (d.aba === 'relatorios') carregaRelatorio(); }
+  if (d.editar) { E.ed = edDe(d.editar === 'novo' ? null : E.prods.find((p) => p.id === d.editar)); desenhaCamada(); }
+  if (d.fechar != null) { E.ed = null; desenhaCamada(); }
+  if (d.moverfoto) await reordena(Number(d.moverfoto), Number(d.d));
+  if (d.apagarfoto && confirm('Apagar esta foto?')) { await sb.from('produto_fotos').delete().eq('id', d.apagarfoto); await carregaTudo(); E.ed = edDe(E.prods.find((p) => p.id === E.ed.id)); desenha(); }
+  if (d.apagarvideo && confirm('Apagar este vídeo?')) { await sb.from('produto_videos').delete().eq('id', d.apagarvideo); await carregaTudo(); E.ed = edDe(E.prods.find((p) => p.id === E.ed.id)); desenha(); }
+  if (el.id === 'nova-promo') { E.promo = { nome: '', tipo: 'percentual', valor: '10', alvo_tipo: 'categoria', alvo: E.cats[0] && E.cats[0].id, inicio: hoje(), fim: hoje() }; desenhaCamada(); }
+  if (d.fecharpromo != null) { E.promo = null; desenhaCamada(); }
+  if (d.pausar) { const pr = E.promos.find((x) => x.id === d.pausar); await sb.from('promocoes').update({ pausada: !pr.pausada }).eq('id', pr.id); await carregaTudo(); desenha(); }
+  if (d.apagarpromo && confirm('Apagar esta promoção?')) { await sb.from('promocoes').delete().eq('id', d.apagarpromo); await carregaTudo(); desenha(); aviso('Promoção apagada.'); }
+  if (d.periodo) { E.periodo = Number(d.periodo); carregaRelatorio(); }
+  if (el.id === 'novo-usuario') { E.convite = {}; desenha(); }
+  if (d.fecharconvite != null) { E.convite = null; desenha(); }
+  if (d.remover && confirm('Remover o acesso de ' + d.remover + '?')) { const { data, error } = await sb.functions.invoke('painel-usuarios', { body: { acao: 'remover', email: d.remover } }); if (error || (data && data.erro)) { aviso('Não removeu: ' + ((data && data.erro) || error.message)); return; } await carregaTudo(); desenha(); aviso('Acesso removido.'); }
+});
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.id === 'busca') { E.busca = t.value; desenha(); }
+  if (t.id === 's-nova') { E.novaSenha = t.value; desenha(); }
+  if (t.id === 's-conf') { E.confSenha = t.value; desenha(); }
+  if (E.ed && t.form && t.form.id === 'f-produto' && ['gramas', 'horas', 'insumos', 'preco'].indexOf(t.name) >= 0) { E.ed[t.name] = t.value; $('#custo-vivo').innerHTML = custoHTML(E.ed); }
+  if (E.ed && t.form && t.form.id === 'f-produto' && t.name === 'nome' && !E.ed.id) { const s = $('#camada [name=slug]'); if (s && (!s.dataset.mexeu)) s.value = slugify(t.value); }
+  if (t.form && t.form.id === 'f-produto' && t.name === 'slug') t.dataset.mexeu = '1';
+});
+document.addEventListener('change', async (e) => {
+  const t = e.target;
+  if (t.id === 'filtro-cat') { E.filtroCat = t.value; desenha(); }
+  if (t.id === 'upload' && t.files.length) await sobeArquivos([...t.files]);
+  if (t.dataset.tipofoto) { await sb.from('produto_fotos').update({ tipo: t.value }).eq('id', t.dataset.tipofoto); aviso('Tipo da foto salvo.'); await carregaTudo(); }
+  if (E.promo && t.form && t.form.id === 'f-promo') { const v = Object.fromEntries(new FormData(t.form)); if (t.name === 'alvo_tipo') v.alvo = t.value === 'produto' ? E.prods[0].id : t.value === 'categoria' ? E.cats[0].id : ((E.prods.flatMap((p) => p.tags || []).sort()[0]) || ''); Object.assign(E.promo, v); desenhaCamada(); }
+});
+
+(async function () {
+  if (!SUPABASE_URL || !SUPABASE_ANON) { desenha(); return; }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  sb.auth.onAuthStateChange((ev) => { if (ev === 'PASSWORD_RECOVERY') { E.tela = 'criar-senha'; desenha(); } });
+  const hash = new URLSearchParams(location.hash.slice(1));
+  if (hash.get('type') === 'invite' || hash.get('type') === 'recovery') { E.tela = 'criar-senha'; desenha(); return; }
+  const { data } = await sb.auth.getSession();
+  if (data.session) await abreSessao(data.session.user); else { E.tela = 'login'; desenha(); }
+})();
+</script>
+</body>
+</html>
