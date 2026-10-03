@@ -58,6 +58,15 @@ header.topo{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px s
 .nav a{min-height:44px;display:flex;align-items:center;padding:0 12px;font-family:var(--f-marca);font-weight:600;font-size:15.5px;color:var(--marca-escura);text-decoration:none;border-radius:var(--pilula)}
 .nav a[aria-current=page]{background:var(--suave)}
 .lista-mini{display:none}
+.abre-menu{display:none}
+.menu-lateral[hidden],.veu[hidden]{display:none}
+.menu-lateral{position:fixed;top:0;left:0;bottom:0;width:min(340px,86%);z-index:60;background:#fff;box-shadow:18px 0 48px rgba(36,31,46,.18);padding:20px 16px calc(20px + env(safe-area-inset-bottom,0));padding-top:calc(20px + env(safe-area-inset-top,0));display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+.menu-lateral nav{display:flex;flex-direction:column;gap:2px}
+.menu-lateral a{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 8px;border-radius:12px;text-decoration:none;color:var(--tinta);font-family:var(--f-marca);font-weight:700;font-size:16px}
+.menu-lateral a:hover,.menu-lateral a[aria-current=page]{background:var(--suave)}
+.menu-lateral img.ic{width:40px;height:40px;border-radius:10px;object-fit:cover}
+.menu-lateral small{display:block;font-family:var(--f-texto);font-weight:600;font-size:13px;color:var(--texto2)}
+.menu-lateral .rot{margin:12px 8px 4px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--texto2)}
 .nav-cat{min-height:44px;display:flex;align-items:center;gap:6px;padding:0 12px;border:0;border-radius:var(--pilula);background:transparent;font-family:var(--f-marca);font-weight:600;font-size:15.5px;color:var(--marca-escura)}
 .nav-cat[aria-expanded=true]{background:var(--suave)}
 .nav-cat[aria-expanded=true] svg{transform:rotate(180deg)}
@@ -86,6 +95,9 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .card a.corpo{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--tinta)}
 .foto{position:relative;aspect-ratio:1/1;border-radius:var(--r1);overflow:hidden;background:var(--suave2)}
 .foto img,.foto video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fotos-trilho{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.fotos-trilho::-webkit-scrollbar{display:none}
+.fotos-trilho img{position:static;flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:start}
 .foto video{opacity:0;transition:opacity .2s}
 .card:hover .foto video.tocando{opacity:1}
 .foto .vazia{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--texto2);font-weight:700;font-size:13px}
@@ -220,7 +232,8 @@ footer a:hover{text-decoration:underline}
   .logo img{height:30px}
   .lista-mini{display:flex;align-items:center;gap:6px;margin-left:auto;min-height:44px;padding:0 14px;border:1px solid #D0C5E7;border-radius:var(--pilula);background:#fff;color:var(--marca-escura);font-family:var(--f-marca);font-weight:700}
   .nav .lista-btn{display:none}
-  .nav{order:3;width:100%;margin:0 -16px;padding:0 16px 8px;overflow-x:auto;flex-wrap:nowrap}
+  .nav{display:none}
+  .abre-menu{display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin-left:-8px;border:0;background:transparent;color:var(--marca-escura)}
   .nav a,.nav-cat{flex-shrink:0;font-size:14.5px}
   .menu-cat{padding:12px 0}
   .menu-cat nav{grid-template-columns:1fr;gap:2px}
@@ -228,7 +241,14 @@ footer a:hover{text-decoration:underline}
   .menu-cat img{width:44px;height:44px}
   .busca{order:2;flex-basis:100%}
   .trilho{grid-auto-columns:160px;gap:12px}
-  .hero .mosaico{grid-template-rows:130px 130px}
+  .hero{gap:20px}
+  .hero .txt{gap:14px}
+  .hero .txt p{font-size:16.5px}
+  .hero .mosaico{flex-basis:100%;grid-template-rows:96px 96px;gap:8px}
+  .hero .mosaico div{border-radius:16px}
+  .hero .btn{min-height:46px;padding:0 14px;font-size:14.5px}
+  .confianca{font-size:13.5px}
+  .faixa{font-size:12.5px;min-height:32px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:32px;padding:0 12px}
   .tema,.faixa-forte{padding:24px}
   .catalogo{flex-direction:column}
   .lateral{position:static;flex-basis:auto;flex-direction:row;overflow-x:auto;width:100%}
@@ -248,6 +268,7 @@ footer a:hover{text-decoration:underline}
 <div id="faixa"></div>
 <header class="topo">
   <div class="wrap">
+    <button type="button" class="abre-menu" id="abrir-menu" aria-label="Abrir o menu" aria-expanded="false" aria-controls="menu-lateral"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16 M4 12h16 M4 17h16"/></svg></button>
     <a class="logo" href="./" data-rota aria-label="Mimori, página inicial"><img src="assets/logo-mimori.svg" alt="Mimori" width="146" height="38"></a>
     <button type="button" class="lista-mini" data-acao="abrir-lista" aria-label="Abrir a lista"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg><span id="rotulo-lista-m"></span></button>
     <form class="busca" role="search" id="form-busca">
@@ -282,6 +303,11 @@ footer a:hover{text-decoration:underline}
   </div>
 </footer>
 <div id="camadas"></div>
+<div class="veu" id="veu-menu" hidden></div>
+<aside class="menu-lateral" id="menu-lateral" aria-label="Menu" hidden>
+  <div style="display:flex;justify-content:space-between;align-items:center"><img src="assets/logo-mimori.svg" alt="Mimori" style="height:30px;width:auto"><button type="button" class="seta" id="fechar-menu" aria-label="Fechar o menu">×</button></div>
+  <nav id="menu-lateral-lista"></nav>
+</aside>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -423,7 +449,7 @@ function cardHTML(p) {
   const selo = p.promo ? `<span class="selo promo">${esc(p.promo.nome || 'Promoção')}</span>` : (p.selo ? `<span class="selo">${esc(p.selo)}</span>` : '');
   return `<article class="card" data-card="${esc(p.slug)}" data-foto="0">
     <a class="corpo" href="${esc(p.categoria + '/' + p.slug)}" data-rota>
-      <span class="foto">${f.length ? `<img src="${esc(f[0].src)}" alt="${esc(p.nome)}" loading="lazy">` : '<span class="vazia">Foto em breve</span>'}
+      <span class="foto">${f.length ? `<span class="fotos-trilho" data-fotos>${f.map((x, i) => `<img src="${esc(x.src)}" alt="${i ? '' : esc(p.nome)}" loading="lazy" draggable="false">`).join('')}</span>` : '<span class="vazia">Foto em breve</span>'}
         ${p.video ? `<video muted loop playsinline preload="none" data-src="${esc(p.video)}"></video><span class="play" title="Tem vídeo">${IC.play}</span>` : ''}
         ${selo}${f.length > 1 ? `<span class="pontos">${f.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</span>` : ''}</span>
       <span class="nome">${esc(p.nome)}</span>
@@ -684,6 +710,12 @@ function render() {
 }
 
 /* ===== Interação ===== */
+function menuLateral(abrir) {
+  const m = $('#menu-lateral'), v = $('#veu-menu'), b = $('#abrir-menu');
+  m.hidden = v.hidden = !abrir; b.setAttribute('aria-expanded', String(abrir));
+  document.body.style.overflow = abrir ? 'hidden' : '';
+  if (abrir) { const a = m.querySelector('a'); if (a) a.focus(); } else b.focus();
+}
 function menuCategorias(abrir) {
   const b = $('#abrir-categorias'), m = $('#menu-cat');
   const v = abrir == null ? m.hidden : abrir;
@@ -691,6 +723,9 @@ function menuCategorias(abrir) {
   if (v) { const a = m.querySelector('a'); if (a) a.focus(); }
 }
 document.addEventListener('click', (e) => {
+  if (e.target.closest('#abrir-menu')) { menuLateral(true); return; }
+  if (e.target.closest('#fechar-menu') || e.target.id === 'veu-menu') { menuLateral(false); return; }
+  if (e.target.closest('#menu-lateral a')) { const m = $('#menu-lateral'); m.hidden = $('#veu-menu').hidden = true; document.body.style.overflow = ''; $('#abrir-menu').setAttribute('aria-expanded', 'false'); }
   if (e.target.closest('#abrir-categorias')) { menuCategorias(); return; }
   if (!$('#menu-cat').hidden && (!e.target.closest('#menu-cat') || e.target.closest('#menu-cat a'))) menuCategorias(false);
   const el = e.target.closest('a,button,[data-acao],[data-perso]');
@@ -706,7 +741,7 @@ document.addEventListener('click', (e) => {
   if (d.remover) { lista = lista.filter((i) => i.chave !== d.remover); salvaLista(); return; }
   if (d.qtd) { const it = lista.find((i) => i.chave === d.qtd); if (it) { it.qtd = Math.max(1, Math.min(99, it.qtd + Number(d.d))); salvaLista(); } return; }
   if (d.rolar) { const t = el.closest('[data-carrossel]').querySelector('[data-trilho]'); const c = t.firstElementChild; t.scrollBy({ left: Number(d.rolar) * (c ? c.getBoundingClientRect().width + 20 : 240), behavior: 'smooth' }); return; }
-  if (d.fotonav) { e.preventDefault(); const card = el.closest('[data-card]'); const p = S.porSlug[card.dataset.card]; const n = p.fotos.length; const i = (Number(card.dataset.foto) + Number(d.fotonav) + n) % n; card.dataset.foto = i; card.querySelector('.foto img').src = p.fotos[i].src; card.querySelectorAll('.pontos i').forEach((x, k) => x.classList.toggle('on', k === i)); return; }
+  if (d.fotonav) { e.preventDefault(); const t = el.closest('[data-card]').querySelector('[data-fotos]'); if (t) t.scrollBy({ left: Number(d.fotonav) * t.clientWidth, behavior: 'smooth' }); return; }
   if (d.galeria != null && d.galeria !== '') { galeria = Number(d.galeria); render(); return; }
   if (d.qtdp) { qtdProduto = Math.max(1, Math.min(20, qtdProduto + Number(d.qtdp))); render(); return; }
   if (d.corproduto) { corProduto = corProduto === d.corproduto ? '' : d.corproduto; render(); return; }
@@ -722,7 +757,7 @@ document.addEventListener('input', (e) => {
   if (e.target.id === 'cep') { cep = e.target.value; const a = $('#enviar-lista'); if (a) a.href = wa(mensagemLista()); const pre = $('.gaveta .msg'); if (pre) pre.textContent = mensagemLista(); }
   if (e.target.id === 'perso-texto') { const pos = e.target.selectionStart; perso.texto = e.target.value; render(); const i = $('#perso-texto'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } }
 });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('#menu-cat').hidden) { menuCategorias(false); $('#abrir-categorias').focus(); } if (gavetaAberta) { gavetaAberta = false; desenhaCamadas(); } if (perso.sel >= 0) { perso.sel = -1; render(); } $('#sugestoes').hidden = true; } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('#menu-lateral').hidden) menuLateral(false); if (!$('#menu-cat').hidden) { menuCategorias(false); $('#abrir-categorias').focus(); } if (gavetaAberta) { gavetaAberta = false; desenhaCamadas(); } if (perso.sel >= 0) { perso.sel = -1; render(); } $('#sugestoes').hidden = true; } });
 /* vídeo ao passar o mouse */
 let cardVideo = null;
 document.addEventListener('mouseover', (e) => {
@@ -743,6 +778,11 @@ inp.addEventListener('input', () => {
 inp.addEventListener('blur', () => setTimeout(() => { sug.hidden = true; }, 200));
 $('#form-busca').addEventListener('submit', (e) => { e.preventDefault(); sug.hidden = true; if (inp.value.trim()) navega('busca?q=' + encodeURIComponent(inp.value.trim())); });
 window.addEventListener('popstate', render);
+document.addEventListener('scroll', (e) => {
+  const t = e.target; if (!t || !t.matches || !t.matches('[data-fotos]')) return;
+  const i = Math.round(t.scrollLeft / t.clientWidth);
+  const card = t.closest('.card'); if (card) card.querySelectorAll('.pontos i').forEach((x, k) => x.classList.toggle('on', k === i));
+}, true);
 
 /* ===== Início ===== */
 (async function () {
@@ -757,6 +797,9 @@ window.addEventListener('popstate', render);
     + `<a href="personalizados" data-rota><img src="assets/fotos/chaveiro-camera-porta-foto-3x4-1.jpg" alt=""><span><b>Personalizados</b><small>com nome, frase ou foto</small></span></a>`
     + `<a href="para-empresas" data-rota><img src="assets/fotos/kit-ore-e-confie-com-bandeja-e-porta-vela-1.jpg" alt=""><span><b>Para empresas</b><small>brindes com o seu logo</small></span></a>`
     + `<a class="todos" href="catalogo" data-rota>Ver o catálogo completo (${S.produtos.length} peças)</a>`;
+  $('#menu-lateral-lista').innerHTML = '<span class="rot">Categorias</span>' + S.categorias.map((c) => `<a href="${esc(c.slug)}" data-rota><img class="ic" src="${esc(c.foto)}" alt=""><span>${esc(c.nome)}<small>${conta(c.slug)} peças</small></span></a>`).join('')
+    + `<a href="catalogo" data-rota><span>Ver o catálogo completo</span></a><span class="rot">Pra você</span><a href="presentes" data-rota>Presentes</a><a href="personalizados" data-rota>Personalizados</a><a href="para-empresas" data-rota>Para empresas</a><a href="${esc(S.config.gamer || '#')}" target="_blank" rel="noopener">Gamer</a>`
+    + `<span class="rot">Fale com a gente</span><a href="https://wa.me/${esc(S.config.whatsapp)}" target="_blank" rel="noopener" data-whats="menu">WhatsApp ${esc(S.config.whatsappTxt || '')}</a><a href="https://instagram.com/mimori3d" target="_blank" rel="noopener">Instagram @mimori3d</a>`;
   $('#rodape-categorias').insertAdjacentHTML('beforeend', S.categorias.map((c) => `<a href="${esc(c.slug)}" data-rota>${esc(c.nome)}</a>`).join(''));
   atualizaLista(); render();
 })();
