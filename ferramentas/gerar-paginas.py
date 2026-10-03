@@ -42,9 +42,9 @@ def pagina(caminho, titulo, descricao, imagem=''):
     h = re.sub(r'<title>.*?</title>', f'<title>{html.escape(titulo)}</title>', h, count=1)
     h = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{html.escape(descricao)}">', h, count=1)
     img = imagem if imagem.startswith('http') else (f'{SITE}/{imagem}' if imagem else f'{SITE}/assets/fotos/categoria-religiosos.jpg')
-    extra = (f'<link rel="canonical" href="{SITE}/{caminho}">\n<meta property="og:title" content="{html.escape(titulo)}">\n'
+    extra = (f'<link rel="canonical" href="{SITE}/{caminho}/">\n<meta property="og:title" content="{html.escape(titulo)}">\n'
              f'<meta property="og:description" content="{html.escape(descricao)}">\n<meta property="og:image" content="{html.escape(img)}">\n'
-             f'<meta property="og:type" content="website">\n<meta property="og:url" content="{SITE}/{caminho}">\n')
+             f'<meta property="og:type" content="website">\n<meta property="og:url" content="{SITE}/{caminho}/">\n')
     h = h.replace('<meta name="theme-color"', extra + '<meta name="theme-color"', 1)
     pasta = os.path.join(RAIZ, caminho)
     os.makedirs(pasta, exist_ok=True)
@@ -75,7 +75,7 @@ for p in produtos:
 
 open(os.path.join(RAIZ, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    ''.join(f'  <url><loc>{SITE}/{u}</loc></url>\n' for u in urls) + '</urlset>\n')
+    ''.join(f'  <url><loc>{SITE}/{u + "/" if u else ""}</loc></url>\n' for u in urls) + '</urlset>\n')
 open(os.path.join(RAIZ, 'robots.txt'), 'w', encoding='utf-8').write(f'User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: {SITE}/sitemap.xml\n')
 shutil.copy(os.path.join(RAIZ, 'index.html'), os.path.join(RAIZ, '404.html'))
 print('Páginas geradas:', len(urls), '· 404.html atualizado')
