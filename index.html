@@ -442,16 +442,32 @@ function atualizaLista() {
 }
 let toastTxt = '', toastT;
 function aviso(t) { toastTxt = t; clearTimeout(toastT); toastT = setTimeout(() => { toastTxt = ''; desenhaCamadas(); }, 2600); desenhaCamadas(); }
+let escolha = null;
+function escolhaHTML() {
+  const p = S.porSlug[escolha.slug]; if (!p) return '';
+  const preco = escolha.op ? precoItem(p, escolha.op) : precoAtual(p);
+  return `<div class="veu" data-acao="fechar-escolha"></div><aside class="gaveta" role="dialog" aria-modal="true" aria-labelledby="t-escolha">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2 id="t-escolha" class="titulo" style="font-size:22px">${esc(p.nome)}</h2><button type="button" class="seta" data-acao="fechar-escolha" aria-label="Fechar">×</button></div>
+    ${p.fotos[0] ? `<img src="${esc(p.fotos[0].src)}" alt="" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:18px;max-height:280px">` : ''}
+    <div class="preco"><small>${p.opcoes.length > 1 && !escolha.op ? 'a partir de' : ''}</small><strong style="font-size:22px">${brl(preco)}</strong></div>
+    ${p.opcoes.length > 1 ? `<div class="caixa${escolha.erro && !escolha.op ? ' erro' : ''}"><b style="font-family:var(--f-marca)">Opção${escolha.op ? ': ' + esc(escolha.op) : ''}</b><div class="chips">${p.opcoes.map((o) => `<button type="button" class="chip" aria-pressed="${o.nome === escolha.op}" data-escop="${esc(o.nome)}">${esc(o.nome)} · ${brl(o.preco)}</button>`).join('')}</div></div>` : ''}
+    ${p.cores.length ? `<div class="caixa${escolha.erro && !escolha.cor ? ' erro' : ''}"><b style="font-family:var(--f-marca)">Cor${escolha.cor ? ': ' + esc(escolha.cor) : ''}</b><div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${c === escolha.cor}" data-esccor="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
+    ${escolha.erro ? `<span class="falta" role="alert">${esc(escolha.erro)}</span>` : ''}
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div class="qtd" role="group" aria-label="Quantidade"><button type="button" data-escqtd="-1" aria-label="Diminuir">−</button><output aria-live="polite">${escolha.qtd}</output><button type="button" data-escqtd="1" aria-label="Aumentar">+</button></div>
+    <button type="button" class="btn" style="flex:1 1 180px" data-acao="confirmar-escolha">${IC.sacola}Adicionar à lista</button></div>
+  </aside>`;
+}
 function desenhaCamadas() {
   const n = totalQtd();
   let h = '';
+  if (escolha) h += escolhaHTML();
   if (n && !gavetaAberta) h += `<button type="button" class="pilula-lista" data-acao="abrir-lista">${n} ${n === 1 ? 'peça' : 'peças'} na lista <span>Ver lista</span></button>`;
   if (toastTxt) h += `<div class="toast" role="status">${esc(toastTxt)}</div>`;
   if (gavetaAberta) {
     const itens = lista.map((i) => {
       const p = S.porSlug[i.slug]; if (!p) return '';
       const ops = p.opcoes.length ? `<select aria-label="Opção de ${esc(p.nome)}" data-op="${esc(i.chave)}">${p.opcoes.map((o) => `<option value="${esc(o.nome)}" ${o.nome === i.op ? 'selected' : ''}>${esc(o.nome)}</option>`).join('')}</select>` : '';
-      const opcoes = p.cores.length ? `<select aria-label="Cor de ${esc(p.nome)}" data-cor="${esc(i.chave)}"><option value="">Cor a combinar</option>${p.cores.map((c) => `<option ${c === i.cor ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>` : '';
+      const opcoes = p.cores.length ? `<select aria-label="Cor de ${esc(p.nome)}" data-cor="${esc(i.chave)}"><option value="">Escolha a cor</option>${p.cores.map((c) => `<option ${c === i.cor ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>` : '';
       return `<div class="item">${p.fotos[0] ? `<img src="${esc(p.fotos[0].src)}" alt="">` : '<span class="semfoto"></span>'}
         <div class="t"><b>${esc(p.nome)}</b>${ops}${opcoes}<span style="font-family:var(--f-marca);font-weight:700;color:var(--marca)">${brl(precoItem(p, i.op) * i.qtd)}</span><button type="button" class="remover" data-remover="${esc(i.chave)}">Remover</button></div>
         <div class="mini"><button type="button" aria-label="Diminuir" data-qtd="${esc(i.chave)}" data-d="-1">−</button><output>${i.qtd}</output><button type="button" aria-label="Aumentar" data-qtd="${esc(i.chave)}" data-d="1">+</button></div></div>`;
@@ -465,13 +481,14 @@ function desenhaCamadas() {
       <details><summary style="cursor:pointer;font-weight:700">Ver a mensagem que vai pro WhatsApp</summary><pre class="msg">${esc(mensagemLista())}</pre></details>
       <a class="btn whats" id="enviar-lista" href="${esc(wa(mensagemLista()))}" target="_blank" rel="noopener">${IC.whats}Enviar pelo WhatsApp</a>
       <p style="margin:0;color:var(--texto2);font-size:14px">A gente confirma cor, prazo e frete com você. A produção começa depois do pagamento pelo link.</p>
-      <button type="button" class="btn claro" data-acao="fechar-lista">Continuar escolhendo</button>` : `<div class="vazio"><b class="titulo" style="font-size:20px">Sua lista está vazia.</b><p style="margin:0">Clique no + das peças pra montar o pedido.</p><a class="btn" href="catalogo" data-rota data-acao="fechar-lista">Ver o catálogo</a></div>`}
+      <button type="button" class="btn claro" data-acao="fechar-lista">Continuar escolhendo</button>` : `<div class="vazio"><b class="titulo" style="font-size:20px">Sua lista está vazia.</b><p style="margin:0">Clique em Adicionar nas peças pra montar o pedido.</p><a class="btn" href="catalogo" data-rota data-acao="fechar-lista">Ver o catálogo</a></div>`}
     </aside>`;
   }
   $('#camadas').innerHTML = h;
 }
 
 /* ===== Peças de interface ===== */
+const cardSel = {};
 function cardHTML(p) {
   const f = p.fotos || [];
   const selo = p.promo ? `<span class="selo promo">${esc(p.promo.nome || 'Promoção')}</span>` : (p.selo ? `<span class="selo">${esc(p.selo)}</span>` : '');
@@ -485,7 +502,7 @@ function cardHTML(p) {
     </a>
     ${p.cores.length ? `<div class="cores" role="group" aria-label="Cor de ${esc(p.nome)}">${p.cores.slice(0, 8).map((c) => `<button type="button" data-cardcor="${esc(p.slug)}" data-c="${esc(c)}" aria-pressed="${cardSel[p.slug] === c}" aria-label="${esc(c)}" title="${esc(c)}" style="background:${COR[c] || '#C9C9CE'}"></button>`).join('')}${p.cores.length > 8 ? `<span class="mais-cores">+${p.cores.length - 8}</span>` : ''}</div>` : ''}
     ${f.length > 1 ? `<button type="button" class="fotonav ant" data-fotonav="-1" aria-label="Foto anterior de ${esc(p.nome)}">${IC.ant}</button><button type="button" class="fotonav prox" data-fotonav="1" aria-label="Próxima foto de ${esc(p.nome)}">${IC.prox}</button>` : ''}
-    <button type="button" class="mais" data-add="${esc(p.slug)}" aria-label="Adicionar ${esc(p.nome)} à lista">${IC.mais}</button>
+    <button type="button" class="add-card" data-add="${esc(p.slug)}" aria-label="Adicionar ${esc(p.nome)} à lista">${IC.sacola}Adicionar</button>
   </article>`;
 }
 function prateleira(id, titulo, texto, itens, link, linkTxt) {
@@ -501,7 +518,6 @@ const deNomes = (nomes) => nomes.map((n) => S.porNome[n]).filter(Boolean);
 function paginaHome() {
   const t = temaAtivo();
   const kit = S.porNome['Kit Ore e Confie com Bandeja e Porta Vela'];
-  const contagem = (slug) => S.produtos.filter((p) => p.categoria === slug).length;
   const PQ = [['Para a mãe', 'assets/fotos/presente-mae.jpg', 'Mãe'], ['Para quem tem fé', 'assets/fotos/categoria-religiosos.jpg', 'Quem tem fé'], ['Para amigos e colegas', 'assets/fotos/categoria-chaveiros.jpg', 'Amigos'], ['Para a casa nova', 'assets/fotos/categoria-casa.jpg', 'Casa nova'], ['Para crianças', 'assets/fotos/categoria-jogos.jpg', 'Dia das Crianças'], ['Para quem ama plantas', 'assets/fotos/categoria-vasos.jpg', 'Quem ama plantas']];
   return `
   <section class="wrap hero" aria-labelledby="h-hero">
@@ -512,8 +528,8 @@ function paginaHome() {
     <div class="mosaico" aria-hidden="true"><div><img src="${esc(kit && kit.fotos[0] ? kit.fotos[0].src : '')}" alt=""></div><div><img src="assets/fotos/categoria-vasos.jpg" alt=""></div><div><img src="assets/fotos/categoria-chaveiros.jpg" alt=""></div></div>
   </section>
   <section class="wrap" aria-labelledby="h-cats"><h2 class="sr" id="h-cats">Categorias</h2><div class="categorias">
-    ${S.categorias.map((c) => `<a href="${esc(c.slug)}" data-rota><img src="${esc(c.foto)}" alt="" loading="lazy"><b>${esc(c.nome)}</b><span>${contagem(c.slug)} peças</span></a>`).join('')}
-    <a href="presentes" data-rota><img src="assets/fotos/categoria-presentes.jpg" alt="" loading="lazy"><b>Presentes</b><span>por quem recebe</span></a>
+    ${S.categorias.map((c) => `<a href="${esc(c.slug)}" data-rota><img src="${esc(c.foto)}" alt="" loading="lazy"><b>${esc(c.nome)}</b></a>`).join('')}
+    <a href="presentes" data-rota><img src="assets/fotos/categoria-presentes.jpg" alt="" loading="lazy"><b>Presentes</b></a>
   </div></section>
   ${prateleira('escolhas', S.colecoes.escolhas.titulo, S.colecoes.escolhas.texto, deNomes(S.colecoes.escolhas.itens), 'catalogo', 'Ver o catálogo')}
   ${t ? temaHTML(t) : ''}
@@ -537,21 +553,21 @@ function paginaHome() {
 }
 function temaHTML(t) {
   const c = t.cor;
-  return `<section class="wrap" aria-labelledby="h-tema"><div class="tema" style="background:${c.fundo};color:${c.texto}">
+  return `<section class="wrap" aria-labelledby="h-tema" data-carrossel><div class="tema" style="background:${c.fundo};color:${c.texto}">
     <div class="txt"><span class="pilula" style="align-self:flex-start;background:${c.selo};color:${c.seloTexto}">${esc(t.data)}</span><h2 class="titulo" id="h-tema" style="color:${c.titulo};font-size:clamp(30px,3.6vw,44px)">${esc(t.titulo)}</h2><p>${esc(t.texto)}</p>
       <a class="btn" style="align-self:flex-start;background:${c.cta};color:${c.ctaTexto}" href="${esc(t.link)}" data-rota>${esc(t.cta)}</a></div>
-    <div class="pecas">${deNomes(t.itens).map((p) => `<a href="${esc(p.categoria + '/' + p.slug)}" data-rota>${p.fotos[0] ? `<img src="${esc(p.fotos[0].src)}" alt="" loading="lazy">` : ''}<b>${esc(p.nome)}</b><span style="font-family:var(--f-marca);font-weight:700;color:var(--marca)">${brl(precoAtual(p))}</span></a>`).join('')}</div>
+    <div class="vitrine"><div class="acoes"><button type="button" class="seta" data-rolar="-1" aria-label="Ver peças anteriores">${IC.ant}</button><button type="button" class="seta" data-rolar="1" aria-label="Ver próximas peças">${IC.prox}</button></div><div class="trilho" data-trilho>${deNomes(t.itens).map(cardHTML).join('')}</div></div>
   </div></section>`;
 }
 function comoFunciona() {
-  const P = [['M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5 M12 11.5v5 M9.5 14h5', 'Monte sua lista', 'Clique no + das peças que quiser, com a cor de cada uma.'], ['M4.2 12a7.8 7.8 0 1 1 3.3 6.4L4 19.5l1.1-3.3A7.7 7.7 0 0 1 4.2 12Z', 'Envie pelo WhatsApp', 'A mensagem vai pronta. A gente confirma cor, prazo e frete com você.'], ['M3.5 6.5h17v11h-17Z M3.5 10h17 M7 14.5h4', 'Pague pelo link', 'O pagamento é antes, e a produção leva de 3 a 5 dias úteis.'], ['M3 7h11v9H3Z M14 10h4l3 3v3h-7 M7.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z M18.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z', 'Receba em casa', 'A gente envia pra todo o Brasil, bem embalado.']];
-  return `<section class="wrap" aria-labelledby="h-como"><div class="cab-secao"><div><h2 class="titulo" id="h-como">Como funciona</h2><p class="sub">Do + na peça até a sua casa, em quatro passos.</p></div></div>
+  const P = [['M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5 M12 11.5v5 M9.5 14h5', 'Monte sua lista', 'Escolha a cor de cada peça e clique em Adicionar.'], ['M4.2 12a7.8 7.8 0 1 1 3.3 6.4L4 19.5l1.1-3.3A7.7 7.7 0 0 1 4.2 12Z', 'Envie pelo WhatsApp', 'A mensagem vai pronta. A gente confirma cor, prazo e frete com você.'], ['M3.5 6.5h17v11h-17Z M3.5 10h17 M7 14.5h4', 'Pague pelo link', 'O pagamento é antes, e a produção leva de 3 a 5 dias úteis.'], ['M3 7h11v9H3Z M14 10h4l3 3v3h-7 M7.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z M18.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z', 'Receba em casa', 'A gente envia pra todo o Brasil, bem embalado.']];
+  return `<section class="wrap" aria-labelledby="h-como"><div class="cab-secao"><div><h2 class="titulo" id="h-como">Como funciona</h2><p class="sub">Da escolha da peça até a sua casa, em quatro passos.</p></div></div>
     <ol class="passos">${P.map((x, i) => `<li><span class="ic" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${x[0]}"/></svg><b>${i + 1}</b></span><strong>${x[1]}</strong><span>${x[2]}</span></li>`).join('')}</ol></section>`;
 }
 
 /* filtros do catálogo (zerados ao trocar de categoria) */
-const F = { preco: '', cor: '', grupo: '', _cat: null };
-const zeraFiltro = (k) => { if (F._cat !== k) { F.preco = F.cor = F.grupo = ''; F._cat = k; } };
+const F = { preco: '', cor: '', grupo: '', _cat: null, aberto: false };
+const zeraFiltro = (k) => { if (F._cat !== k) { F.preco = F.cor = F.grupo = ''; F.aberto = false; F._cat = k; } };
 const passaFiltro = (p) => {
   const v = precoAtual(p);
   if (F.preco && (F.preco === 'mais' ? v <= 100 : v > Number(F.preco))) return false;
@@ -559,13 +575,16 @@ const passaFiltro = (p) => {
   if (F.grupo && (p.grupos || []).indexOf(F.grupo) < 0) return false;
   return true;
 };
-function filtrosHTML(lista) {
+function filtrosHTML(lista, grupos) {
   const cores = Object.keys(COR).filter((c) => lista.some((p) => p.cores.indexOf(c) >= 0));
   const P = [['', 'Todos'], ['30', 'Até R$ 30'], ['60', 'Até R$ 60'], ['100', 'Até R$ 100'], ['mais', 'Acima de R$ 100']];
-  return `<div class="filtros" role="group" aria-label="Filtros">
+  const n = (F.preco ? 1 : 0) + (F.cor ? 1 : 0) + (F.grupo ? 1 : 0);
+  const barra = `<div class="barra-filtros"><button type="button" class="btn-filtro" data-acao="filtros" aria-expanded="${F.aberto}" aria-controls="painel-filtros"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16 M7 12h10 M10 18h4"/></svg>Filtrar${n ? ' (' + n + ')' : ''}</button>${n ? `<button type="button" class="link" data-filtro="limpar" style="border:0;background:none;padding:0 6px">Limpar filtros</button>` : ''}</div>`;
+  if (!F.aberto) return barra;
+  return barra + `<div class="filtros" id="painel-filtros" role="group" aria-label="Filtros">
+    ${grupos ? `<div class="linha"><span class="rot">Tipo</span>${grupos}</div>` : ''}
     <div class="linha"><span class="rot">Preço</span>${P.map((x) => `<button type="button" class="chip" aria-pressed="${F.preco === x[0]}" data-filtro="preco" data-valor="${x[0]}">${x[1]}</button>`).join('')}</div>
     ${cores.length ? `<div class="linha"><span class="rot">Cor</span>${cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${F.cor === c}" data-filtro="cor" data-valor="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c]}"></i></button>`).join('')}</div>` : ''}
-    ${F.preco || F.cor || F.grupo ? `<button type="button" class="link" data-filtro="limpar" style="border:0;background:none;padding:0">Limpar filtros</button>` : ''}
   </div>`;
 }
 function paginaCatalogo(slugCat) {
@@ -575,25 +594,27 @@ function paginaCatalogo(slugCat) {
   if (cat) {
     const todos = S.produtos.filter((p) => p.categoria === cat.slug);
     const vis = todos.filter(passaFiltro);
-    const grupos = cat.slug === 'vasos-de-planta' ? `<div class="chips" role="group" aria-label="Tipo de vaso">${[['', 'Todos'], ['bichinho', 'Bichinhos'], ['moderno', 'Modernos'], ['autoirrigavel', 'Autoirrigáveis'], ['pratinho', 'Com pratinho']].map((g) => `<button type="button" class="chip" aria-pressed="${F.grupo === g[0]}" data-filtro="grupo" data-valor="${g[0]}">${g[1]} <small>${g[0] ? todos.filter((p) => (p.grupos || []).indexOf(g[0]) >= 0).length : todos.length}</small></button>`).join('')}</div>` : '';
-    corpo = `<div><h1 class="titulo">${esc(cat.nome)}</h1><p class="sub">${vis.length} ${vis.length === 1 ? 'peça' : 'peças'}. Clique no + pra montar a sua lista e feche o pedido com a gente no WhatsApp.</p></div>${grupos}${filtrosHTML(todos)}
+    const grupos = cat.slug === 'vasos-de-planta' ? `${[['', 'Todos'], ['bichinho', 'Bichinhos'], ['moderno', 'Modernos'], ['autoirrigavel', 'Autoirrigáveis'], ['pratinho', 'Com pratinho']].map((g) => `<button type="button" class="chip" aria-pressed="${F.grupo === g[0]}" data-filtro="grupo" data-valor="${g[0]}">${g[1]} <small>${g[0] ? todos.filter((p) => (p.grupos || []).indexOf(g[0]) >= 0).length : todos.length}</small></button>`).join('')}` : '';
+    corpo = `<div><h1 class="titulo">${esc(cat.nome)}</h1><p class="sub">${vis.length} ${vis.length === 1 ? 'peça' : 'peças'}. Escolha a cor, clique em Adicionar e feche o pedido com a gente no WhatsApp.</p></div>${filtrosHTML(todos, grupos)}
       ${vis.length ? `<div class="grade">${vis.map(cardHTML).join('')}</div>` : semResultado('Nenhuma peça com esses filtros.')}`;
   } else {
-    corpo = `<div><h1 class="titulo">Catálogo</h1><p class="sub">${S.produtos.length} peças em ${S.categorias.length} categorias. Clique no + pra montar a sua lista e feche o pedido com a gente no WhatsApp.</p></div>${filtrosHTML(S.produtos)}
+    corpo = `<div><h1 class="titulo">Catálogo</h1><p class="sub">${S.produtos.length} peças em ${S.categorias.length} categorias. Escolha a cor, clique em Adicionar e feche o pedido com a gente no WhatsApp.</p></div>${filtrosHTML(S.produtos)}
       ${S.categorias.map((c) => { const it = S.produtos.filter((p) => p.categoria === c.slug && passaFiltro(p)); return it.length ? `<section aria-labelledby="h-${c.slug}" data-carrossel><div class="cab-secao"><h2 class="titulo" id="h-${c.slug}">${esc(c.nome)} <small style="font-size:15px;color:var(--texto2)">${it.length} peças</small></h2><div class="acoes"><a class="link" href="${esc(c.slug)}" data-rota>Ver tudo${IC.prox}</a><button type="button" class="seta" data-rolar="-1" aria-label="Anterior">${IC.ant}</button><button type="button" class="seta" data-rolar="1" aria-label="Próxima">${IC.prox}</button></div></div><div class="trilho" data-trilho style="grid-auto-columns:max(210px,calc((100% - 60px)/4))">${it.map(cardHTML).join('')}</div></section>` : ''; }).join('')}`;
   }
   return `<div class="wrap catalogo">${lateral}<div class="conteudo">${corpo}</div></div>`;
 }
 function semResultado(t) { return `<div class="vazio"><b class="titulo" style="font-size:20px">${esc(t)}</b><p style="margin:0">Conte pra gente o que você procura. Muita coisa a gente consegue fazer sob encomenda.</p><a class="btn whats" href="${esc(wa('Oi, Mimori! Procurei no site e não achei: '))}" target="_blank" rel="noopener" data-whats="busca">${IC.whats}Perguntar no WhatsApp</a></div>`; }
 
-let galeria = 0, qtdProduto = 1, corProduto = '', opProduto = '';
+let galeria = 0, qtdProduto = 1, corProduto = '', opProduto = '', faltaProduto = false;
+const faltaEscolha = (p, cor, op) => (p.cores.length && !cor) || (p.opcoes.length > 1 && !op);
 function paginaProduto(p) {
   const midias = (p.fotos || []).map((f) => ({ t: 'foto', src: f.src })).concat(p.video ? [{ t: 'video', src: p.video }] : []);
   if (galeria >= midias.length) galeria = 0;
   const m = midias[galeria];
   const cat = catDe(p.categoria);
   const combina = S.produtos.filter((x) => x.categoria === p.categoria && x.slug !== p.slug).slice(0, 10);
-  const op = opProduto || (p.opcoes.length ? p.opcoes[0].nome : '');
+  const op = opProduto || (p.opcoes.length === 1 ? p.opcoes[0].nome : '');
+  const faltaCor = faltaProduto && p.cores.length && !corProduto, faltaOp = faltaProduto && p.opcoes.length > 1 && !op;
   const msg = 'Oi, Mimori! Quero pedir:\n\n• ' + p.nome + (op ? ' (' + op + ')' : '') + (corProduto ? ' (Cor: ' + corProduto + ')' : '') + '\n  Quantidade: ' + qtdProduto + '\n\nMeu CEP para o frete: ';
   return `<div class="wrap" style="display:flex;flex-direction:column;gap:48px">
     <nav aria-label="Você está em" style="font-size:14px;color:var(--texto2)"><a href="./" data-rota>Início</a> / <a href="${esc(p.categoria)}" data-rota>${esc(cat ? cat.nome : '')}</a> / <span aria-current="page">${esc(p.nome)}</span></nav>
@@ -607,8 +628,8 @@ function paginaProduto(p) {
         <a class="pilula" style="align-self:flex-start;text-decoration:none" href="${esc(p.categoria)}" data-rota>${esc(cat ? cat.nome : '')}</a>
         <h1 class="titulo">${esc(p.nome)}</h1>
         <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px">${p.aPartir && !op ? '<small style="color:var(--texto2)">a partir de</small>' : ''}${p.promo ? `<s style="color:var(--texto2)">${brl(op ? opcaoDe(p, op).preco : p.preco)}</s>` : ''}<span class="valor">${brl(precoItem(p, op))}</span>${p.promo ? `<span class="pilula" style="background:var(--destaque);color:var(--tinta)">${esc(p.promo.nome || 'Promoção')}</span>` : ''}<span style="font-size:14.5px;color:var(--texto2)">Frete pelo seu CEP, na conversa</span></div>
-        ${p.opcoes.length ? `<div class="caixa"><b style="font-family:var(--f-marca)">Opção: ${esc(op)}</b><div class="chips">${p.opcoes.map((o) => `<button type="button" class="chip" aria-pressed="${o.nome === op}" data-opproduto="${esc(o.nome)}">${esc(o.nome)} · ${brl(o.preco)}</button>`).join('')}</div></div>` : ''}
-        ${p.cores.length ? `<div class="caixa"><b style="font-family:var(--f-marca)">Cor${corProduto ? ': ' + esc(corProduto) : ''}</b><div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${corProduto === c}" data-corproduto="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
+        ${p.opcoes.length ? `<div class="caixa${faltaOp ? ' erro' : ''}"><b style="font-family:var(--f-marca)">Opção${op ? ': ' + esc(op) : ''}</b>${faltaOp ? '<span class="falta">Escolha uma opção</span>' : ''}<div class="chips">${p.opcoes.map((o) => `<button type="button" class="chip" aria-pressed="${o.nome === op}" data-opproduto="${esc(o.nome)}">${esc(o.nome)} · ${brl(o.preco)}</button>`).join('')}</div></div>` : ''}
+        ${p.cores.length ? `<div class="caixa${faltaCor ? ' erro' : ''}"><b style="font-family:var(--f-marca)">Cor${corProduto ? ': ' + esc(corProduto) : ''}</b>${faltaCor ? '<span class="falta">Escolha uma cor</span>' : ''}<div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${corProduto === c}" data-corproduto="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
           <div class="qtd" role="group" aria-label="Quantidade"><button type="button" data-qtdp="-1" aria-label="Diminuir">−</button><output aria-live="polite">${qtdProduto}</output><button type="button" data-qtdp="1" aria-label="Aumentar">+</button></div>
           <button type="button" class="btn" style="flex:1 1 220px;min-height:56px;font-size:17px" data-addproduto="${esc(p.slug)}">${IC.sacola}Adicionar à lista</button>
@@ -664,7 +685,6 @@ let perso = { sel: -1, texto: '', cor: 0 };
 function paginaPersonalizados() {
   const P = [
     { nome: 'Chaveiro Câmera com a Sua Foto', foto: 'assets/fotos/chaveiro-camera-porta-foto-3x4-1.jpg', preco: 'Kit com 5: R$ 98,90', foto_: true, cores: ['Rosa', 'Azul bebê', 'Branco', 'Verde', 'Amarelo', 'Bege', 'Roxo ametista'] },
-    { nome: 'Chaveiro Câmera Instantânea com Foto', foto: 'assets/fotos/chaveiro-camera-instantanea-1.jpg', preco: 'R$ 14,90', foto_: true, cores: ['Rosa bebê', 'Branco', 'Preto', 'Azul bebê', 'Verde', 'Roxo ametista'] },
     { nome: 'Letreiro com Nome ou Frase', foto: 'assets/fotos/letreiro-ore-e-confie-1.jpg', preco: 'Preço sob consulta', foto_: false, cores: ['Branco', 'Bege', 'Marrom', 'Verde oliva'] },
     { nome: 'Porta Chaves com Nome da Família', foto: 'assets/fotos/porta-chaves-arco-canelado-com-prateleira-1.jpg', preco: 'Preço sob consulta', foto_: false, cores: ['Branco', 'Preto', 'Verde oliva', 'Marrom', 'Bege'] }
   ];
@@ -765,13 +785,15 @@ document.addEventListener('click', (e) => {
   const el = e.target.closest('a,button,[data-acao],[data-perso]');
   if (!el) return;
   const d = el.dataset;
+  if (d.whats === 'produto') { const pp = S.porSlug[caminho().split('/')[1]]; if (pp && faltaEscolha(pp, corProduto, opProduto || (pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''))) { e.preventDefault(); faltaProduto = true; render(); const c = $('.caixa.erro'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } }
   if (d.whats) registra('whatsapp_clique', { botao: d.whats, produto: d.produto });
+  if (el.id === 'enviar-lista' && lista.some((i) => { const p = S.porSlug[i.slug]; return p && faltaEscolha(p, i.cor, i.op); })) { e.preventDefault(); aviso('Escolha a cor de todas as peças da lista.'); return; }
   if (el.id === 'enviar-lista') { registra('lista_enviou', {}); registra('whatsapp_clique', { botao: 'lista' }); return; }
   if (d.acao === 'abrir-lista' || el.id === 'abrir-lista') { gavetaAberta = true; desenhaCamadas(); return; }
   if (d.acao === 'fechar-lista') { gavetaAberta = false; desenhaCamadas(); if (el.tagName !== 'A') return; }
-  if (el.tagName === 'A' && el.hasAttribute('data-rota')) { e.preventDefault(); galeria = 0; qtdProduto = 1; corProduto = ''; opProduto = ''; navega(el.getAttribute('href')); return; }
-  if (d.add) { e.preventDefault(); adiciona(d.add, 1, ''); return; }
-  if (d.addproduto) { adiciona(d.addproduto, qtdProduto, corProduto, opProduto); gavetaAberta = true; desenhaCamadas(); return; }
+  if (el.tagName === 'A' && el.hasAttribute('data-rota')) { e.preventDefault(); galeria = 0; qtdProduto = 1; corProduto = ''; opProduto = ''; faltaProduto = false; navega(el.getAttribute('href')); return; }
+  if (d.add) { e.preventDefault(); const pp = S.porSlug[d.add]; const cor = cardSel[d.add] || '', op = pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''; if (faltaEscolha(pp, cor, op)) { escolha = { slug: d.add, cor, op, qtd: 1, erro: '' }; desenhaCamadas(); return; } adiciona(d.add, 1, cor, op); return; }
+  if (d.addproduto) { const pp = S.porSlug[d.addproduto]; const opp = opProduto || (pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''); if (faltaEscolha(pp, corProduto, opp)) { faltaProduto = true; render(); const c = $('.caixa.erro'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } adiciona(d.addproduto, qtdProduto, corProduto, opProduto); gavetaAberta = true; desenhaCamadas(); return; }
   if (d.remover) { lista = lista.filter((i) => i.chave !== d.remover); salvaLista(); return; }
   if (d.qtd) { const it = lista.find((i) => i.chave === d.qtd); if (it) { it.qtd = Math.max(1, Math.min(99, it.qtd + Number(d.d))); salvaLista(); } return; }
   if (d.rolar) { const t = el.closest('[data-carrossel]').querySelector('[data-trilho]'); const c = t.firstElementChild; t.scrollBy({ left: Number(d.rolar) * (c ? c.getBoundingClientRect().width + 20 : 240), behavior: 'smooth' }); return; }
@@ -779,7 +801,14 @@ document.addEventListener('click', (e) => {
   if (d.galeria != null && d.galeria !== '') { galeria = Number(d.galeria); render(); return; }
   if (d.qtdp) { qtdProduto = Math.max(1, Math.min(20, qtdProduto + Number(d.qtdp))); render(); return; }
   if (d.opproduto) { opProduto = d.opproduto; render(); return; }
+  if (d.cardcor) { cardSel[d.cardcor] = cardSel[d.cardcor] === d.c ? '' : d.c; document.querySelectorAll('[data-cardcor]').forEach((b) => { if (b.dataset.cardcor === d.cardcor) b.setAttribute('aria-pressed', String(b.dataset.c === cardSel[d.cardcor])); }); return; }
+  if (d.escop != null && escolha) { escolha.op = d.escop; escolha.erro = ''; desenhaCamadas(); return; }
+  if (d.esccor != null && escolha) { escolha.cor = d.esccor; cardSel[escolha.slug] = d.esccor; escolha.erro = ''; desenhaCamadas(); return; }
+  if (d.escqtd && escolha) { escolha.qtd = Math.max(1, Math.min(20, escolha.qtd + Number(d.escqtd))); desenhaCamadas(); return; }
+  if (d.acao === 'fechar-escolha') { escolha = null; desenhaCamadas(); return; }
+  if (d.acao === 'confirmar-escolha' && escolha) { const pp = S.porSlug[escolha.slug]; if (faltaEscolha(pp, escolha.cor, escolha.op)) { escolha.erro = pp.cores.length && !escolha.cor ? 'Escolha uma cor' : 'Escolha uma opção'; desenhaCamadas(); return; } adiciona(escolha.slug, escolha.qtd, escolha.cor, escolha.op); escolha = null; gavetaAberta = true; desenhaCamadas(); return; }
   if (d.corproduto) { corProduto = corProduto === d.corproduto ? '' : d.corproduto; render(); return; }
+  if (d.acao === 'filtros') { F.aberto = !F.aberto; render(); return; }
   if (d.filtro) { if (d.filtro === 'limpar') { F.preco = F.cor = F.grupo = ''; } else F[d.filtro] = F[d.filtro] === d.valor ? '' : d.valor; render(); return; }
   if (d.presente) { presentes[d.presente] = presentes[d.presente] === d.valor ? '' : d.valor; render(); return; }
   if (d.perso != null && d.perso !== '') { perso = { sel: Number(d.perso), texto: '', cor: 0 }; render(); return; }
@@ -797,15 +826,24 @@ document.addEventListener('input', (e) => {
   if (e.target.id === 'cep') { cep = e.target.value; const a = $('#enviar-lista'); if (a) a.href = wa(mensagemLista()); const pre = $('.gaveta .msg'); if (pre) pre.textContent = mensagemLista(); }
   if (e.target.id === 'perso-texto') { const pos = e.target.selectionStart; perso.texto = e.target.value; render(); const i = $('#perso-texto'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } }
 });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('#menu-lateral').hidden) menuLateral(false); if (!$('#menu-cat').hidden) { menuCategorias(false); $('#abrir-categorias').focus(); } if (gavetaAberta) { gavetaAberta = false; desenhaCamadas(); } if (perso.sel >= 0) { perso.sel = -1; render(); } $('#sugestoes').hidden = true; } });
-/* vídeo ao passar o mouse */
-let cardVideo = null;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('#menu-lateral').hidden) menuLateral(false); if (!$('#menu-cat').hidden) { menuCategorias(false); $('#abrir-categorias').focus(); } if (escolha) { escolha = null; desenhaCamadas(); } if (gavetaAberta) { gavetaAberta = false; desenhaCamadas(); } if (perso.sel >= 0) { perso.sel = -1; render(); } $('#sugestoes').hidden = true; } });
+/* ao passar o mouse: troca a foto (ou toca o vídeo, se a peça tiver uma foto só) */
+let cardVideo = null, cardTimer = null;
 document.addEventListener('mouseover', (e) => {
   const card = e.target.closest ? e.target.closest('.card') : null;
   if (card === cardVideo) return;
-  if (cardVideo) { const v = cardVideo.querySelector('video'); if (v) { v.pause(); v.classList.remove('tocando'); } }
+  if (cardVideo) {
+    const v = cardVideo.querySelector('video'); if (v) { v.pause(); v.classList.remove('tocando'); }
+    clearInterval(cardTimer); cardTimer = null;
+    const t0 = cardVideo.querySelector('[data-fotos]'); if (t0) t0.scrollTo({ left: 0, behavior: 'smooth' });
+  }
   cardVideo = card;
-  if (card) { const v = card.querySelector('video'); if (v && matchMedia('(hover: hover)').matches) { if (!v.src) v.src = v.dataset.src; v.classList.add('tocando'); const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); } }
+  if (!card || !matchMedia('(hover: hover)').matches) return;
+  const t = card.querySelector('[data-fotos]'), n = t ? t.children.length : 0;
+  if (n > 1) {
+    let i = 1; t.scrollTo({ left: t.clientWidth, behavior: 'smooth' });
+    cardTimer = setInterval(() => { i = (i + 1) % n; t.scrollTo({ left: i * t.clientWidth, behavior: 'smooth' }); }, 1600);
+  } else { const v = card.querySelector('video'); if (v) { if (!v.src) v.src = v.dataset.src; v.classList.add('tocando'); const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); } }
 });
 /* busca com sugestões */
 const inp = $('#q'), sug = $('#sugestoes');
