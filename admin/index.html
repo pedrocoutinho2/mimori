@@ -65,6 +65,7 @@ dl.custo .total{color:var(--tinta);font-weight:700}
 <body>
 <div id="app"></div>
 <div id="camada"></div>
+<div id="toast-area"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* Mesmos valores do index.html. Só a chave anon (pública). Nunca a service_role. */
@@ -82,7 +83,8 @@ const hoje = () => new Date().toISOString().slice(0, 10);
 let sb = null;
 const E = { tela: 'carregando', aba: 'produtos', eu: null, papel: '', cats: [], prods: [], par: null, promos: [], usuarios: [], busca: '', filtroCat: '', ed: null, promo: null, periodo: 30, rel: null, erro: '', toast: '', novaSenha: '', confSenha: '', convite: null };
 let toastT;
-function aviso(t) { E.toast = t; clearTimeout(toastT); toastT = setTimeout(() => { E.toast = ''; desenhaCamada(); }, 2800); desenhaCamada(); }
+function aviso(t) { E.toast = t; clearTimeout(toastT); toastT = setTimeout(() => { E.toast = ''; desenhaToast(); }, 2800); desenhaToast(); }
+function desenhaToast() { const a = $('#toast-area'); if (a) a.innerHTML = E.toast ? `<div class="toast" role="status">${esc(E.toast)}</div>` : ''; }
 
 /* ===== custo e preço ===== */
 function custoDe(g, h, ins) {
@@ -101,14 +103,14 @@ const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' 
 async function carregaTudo() {
   const [cats, prods, par, promos, usu] = await Promise.all([
     sb.from('categorias').select('id,slug,nome,ordem').order('ordem'),
-    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_custos(gramas,horas,insumos,fonte)').order('ordem'),
+    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),produto_custos(gramas,horas,insumos,fonte)').order('ordem'),
     sb.from('parametros_custo').select('*').eq('id', 1).single(),
     sb.from('promocoes').select('*').order('inicio', { ascending: false }),
     sb.from('painel_usuarios').select('*').order('criado_em')
   ]);
   for (const r of [cats, prods, par, promos, usu]) if (r.error) throw r.error;
   E.cats = cats.data; E.par = par.data; E.promos = promos.data; E.usuarios = usu.data;
-  E.prods = prods.data.map((p) => ({ ...p, custo: Array.isArray(p.produto_custos) ? p.produto_custos[0] : p.produto_custos, fotos: (p.produto_fotos || []).sort((a, b) => a.ordem - b.ordem), videos: (p.produto_videos || []).sort((a, b) => a.ordem - b.ordem), cores: (p.variacoes || []).sort((a, b) => a.ordem - b.ordem).map((v) => v.cor) }));
+  E.prods = prods.data.map((p) => ({ ...p, custo: Array.isArray(p.produto_custos) ? p.produto_custos[0] : p.produto_custos, fotos: (p.produto_fotos || []).sort((a, b) => a.ordem - b.ordem), videos: (p.produto_videos || []).sort((a, b) => a.ordem - b.ordem), cores: (p.variacoes || []).sort((a, b) => a.ordem - b.ordem).map((v) => v.cor), opcoes: (p.produto_opcoes || []).sort((a, b) => a.ordem - b.ordem) }));
 }
 const catNome = (id) => (E.cats.find((c) => c.id === id) || {}).nome || '';
 
@@ -155,7 +157,7 @@ function abaProdutos() {
     const ft = !p.fotos.length ? ['Sem foto', '#FBE3DF', 'var(--erro)'] : reais ? ['Foto real', '#E1F2E8', 'var(--ok)'] : ['Foto do criador', '#FFF4D6', 'var(--atencao)'];
     return `<tr><td><span style="display:flex;align-items:center;gap:12px">${p.fotos[0] ? `<img class="thumb" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb"></span>'}<span><b style="font-family:var(--f-marca)">${esc(p.nome)}</b><br><small style="color:var(--texto2)">${esc(p.sku || 'sem código')}</small></span></span></td>
       <td style="color:var(--texto2)">${esc(catNome(p.categoria_id))}</td>
-      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-marca);color:var(--marca)">${brl(preco)}</b>${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
+      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-marca);color:var(--marca)">${brl(preco)}</b>${p.opcoes && p.opcoes.length ? `<br><small style="color:var(--texto2)">${p.opcoes.length} ${p.opcoes.length === 1 ? 'opção' : 'opções'}</small>` : ''}${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
       <td style="white-space:nowrap"><b style="font-family:var(--f-marca);color:${corLucro(l, h)}">${l == null ? 'sem custo' : brl(l)}</b><br><small style="color:var(--texto2)">${l == null ? 'falta peso e tempo' : Math.round(l / preco * 100) + '% · ' + brl(l / h) + '/h'}</small></td>
       <td><span class="pil" style="background:${ft[1]};color:${ft[2]}">${ft[0]}</span></td>
       <td><span class="pil" style="background:${p.publicado ? 'var(--suave)' : 'var(--suave2)'};color:${p.publicado ? 'var(--marca-escura)' : 'var(--texto2)'}">${p.publicado ? 'Publicado' : 'Oculto'}</span></td>
@@ -181,6 +183,9 @@ function gavetaProduto() {
     <div class="linha"><label class="campo">Categoria<select name="categoria_id">${E.cats.map((c) => `<option value="${c.id}" ${ed.categoria_id === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></label><label class="campo">Preço (R$)<input name="preco" inputmode="decimal" value="${esc(ed.preco)}" required></label></div>
     <div class="linha"><label class="campo">Selo no card<input name="selo" value="${esc(ed.selo || '')}" placeholder="Ex.: Com luz LED"></label><label class="campo">Tags (vírgula)<input name="tags" value="${esc((ed.tags || []).join(', '))}" placeholder="Fé, Para a mãe, Natal"></label></div>
     <label class="campo">Cores (vírgula)<input name="cores" value="${esc((ed.cores || []).join(', '))}" placeholder="Branco, Bege, Marrom"></label>
+    <div class="bloco"><h3>Kits e opções</h3><p style="margin:0;font-size:13.5px;color:var(--texto2)">Kit (5, 10, 20 unidades), modelo (com ou sem tampa) ou versão (manto azul ou rosa), cada um com o próprio preço. O cliente escolhe na página do produto. Com opções, o preço do card passa a ser o menor deles, com "a partir de" quando os preços forem diferentes.</p>
+      <div id="opcoes" style="display:flex;flex-direction:column;gap:8px">${(ed.opcoes || []).map(opLinha).join('')}</div>
+      <button type="button" class="btn claro mini" id="add-op" style="align-self:flex-start">+ Adicionar kit ou opção</button></div>
     <label class="campo">Descrição<textarea name="descricao" rows="9">${esc(ed.descricao || '')}</textarea></label>
     <div class="bloco"><h3>Custo e lucro</h3>
       <div class="linha"><label class="campo">Gramas de PLA<input name="gramas" inputmode="decimal" value="${esc(ed.gramas)}"></label><label class="campo">Horas de máquina<input name="horas" inputmode="decimal" value="${esc(ed.horas)}"></label><label class="campo">Insumos (R$)<input name="insumos" inputmode="decimal" value="${esc(ed.insumos)}"></label></div>
@@ -288,10 +293,10 @@ function desenhaCamada() {
   let h = '';
   if (E.tela === 'app' && E.ed) h += gavetaProduto();
   if (E.tela === 'app' && E.promo) h += modalPromo();
-  if (E.toast) h += `<div class="toast" role="status">${esc(E.toast)}</div>`;
   const ativo = document.activeElement; const nome = ativo && ativo.name; const pos = ativo && ativo.selectionStart;
   $('#camada').innerHTML = h;
   if (nome && ativo.closest && ativo.closest('#camada') === null && $('#camada [name="' + nome + '"]')) { const el = $('#camada [name="' + nome + '"]'); el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) {} }
+  desenhaToast();
 }
 
 /* ===== ações ===== */
@@ -326,14 +331,21 @@ async function abreSessao(user) {
   try { await carregaTudo(); } catch (e) { E.tela = 'login'; E.erro = 'Não foi possível carregar os dados: ' + e.message; desenha(); return; }
   E.tela = 'app'; desenha();
 }
+function opLinha(o) {
+  return `<div class="linha op-linha" style="align-items:flex-end"><label class="campo">Nome do kit ou opção<input name="op_nome" value="${esc(o.nome)}" placeholder="Kit com 5"></label><label class="campo" style="flex:0 0 150px">Preço (R$)<input name="op_preco" inputmode="decimal" value="${esc(o.preco)}" placeholder="98,90"></label><button type="button" class="icone" data-delop aria-label="Remover esta opção" style="color:var(--erro);flex:0 0 44px;width:44px;height:44px">×</button></div>`;
+}
 function edDe(p) {
-  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos }
-    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', fonte: 'suposição', fotos: [], videos: [] };
+  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })) }
+    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [] };
 }
 async function salvaProduto(f) {
   const v = Object.fromEntries(new FormData(f));
-  const preco = num(v.preco); if (!v.nome || preco == null) { aviso('Preencha nome e preço.'); return; }
-  const linha = { nome: v.nome.trim(), slug: (v.slug || slugify(v.nome)).trim(), sku: v.sku || null, categoria_id: v.categoria_id, preco, selo: v.selo || null, descricao: v.descricao || '', publicado: !!v.publicado, tags: String(v.tags || '').split(',').map((t) => t.trim()).filter(Boolean) };
+  const fd = new FormData(f), opN = fd.getAll('op_nome').map((x) => String(x).trim()), opP = fd.getAll('op_preco');
+  if (opN.some((n, i) => (n && num(opP[i]) == null) || (!n && String(opP[i]).trim()))) { aviso('Cada kit ou opção precisa de nome e preço.'); return; }
+  const ops = opN.map((n, i) => ({ nome: n, preco: num(opP[i]) })).filter((o) => o.nome);
+  if (new Set(ops.map((o) => o.nome.toLowerCase())).size !== ops.length) { aviso('Há dois kits com o mesmo nome.'); return; }
+  const preco = ops.length ? Math.min(...ops.map((o) => o.preco)) : num(v.preco); if (!v.nome || preco == null) { aviso('Preencha nome e preço.'); return; }
+  const linha = { nome: v.nome.trim(), slug: (v.slug || slugify(v.nome)).trim(), sku: v.sku || null, categoria_id: v.categoria_id, preco, selo: v.selo || null, descricao: v.descricao || '', publicado: !!v.publicado, a_partir: new Set(ops.map((o) => o.preco)).size > 1, tags: String(v.tags || '').split(',').map((t) => t.trim()).filter(Boolean) };
   let id = E.ed.id;
   const r = id ? await sb.from('produtos').update(linha).eq('id', id) : await sb.from('produtos').insert(linha).select('id').single();
   if (r.error) { aviso('Não salvou: ' + r.error.message); return; }
@@ -341,6 +353,9 @@ async function salvaProduto(f) {
   const cores = String(v.cores || '').split(',').map((t) => t.trim()).filter(Boolean);
   await sb.from('variacoes').delete().eq('produto_id', id);
   if (cores.length) await sb.from('variacoes').insert(cores.map((c, i) => ({ produto_id: id, cor: c, ordem: i })));
+  const apaga = await sb.from('produto_opcoes').delete().eq('produto_id', id);
+  if (apaga.error) { aviso('Não salvou os kits: ' + apaga.error.message); return; }
+  if (ops.length) { const ins = await sb.from('produto_opcoes').insert(ops.map((o, i) => ({ produto_id: id, nome: o.nome, preco: o.preco, ordem: i }))); if (ins.error) { aviso('Não salvou os kits: ' + ins.error.message); return; } }
   await sb.from('produto_custos').upsert({ produto_id: id, gramas: num(v.gramas), horas: num(v.horas), insumos: num(v.insumos) || 0, fonte: v.fonte, atualizado_em: new Date().toISOString() });
   await carregaTudo(); E.ed = E.ed.id ? null : edDe(E.prods.find((p) => p.id === id)); desenha(); aviso('Produto salvo. Já aparece no site.');
 }
@@ -382,6 +397,8 @@ document.addEventListener('click', async (e) => {
   if (d.aba) { E.aba = d.aba; E.ed = E.promo = null; desenha(); if (d.aba === 'relatorios') carregaRelatorio(); }
   if (d.editar) { E.ed = edDe(d.editar === 'novo' ? null : E.prods.find((p) => p.id === d.editar)); desenhaCamada(); }
   if (d.fechar != null) { E.ed = null; desenhaCamada(); }
+  if (el.id === 'add-op') { $('#opcoes').insertAdjacentHTML('beforeend', opLinha({ nome: '', preco: '' })); const l = $('#opcoes').lastElementChild.querySelector('input'); if (l) l.focus(); }
+  if (d.delop != null && el.closest('.op-linha')) el.closest('.op-linha').remove();
   if (d.moverfoto) await reordena(Number(d.moverfoto), Number(d.d));
   if (d.apagarfoto && confirm('Apagar esta foto?')) { await sb.from('produto_fotos').delete().eq('id', d.apagarfoto); await carregaTudo(); E.ed = edDe(E.prods.find((p) => p.id === E.ed.id)); desenha(); }
   if (d.apagarvideo && confirm('Apagar este vídeo?')) { await sb.from('produto_videos').delete().eq('id', d.apagarvideo); await carregaTudo(); E.ed = edDe(E.prods.find((p) => p.id === E.ed.id)); desenha(); }

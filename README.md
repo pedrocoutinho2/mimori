@@ -21,7 +21,7 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 ## No ar
 
 - Site: https://mimori3d.com.br (GitHub Pages, domínio pela Hostinger, HTTPS ativo).
-- Supabase: projeto `ydnanmpqwbjzskovnhyh`. SQL 001, 002, 003, 005 e 006 aplicados. Catálogo importado em 03/10/2026.
+- Supabase: projeto `ydnanmpqwbjzskovnhyh`. SQL 001, 002, 003, 005, 006, 007 e 008 aplicados. Catálogo importado em 03/10/2026. Kits e opções com preço (tabela `produto_opcoes`) desde 04/10/2026, editáveis no painel.
 - Painel: https://mimori3d.com.br/admin (Pedro e Kamilla como administradores).
 
 ## Dia a dia
@@ -34,7 +34,7 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 
 ## Pendências
 
-- `[CONFIRMAR]` data-limite de pedidos dos temas (`[data-limite]` em `data/catalogo.json`).
+- `[DECIDIR]` data-limite de pedidos de Halloween e Natal (a frase saiu das faixas em 04/10/2026).
 - `[CONFIRMAR]` taxa do link de pagamento e valor da hora de mão de obra (`parametros_custo`).
 - `[CONFIRMAR]` CNPJ no rodapé, aviso de cookies e licença de uso de cada modelo e foto do criador.
 - Fotos do criador e da exceção da §11: trocar pela foto da peça real pelo painel, conforme imprimir.
