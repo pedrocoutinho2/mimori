@@ -6,12 +6,13 @@
 <base href="/">
 <title>Jogo da Memória das Cenouras · Mimori</title>
 <meta name="description" content="Jogo da Memória das Cenouras brincadeira educativa para a família toda Cada cenoura esconde uma cor na ponta, e só a folhinha fica de fora. A criança…">
-<link rel="canonical" href="https://mimori3d.com.br/jogos-e-fidget/jogo-da-memoria-das-cenouras/">
+<!--seo--><link rel="canonical" href="https://mimori3d.com.br/jogos-e-fidget/jogo-da-memoria-das-cenouras/">
 <meta property="og:title" content="Jogo da Memória das Cenouras · Mimori">
 <meta property="og:description" content="Jogo da Memória das Cenouras brincadeira educativa para a família toda Cada cenoura esconde uma cor na ponta, e só a folhinha fica de fora. A criança…">
 <meta property="og:image" content="https://mimori3d.com.br/assets/fotos/jogo-da-memoria-das-cenouras-1.jpg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mimori3d.com.br/jogos-e-fidget/jogo-da-memoria-das-cenouras/">
+<style>.estatico{padding-top:24px;padding-bottom:40px}.estatico ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}.estatico img{display:block;max-width:100%;height:auto;border-radius:12px}.estatico li p{font-size:14px;color:var(--texto2)}</style><!--/seo-->
 <meta name="theme-color" content="#6E5B98">
 <link rel="icon" href="assets/logo-mimori.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -93,7 +94,8 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .cab-secao{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;margin-bottom:18px}
 .cab-secao .acoes{display:flex;align-items:center;gap:8px}
 .seta{width:44px;height:44px;border-radius:var(--pilula);border:1px solid #D0C5E7;background:#fff;color:var(--marca-escura);display:flex;align-items:center;justify-content:center}
-.trilho{display:grid;grid-auto-flow:column;grid-auto-columns:max(220px,calc((100% - 80px)/5));gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.trilho{--col:max(220px,calc((100% - 80px)/5));display:flex;align-items:stretch;gap:20px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.trilho>*{flex:0 0 var(--col)}
 .trilho::-webkit-scrollbar{display:none}
 .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:32px 20px}
 
@@ -150,7 +152,7 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .tema .txt p{margin:0;font-size:17px;max-width:34em}
 .tema .vitrine{flex:1.7 1 520px;min-width:0;display:flex;flex-direction:column;gap:10px}
 .tema .vitrine .acoes{display:flex;justify-content:flex-end;gap:8px}
-.tema .trilho{grid-auto-columns:max(190px,calc((100% - 40px)/3))}
+.tema .trilho{--col:max(190px,calc((100% - 40px)/3))}
 .tema .card{background:#fff;border-radius:var(--r1);padding:10px}
 .tema .pecas a{background:#fff;border-radius:var(--r1);padding:10px;text-decoration:none;color:var(--tinta);display:flex;flex-direction:column;gap:6px}
 .tema .pecas img{aspect-ratio:1/1;width:100%;object-fit:cover;border-radius:10px}
@@ -266,7 +268,7 @@ footer a:hover{text-decoration:underline}
   .menu-cat b{font-size:14.5px}
   .menu-cat img{width:44px;height:44px}
   .busca{order:2;flex-basis:100%}
-  .trilho{grid-auto-columns:160px;gap:12px}
+  .trilho{--col:160px;gap:12px}
   .hero{gap:20px}
   .hero .txt{gap:14px}
   .hero .txt p{font-size:16.5px}
@@ -314,7 +316,7 @@ footer a:hover{text-decoration:underline}
   </div>
   <div class="menu-cat" id="menu-cat" hidden><div class="wrap"><nav aria-label="Categorias" id="menu-cat-lista"></nav></div></div>
 </header>
-<main id="conteudo" tabindex="-1"></main>
+<main id="conteudo" tabindex="-1"><!--estatico--><div class="wrap estatico"><p><a href="./">Início</a> › <a href="jogos-e-fidget/">Jogos e fidget</a> › Jogo da Memória das Cenouras</p><h1>Jogo da Memória das Cenouras</h1><img src="/assets/fotos/jogo-da-memoria-das-cenouras-1.jpg" alt="Jogo da Memória das Cenouras" width="480" height="480"><p>🥕 Jogo da Memória das Cenouras: brincadeira educativa para a família toda</p><p>Cada cenoura esconde uma cor na ponta, e só a folhinha fica de fora. A criança rola o dado, puxa uma cenoura e tenta lembrar onde está a cor da vez.</p><p>Tem dois modelos: Sem tampa, com tabuleiro, cenouras e dado, e Com tampa, que fecha o jogo e guarda tudo depois da partida.</p><p>🎲 COMO JOGAR<br>✔ Role o dado de cores. A cor que cair é a sua cor da vez.<br>✔ Puxe uma cenoura. Acertou a cor? Guarde e decida: parar ou arriscar mais uma.<br>✔ Errou a cor? Perde as cenouras da rodada.<br>✔ Quem juntar mais cenouras no final vence.</p><p>🧠 O QUE A BRINCADEIRA TRABALHA<br>✔ Memória e atenção: cada rodada revela uma cor, e quem presta atenção sai na frente<br>✔ Coordenação motora: puxar e plantar as cenouras de novo no tabuleiro<br>✔ Cores: 6 cores para reconhecer e nomear<br>✔ Momento sem tela, com todo mundo junto na mesa</p><p>🎨 6 CORES ESCONDIDAS<br>Vermelho, amarelo, verde, azul-claro, azul e rosa. São 4 cenouras de cada cor.</p><p>📦 O QUE VEM NO PEDIDO<br>Sem tampa: 1 tabuleiro redondo, 24 cenouras e 1 dado de cores<br>Com tampa: tudo isso e mais a tampa que fecha o jogo</p><p>📏 FICHA TÉCNICA<br>Material: PLA<br>Tabuleiro: 20 cm de diâmetro e 3 cm de altura<br>Peso: cerca de 450 g sem tampa e 820 g com tampa<br>Cores: tabuleiro, tampa e dado bege, cenouras laranja com folha verde e ponta nas 6 cores do jogo</p><p>ℹ️ INFORMAÇÕES IMPORTANTES<br>Recomendado a partir de 4 anos, com um adulto por perto.<br>Contém peças pequenas. Não indicado para menores de 3 anos.<br>A cor pode variar levemente de um lote para outro.</p><p>🧼 CUIDADOS<br>Limpar com pano seco. O PLA deforma no calor: não deixar no sol nem dentro do carro.</p><p>💬 PERGUNTAS FREQUENTES<br>Qual a diferença entre os modelos? O jogo é o mesmo. O Com tampa vem com a tampa que fecha e guarda as peças.<br>Quantas pessoas jogam? A partir de 2, e quanto mais gente, melhor.<br>Serve de presente? Sim, vai em caixa, pronto para entregar.</p><p>💜 POR QUE ESCOLHER A MIMORI<br>Nós fazemos cada peça aqui, com cuidado em cada detalhe, e respondemos no WhatsApp de verdade. Qualquer dúvida, é só chamar.</p><p>Cada peça é feita sob encomenda, na cor que você escolhe, e o pedido fecha com a gente no WhatsApp.</p><h2>Mais em Jogos e fidget</h2><ul><li><a href="jogos-e-fidget/estrela-do-mar-fidget/"><img src="/assets/fotos/estrela-do-mar-fidget-1.jpg" alt="Estrela do Mar Fidget" width="160" height="160" loading="lazy"><strong>Estrela do Mar Fidget</strong></a><p>Estrela do Mar Fidget 3D antiestresse, foco e relaxamento Uma estrela que cabe na mão e não para quieta. A Estrela do Mar da Mimori é…</p></li><li><a href="jogos-e-fidget/cubo-infinito-fidget/"><img src="/assets/fotos/cubo-infinito-fidget-1.jpg" alt="Cubo Infinito Fidget" width="160" height="160" loading="lazy"><strong>Cubo Infinito Fidget</strong></a><p>Cubo Infinito Fidget antiestresse, foco e relaxamento Um cubo que dobra para sempre. Cantos arredondados que a mão não quer soltar. O Cubo…</p></li><li><a href="jogos-e-fidget/giroscopio-fidget-4-aneis/"><img src="/assets/fotos/giroscopio-fidget-4-aneis-1.jpg" alt="Giroscópio Fidget 4 Anéis" width="160" height="160" loading="lazy"><strong>Giroscópio Fidget 4 Anéis</strong></a><p>Giroscópio Fidget 4 Anéis antiestresse, foco e relaxamento Quatro anéis girando ao mesmo tempo. Uma pausa de segundos que muda o dia. O…</p></li><li><a href="jogos-e-fidget/cambio-de-marchas-fidget/"><img src="/assets/fotos/cambio-de-marchas-fidget-1.jpg" alt="Câmbio de Marchas Fidget" width="160" height="160" loading="lazy"><strong>Câmbio de Marchas Fidget</strong></a><p>Câmbio de Marchas Fidget antiestresse, foco e relaxamento Troque de marcha sem sair da mesa. Cada engate com um clique firme. O Câmbio de…</p></li><li><a href="jogos-e-fidget/aneis-tateis-fidget/"><img src="/assets/fotos/aneis-tateis-fidget-1.jpg" alt="Anéis Táteis Fidget" width="160" height="160" loading="lazy"><strong>Anéis Táteis Fidget</strong></a><p>Anéis Táteis Fidget antiestresse, foco e relaxamento Anéis com textura que giram entre os dedos. O toque já acalma. Os Anéis Táteis Fidget…</p></li><li><a href="jogos-e-fidget/medusa-fidget-articulada/"><img src="/assets/fotos/medusa-fidget-articulada-1.jpg" alt="Medusa Fidget Articulada" width="160" height="160" loading="lazy"><strong>Medusa Fidget Articulada</strong></a><p>Medusa Fidget Articulada antiestresse, foco e relaxamento Uma água-viva de 16 tentáculos que escorrem pela mão. Mexe, enrola e vira…</p></li><li><a href="jogos-e-fidget/cone-espiral-fidget/"><img src="/assets/fotos/cone-espiral-fidget-1.jpg" alt="Cone Espiral Fidget" width="160" height="160" loading="lazy"><strong>Cone Espiral Fidget</strong></a><p>Cone Espiral Fidget antiestresse, foco e relaxamento Duas espirais que atravessam uma a outra. Um giro que acalma só de olhar. O Cone…</p></li><li><a href="jogos-e-fidget/cone-impossivel-fidget/"><img src="/assets/fotos/cone-impossivel-fidget-1.jpg" alt="Cone Impossível Fidget" width="160" height="160" loading="lazy"><strong>Cone Impossível Fidget</strong></a><p>Cone Impossível Fidget antiestresse, foco e relaxamento Uma peça que atravessa a outra. Parece impossível, e é isso que prende o olhar. O…</p></li></ul></div><!--/estatico--></main>
 <footer>
   <div class="wrap">
     <div class="marca">
@@ -544,7 +546,7 @@ function paginaHome() {
   <section class="wrap" aria-labelledby="h-presentes"><div class="cab-secao"><div><h2 class="titulo" id="h-presentes">Ideias de presente</h2><p class="sub">Escolha por quem vai ganhar ou por quanto você quer gastar.</p></div><a class="link" href="presentes" data-rota>Ver todas as ideias${IC.prox}</a></div>
     <div class="duas">
       <div style="background:#fff;border:1px solid var(--borda)" data-carrossel><div class="cab-secao" style="margin-bottom:12px"><div><h3 class="titulo" style="font-size:22px">${esc(S.colecoes.ate35.titulo)}</h3><p class="sub" style="font-size:14.5px">${esc(S.colecoes.ate35.texto)}</p></div><div class="acoes"><button type="button" class="seta" data-rolar="-1" aria-label="Anterior">${IC.ant}</button><button type="button" class="seta" data-rolar="1" aria-label="Próxima">${IC.prox}</button></div></div>
-        <div class="trilho" data-trilho style="grid-auto-columns:calc((100% - 20px)/2)">${deNomes(S.colecoes.ate35.itens).map(cardHTML).join('')}</div></div>
+        <div class="trilho" data-trilho style="--col:calc((100% - 20px)/2)">${deNomes(S.colecoes.ate35.itens).map(cardHTML).join('')}</div></div>
       <div style="background:var(--suave)"><h3 class="titulo" style="font-size:22px;margin-bottom:16px">Para quem é o presente?</h3><div class="paraquem">${PQ.map((x) => `<a href="presentes?para=${encodeURIComponent(x[2])}" data-rota><img src="${x[1]}" alt="" loading="lazy">${esc(x[0])}</a>`).join('')}</div></div>
     </div></section>
   <section class="wrap"><div class="faixa-forte" style="background:var(--marca);color:#fff">
@@ -601,7 +603,8 @@ function paginaCatalogo(slugCat) {
     const todos = S.produtos.filter((p) => p.categoria === cat.slug);
     const vis = todos.filter(passaFiltro);
     const grupos = cat.slug === 'vasos-de-planta' ? `${[['', 'Todos'], ['bichinho', 'Bichinhos'], ['moderno', 'Modernos'], ['autoirrigavel', 'Autoirrigáveis'], ['pratinho', 'Com pratinho']].map((g) => `<button type="button" class="chip" aria-pressed="${F.grupo === g[0]}" data-filtro="grupo" data-valor="${g[0]}">${g[1]} <small>${g[0] ? todos.filter((p) => (p.grupos || []).indexOf(g[0]) >= 0).length : todos.length}</small></button>`).join('')}` : '';
-    corpo = `<div><h1 class="titulo">${esc(cat.nome)}</h1><p class="sub">${vis.length} ${vis.length === 1 ? 'peça' : 'peças'}. Escolha a cor, clique em Adicionar e feche o pedido com a gente no WhatsApp.</p></div>${filtrosHTML(todos, grupos)}
+    const introCat = cat.slug === 'brindes-para-salao' ? `<p class="sub">Mimos para presentear as suas clientes: porta batom, chaveiros que abrem latinha, porta anel e caixinhas. Para kits a partir de 10 peças, a gente combina cores e quantidade com você.</p><a class="btn whats" style="align-self:flex-start;margin-top:12px" href="${esc(wa('Oi, Mimori! Quero montar um kit de brindes para o meu salão.'))}" target="_blank" rel="noopener" data-whats="salao">${IC.whats}Montar kit para o salão</a>` : '';
+    corpo = `<div><h1 class="titulo">${esc(cat.nome)}</h1>${introCat}<p class="sub">${vis.length} ${vis.length === 1 ? 'peça' : 'peças'}. Escolha a cor, clique em Adicionar e feche o pedido com a gente no WhatsApp.</p></div>${filtrosHTML(todos, grupos)}
       ${vis.length ? `<div class="grade">${vis.map(cardHTML).join('')}</div>` : semResultado('Nenhuma peça com esses filtros.')}`;
   } else {
     corpo = `<div><h1 class="titulo">Catálogo</h1><p class="sub">${S.produtos.length} peças em ${S.categorias.length} categorias. Escolha a cor, clique em Adicionar e feche o pedido com a gente no WhatsApp.</p></div>${filtrosHTML(S.produtos)}
@@ -802,7 +805,7 @@ document.addEventListener('click', (e) => {
   if (d.addproduto) { const pp = S.porSlug[d.addproduto]; const opp = opProduto || (pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''); if (faltaEscolha(pp, corProduto, opp)) { faltaProduto = true; render(); const c = $('.caixa.erro'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } adiciona(d.addproduto, qtdProduto, corProduto, opProduto); gavetaAberta = true; desenhaCamadas(); return; }
   if (d.remover) { lista = lista.filter((i) => i.chave !== d.remover); salvaLista(); return; }
   if (d.qtd) { const it = lista.find((i) => i.chave === d.qtd); if (it) { it.qtd = Math.max(1, Math.min(99, it.qtd + Number(d.d))); salvaLista(); } return; }
-  if (d.rolar) { const t = el.closest('[data-carrossel]').querySelector('[data-trilho]'); const c = t.firstElementChild; t.scrollBy({ left: Number(d.rolar) * (c ? c.getBoundingClientRect().width + 20 : 240), behavior: 'smooth' }); return; }
+  if (d.rolar) { const t = el.closest('[data-carrossel]').querySelector('[data-trilho]'); const c = t.firstElementChild; t.scrollBy({ left: Number(d.rolar) * (c ? c.getBoundingClientRect().width + (parseFloat(getComputedStyle(t).columnGap) || 20) : 240), behavior: 'smooth' }); return; }
   if (d.fotonav) { e.preventDefault(); const t = el.closest('[data-card]').querySelector('[data-fotos]'); if (t) t.scrollBy({ left: Number(d.fotonav) * t.clientWidth, behavior: 'smooth' }); return; }
   if (d.galeria != null && d.galeria !== '') { galeria = Number(d.galeria); render(); return; }
   if (d.qtdp) { qtdProduto = Math.max(1, Math.min(20, qtdProduto + Number(d.qtdp))); render(); return; }
