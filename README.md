@@ -21,7 +21,7 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 ## No ar
 
 - Site: https://mimori3d.com.br (GitHub Pages, domínio pela Hostinger, HTTPS ativo).
-- Supabase: projeto `ydnanmpqwbjzskovnhyh`. SQL 001, 002, 003, 005, 006, 007, 008, 009 e 010 aplicados. Categoria Brindes para salão desde 09/10/2026. Catálogo importado em 03/10/2026. Kits e opções com preço (tabela `produto_opcoes`) desde 04/10/2026, editáveis no painel.
+- Supabase: projeto `ydnanmpqwbjzskovnhyh`. SQL 001, 002, 003, 005, 006, 007, 008, 009, 010 e 011 aplicados. Categoria Brindes para salão desde 09/10/2026 (26 produtos; licença comercial dos modelos do 011 a cargo do Pedro). Catálogo importado em 03/10/2026. Kits e opções com preço (tabela `produto_opcoes`) desde 04/10/2026, editáveis no painel.
 - Painel: https://mimori3d.com.br/admin (Pedro e Kamilla como administradores).
 
 ## Dia a dia
