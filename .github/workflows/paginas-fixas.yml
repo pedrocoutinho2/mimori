@@ -1,0 +1,41 @@
+# Refaz as páginas fixas (Google), o sitemap e o 404 a partir do Supabase.
+# Por quê: o painel grava no banco e o site mostra na hora, mas as páginas fixas que o Google lê
+# só mudavam quando alguém rodava o script no computador. Agora isso roda sozinho.
+# Roda a cada 6 horas e também pelo botão "Run workflow" na aba Actions do GitHub.
+name: Páginas fixas
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paginas-fixas
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Gerar páginas
+        env:
+          MIMORI_EXIGE_BANCO: '1'
+        run: python3 ferramentas/gerar-paginas.py
+      - name: Salvar se mudou
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "mimori-paginas"
+            git config user.email "actions@users.noreply.github.com"
+            git add -A
+            git commit -m "Páginas fixas atualizadas a partir do painel"
+            git push
+          else
+            echo "Nada mudou."
+          fi
