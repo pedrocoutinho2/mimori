@@ -105,7 +105,7 @@ const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' 
 async function carregaTudo() {
   const [cats, prods, par, promos, usu] = await Promise.all([
     sb.from('categorias').select('id,slug,nome,ordem').order('ordem'),
-    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
+    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),faixas,faixa_consulta,produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
     sb.from('parametros_custo').select('*').eq('id', 1).single(),
     sb.from('promocoes').select('*').order('inicio', { ascending: false }),
     sb.from('painel_usuarios').select('*').order('criado_em')
@@ -189,6 +189,9 @@ function gavetaProduto() {
     <div class="bloco"><h3>Kits e opções</h3><p style="margin:0;font-size:13.5px;color:var(--texto2)">Kit (5, 10, 20 unidades), modelo (com ou sem tampa) ou versão (manto azul ou rosa), cada um com o próprio preço. O cliente escolhe na página do produto. Com opções, o preço do card passa a ser o menor deles, com "a partir de" quando os preços forem diferentes.</p>
       <div id="opcoes" style="display:flex;flex-direction:column;gap:8px">${(ed.opcoes || []).map(opLinha).join('')}</div>
       <button type="button" class="btn claro mini" id="add-op" style="align-self:flex-start">+ Adicionar kit ou opção</button></div>
+    <div class="bloco"><h3>Preço por quantidade</h3><p style="margin:0;font-size:13.5px;color:var(--texto2)">Preço por unidade a partir de uma quantidade, sobre o preço base. Nas opções o site aplica a mesma proporção. Deixe em branco para não usar.</p>
+      ${[0, 1, 2].map((k) => { const x = (ed.faixas || [])[k] || { min: '', preco: '' }; return `<div class="linha"><label class="campo">A partir de (un)<input name="fx_min" inputmode="numeric" value="${esc(x.min)}"></label><label class="campo">Preço por unidade (R$)<input name="fx_preco" inputmode="decimal" value="${esc(x.preco)}"></label></div>`; }).join('')}
+      <label class="campo">A consultar a partir de (un)<input name="faixa_consulta" inputmode="numeric" value="${esc(ed.consulta || '')}" placeholder="Ex.: 50"></label></div>
     <label class="campo">Descrição<textarea name="descricao" rows="9">${esc(ed.descricao || '')}</textarea></label>
     <div class="bloco"><h3>Custo</h3>
       <div class="linha"><label class="campo">Filamento (g)<input name="gramas" inputmode="decimal" value="${esc(ed.gramas)}"></label><label class="campo">Tempo de produção (h)<input name="horas" inputmode="decimal" value="${esc(ed.horas)}"></label><label class="campo">Insumos (R$)<input name="insumos" inputmode="decimal" value="${esc(ed.insumos)}"></label><label class="campo">Mão de obra (min, se usar)<input name="mao_obra_min" inputmode="numeric" value="${esc(ed.mao_obra_min)}"></label></div>
@@ -338,17 +341,20 @@ function opLinha(o) {
   return `<div class="linha op-linha" style="align-items:flex-end"><label class="campo">Nome do kit ou opção<input name="op_nome" value="${esc(o.nome)}" placeholder="Kit com 5"></label><label class="campo" style="flex:0 0 150px">Preço (R$)<input name="op_preco" inputmode="decimal" value="${esc(o.preco)}" placeholder="98,90"></label><button type="button" class="icone" data-delop aria-label="Remover esta opção" style="color:var(--erro);flex:0 0 44px;width:44px;height:44px">×</button></div>`;
 }
 function edDe(p) {
-  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })) }
-    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', mao_obra_min: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [] };
+  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })), faixas: (p.faixas || []).map((x) => ({ min: String(x.min), preco: Number(x.preco).toFixed(2).replace('.', ',') })), consulta: p.faixa_consulta ? String(p.faixa_consulta) : '' }
+    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', mao_obra_min: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [], faixas: [], consulta: '' };
 }
 async function salvaProduto(f) {
   const v = Object.fromEntries(new FormData(f));
   const fd = new FormData(f), opN = fd.getAll('op_nome').map((x) => String(x).trim()), opP = fd.getAll('op_preco');
   if (opN.some((n, i) => (n && num(opP[i]) == null) || (!n && String(opP[i]).trim()))) { aviso('Cada kit ou opção precisa de nome e preço.'); return; }
   const ops = opN.map((n, i) => ({ nome: n, preco: num(opP[i]) })).filter((o) => o.nome);
+  const fxM = fd.getAll('fx_min'), fxP = fd.getAll('fx_preco');
+  const faixas = fxM.map((m, i) => ({ min: Math.round(num(m) || 0), preco: num(fxP[i]) })).filter((x) => x.min > 1 && x.preco != null).sort((a, b) => a.min - b.min);
+  if (fxM.some((m, i) => (String(m).trim() === '') !== (String(fxP[i]).trim() === ''))) { aviso('Cada faixa de quantidade precisa de quantidade e preço.'); return; }
   if (new Set(ops.map((o) => o.nome.toLowerCase())).size !== ops.length) { aviso('Há dois kits com o mesmo nome.'); return; }
   const preco = ops.length ? Math.min(...ops.map((o) => o.preco)) : num(v.preco); if (!v.nome || preco == null) { aviso('Preencha nome e preço.'); return; }
-  const linha = { nome: v.nome.trim(), slug: (v.slug || slugify(v.nome)).trim(), sku: v.sku || null, categoria_id: v.categoria_id, preco, selo: v.selo || null, descricao: v.descricao || '', publicado: !!v.publicado, a_partir: new Set(ops.map((o) => o.preco)).size > 1, tags: String(v.tags || '').split(',').map((t) => t.trim()).filter(Boolean) };
+  const linha = { nome: v.nome.trim(), slug: (v.slug || slugify(v.nome)).trim(), sku: v.sku || null, categoria_id: v.categoria_id, preco, selo: v.selo || null, descricao: v.descricao || '', publicado: !!v.publicado, a_partir: new Set(ops.map((o) => o.preco)).size > 1, tags: String(v.tags || '').split(',').map((t) => t.trim()).filter(Boolean), faixas, faixa_consulta: num(v.faixa_consulta) ? Math.round(num(v.faixa_consulta)) : null };
   let id = E.ed.id;
   const r = id ? await sb.from('produtos').update(linha).eq('id', id) : await sb.from('produtos').insert(linha).select('id').single();
   if (r.error) { aviso('Não salvou: ' + r.error.message); return; }
