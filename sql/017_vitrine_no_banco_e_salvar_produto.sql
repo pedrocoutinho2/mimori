@@ -1,4 +1,4 @@
--- 016 · Vitrine e configuração no banco, e salvamento do produto numa transação só (10/10/2026)
+-- 017 · Vitrine e configuração no banco, e salvamento do produto numa transação só (10/10/2026)
 --
 -- Por quê: até aqui, prateleiras da home, datas especiais (temas), WhatsApp e fotos de categoria
 -- moravam só em data/catalogo.json, e as prateleiras ligavam o produto pelo NOME. Renomear uma peça
