@@ -87,11 +87,13 @@ function aviso(t) { E.toast = t; clearTimeout(toastT); toastT = setTimeout(() =>
 function desenhaToast() { const a = $('#toast-area'); if (a) a.innerHTML = E.toast ? `<div class="toast" role="status">${esc(E.toast)}</div>` : ''; }
 
 /* ===== custo e preço ===== */
-function custoDe(g, h, ins) {
+function custoDe(g, h, ins, moMin) {
   const P = E.par; if (!P || g == null || h == null) return null;
-  const material = g * P.pla_kg / 1000, maquina = h * P.hora_maquina, refugo = (material + maquina) * P.refugo, mo = P.mao_obra_min / 60 * P.mao_obra_hora;
-  return { material, maquina, refugo, emb: Number(P.embalagem), ins: ins || 0, mo, total: material + maquina + refugo + Number(P.embalagem) + (ins || 0) + mo };
+  const material = g * P.pla_kg / 1000, maquina = h * P.hora_maquina, refugo = (material + maquina) * P.refugo, mo = (moMin || 0) / 60 * P.mao_obra_hora;
+  const producao = material + maquina + refugo;
+  return { material, maquina, refugo, producao, emb: Number(P.embalagem), ins: ins || 0, mo, total: producao + Number(P.embalagem) + (ins || 0) + mo };
 }
+const custoDoProduto = (p) => (p.custo ? custoDe(num(p.custo.gramas), num(p.custo.horas), num(p.custo.insumos), num(p.custo.mao_obra_min)) : null);
 const lucroDe = (preco, c) => (c ? preco - preco * E.par.taxa_link - c.total : null);
 const situacao = (pr) => (pr.pausada ? 'Pausada' : hoje() < pr.inicio ? 'Agendada' : hoje() > pr.fim ? 'Encerrada' : 'Ativa');
 const atinge = (pr, p) => (pr.alvo_tipo === 'produto' ? pr.alvo_produto === p.id : pr.alvo_tipo === 'categoria' ? pr.alvo_categoria === p.categoria_id : (p.tags || []).indexOf(pr.alvo_tag) >= 0);
@@ -103,7 +105,7 @@ const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' 
 async function carregaTudo() {
   const [cats, prods, par, promos, usu] = await Promise.all([
     sb.from('categorias').select('id,slug,nome,ordem').order('ordem'),
-    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),produto_custos(gramas,horas,insumos,fonte)').order('ordem'),
+    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
     sb.from('parametros_custo').select('*').eq('id', 1).single(),
     sb.from('promocoes').select('*').order('inicio', { ascending: false }),
     sb.from('painel_usuarios').select('*').order('criado_em')
@@ -152,7 +154,7 @@ function abaProdutos() {
     <select id="filtro-cat" aria-label="Categoria" style="flex:0 0 240px;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid #D0C5E7"><option value="">Todas as categorias</option>${E.cats.map((c) => `<option value="${c.id}" ${E.filtroCat === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></div>
   <div class="card" style="overflow-x:auto"><table class="tabela"><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Lucro</th><th>Fotos</th><th>No site</th><th><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden">Ações</span></th></tr></thead><tbody>
   ${vis.map((p) => {
-    const pv = vigente(p), preco = pv ? pv.v : Number(p.preco), c = p.custo ? custoDe(num(p.custo.gramas), num(p.custo.horas), num(p.custo.insumos)) : null, l = lucroDe(preco, c), h = p.custo ? num(p.custo.horas) : null;
+    const pv = vigente(p), preco = pv ? pv.v : Number(p.preco), c = custoDoProduto(p), l = lucroDe(preco, c), h = p.custo ? num(p.custo.horas) : null;
     const reais = p.fotos.filter((f) => f.tipo === 'real').length;
     const ft = !p.fotos.length ? ['Sem foto', '#FBE3DF', 'var(--erro)'] : reais ? ['Foto real', '#E1F2E8', 'var(--ok)'] : ['Foto do criador', '#FFF4D6', 'var(--atencao)'];
     return `<tr><td><span style="display:flex;align-items:center;gap:12px">${p.fotos[0] ? `<img class="thumb" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb"></span>'}<span><b style="font-family:var(--f-marca)">${esc(p.nome)}</b><br><small style="color:var(--texto2)">${esc(p.sku || 'sem código')}</small></span></span></td>
@@ -165,14 +167,15 @@ function abaProdutos() {
   }).join('')}</tbody></table></div>`;
 }
 function custoHTML(ed) {
-  const c = custoDe(num(ed.gramas), num(ed.horas), num(ed.insumos) || 0), preco = num(ed.preco), h = num(ed.horas);
-  if (!c) return '<p style="margin:0;color:var(--texto2)">Preencha peso e tempo do fatiador para calcular o custo.</p>';
-  const l = preco != null ? lucroDe(preco, c) : null;
-  const P = E.par;
-  return `<dl class="custo"><dt>Material</dt><dd>${brl(c.material)}</dd><dt>Máquina</dt><dd>${brl(c.maquina)}</dd><dt>Refugo (${Math.round(P.refugo * 100)}%)</dt><dd>${brl(c.refugo)}</dd><dt>Embalagem</dt><dd>${brl(c.emb)}</dd><dt>Insumos</dt><dd>${brl(c.ins)}</dd><dt>Mão de obra</dt><dd>${brl(c.mo)}</dd>
-    <dt class="total">Custo total</dt><dd class="total">${brl(c.total)}</dd>
-    ${l != null ? `<dt>Preço</dt><dd>${brl(preco)}</dd><dt>Taxa do link (${Math.round(P.taxa_link * 1000) / 10}%)</dt><dd>${brl(preco * P.taxa_link)}</dd><dt class="total">Lucro</dt><dd class="total" style="color:${corLucro(l, h)}">${brl(l)}</dd><dt>Margem</dt><dd>${Math.round(l / preco * 100)}%</dd><dt>Lucro por hora de máquina</dt><dd style="color:${corLucro(l, h)};font-weight:700">${brl(l / h)}</dd>` : ''}</dl>
-    <small style="color:var(--texto2)">PLA ${brl(P.pla_kg)}/kg, hora de máquina ${brl(P.hora_maquina)}, embalagem ${brl(P.embalagem)} por pedido, mão de obra ${brl(P.mao_obra_hora)}/h.</small>`;
+  const g = num(ed.gramas), h = num(ed.horas), c = custoDe(g, h, num(ed.insumos) || 0, num(ed.mao_obra_min)), preco = num(ed.preco);
+  if (!c) return '<p style="margin:0;color:var(--texto2)">Preencha filamento e tempo de produção para calcular o custo.</p>';
+  const l = preco != null ? lucroDe(preco, c) : null, P = E.par;
+  return `<dl class="custo"><dt>Filamento</dt><dd>${String(g).replace('.', ',')} g</dd><dt>Tempo de produção</dt><dd>${String(h).replace('.', ',')} h</dd>
+    <dt class="total">Custo de produção</dt><dd class="total">${brl(c.producao)}</dd>
+    <dt>Embalagem</dt><dd>${brl(c.emb)}</dd><dt>Insumos</dt><dd>${brl(c.ins)}</dd><dt>Mão de obra</dt><dd>${c.mo ? brl(c.mo) : '-'}</dd>
+    <dt class="total">Produção + embalagem + insumos + mão de obra</dt><dd class="total">${brl(c.total)}</dd>
+    ${l != null ? `<dt class="total">Preço de venda</dt><dd class="total" style="color:var(--marca)">${brl(preco)}</dd><dt>Lucro</dt><dd style="color:${corLucro(l, h)};font-weight:700">${brl(l)} · ${brl(l / h)}/h</dd>` : ''}</dl>
+    <small style="color:var(--texto2)">Custo de produção = filamento (PLA ${brl(P.pla_kg)}/kg) + máquina (${brl(P.hora_maquina)}/h) + refugo de ${Math.round(P.refugo * 100)}%. Embalagem ${brl(P.embalagem)} por pedido. Mão de obra ${brl(P.mao_obra_hora)}/h, só quando os minutos forem preenchidos.</small>`;
 }
 function gavetaProduto() {
   const ed = E.ed;
@@ -187,8 +190,8 @@ function gavetaProduto() {
       <div id="opcoes" style="display:flex;flex-direction:column;gap:8px">${(ed.opcoes || []).map(opLinha).join('')}</div>
       <button type="button" class="btn claro mini" id="add-op" style="align-self:flex-start">+ Adicionar kit ou opção</button></div>
     <label class="campo">Descrição<textarea name="descricao" rows="9">${esc(ed.descricao || '')}</textarea></label>
-    <div class="bloco"><h3>Custo e lucro</h3>
-      <div class="linha"><label class="campo">Gramas de PLA<input name="gramas" inputmode="decimal" value="${esc(ed.gramas)}"></label><label class="campo">Horas de máquina<input name="horas" inputmode="decimal" value="${esc(ed.horas)}"></label><label class="campo">Insumos (R$)<input name="insumos" inputmode="decimal" value="${esc(ed.insumos)}"></label></div>
+    <div class="bloco"><h3>Custo</h3>
+      <div class="linha"><label class="campo">Filamento (g)<input name="gramas" inputmode="decimal" value="${esc(ed.gramas)}"></label><label class="campo">Tempo de produção (h)<input name="horas" inputmode="decimal" value="${esc(ed.horas)}"></label><label class="campo">Insumos (R$)<input name="insumos" inputmode="decimal" value="${esc(ed.insumos)}"></label><label class="campo">Mão de obra (min, se usar)<input name="mao_obra_min" inputmode="numeric" value="${esc(ed.mao_obra_min)}"></label></div>
       <label class="campo">De onde vieram peso e tempo<select name="fonte"><option ${ed.fonte === 'fatiador' ? 'selected' : ''} value="fatiador">Print do fatiador</option><option ${ed.fonte !== 'fatiador' ? 'selected' : ''} value="suposição">Suposição (perfil do criador)</option></select></label>
       <div id="custo-vivo">${custoHTML(ed)}</div></div>
     ${ed.id ? `<div class="bloco"><h3>Fotos e vídeo</h3><p style="margin:0;font-size:13.5px;color:var(--texto2)">A primeira foto é a capa. Marque se a foto é da peça real.</p>
@@ -215,7 +218,7 @@ function modalPromo() {
   const rasc = { tipo: m.tipo, valor: num(m.valor) || 0, alvo_tipo: m.alvo_tipo, alvo_produto: m.alvo, alvo_categoria: m.alvo, alvo_tag: m.alvo };
   const afet = E.prods.filter((p) => atinge(rasc, p));
   let ruim = 0;
-  const prev = afet.slice(0, 8).map((p) => { const por = comDesconto(rasc, Number(p.preco)); const c = p.custo ? custoDe(num(p.custo.gramas), num(p.custo.horas), num(p.custo.insumos)) : null; const l = lucroDe(por, c); if (l != null && l < 0) ruim++; return `<div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;font-size:14px"><span>${esc(p.nome)}</span><span><s style="color:var(--texto2)">${brl(p.preco)}</s> <b style="color:var(--marca)">${brl(por)}</b></span><b style="color:${corLucro(l, p.custo ? num(p.custo.horas) : null)}">${l == null ? 'sem custo' : 'lucro ' + brl(l)}</b></div>`; }).join('');
+  const prev = afet.slice(0, 8).map((p) => { const por = comDesconto(rasc, Number(p.preco)); const c = custoDoProduto(p); const l = lucroDe(por, c); if (l != null && l < 0) ruim++; return `<div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;font-size:14px"><span>${esc(p.nome)}</span><span><s style="color:var(--texto2)">${brl(p.preco)}</s> <b style="color:var(--marca)">${brl(por)}</b></span><b style="color:${corLucro(l, p.custo ? num(p.custo.horas) : null)}">${l == null ? 'sem custo' : 'lucro ' + brl(l)}</b></div>`; }).join('');
   return `<div class="veu" data-fecharpromo></div><form class="modal" id="f-promo" role="dialog" aria-modal="true" aria-labelledby="t-promo"><h2 id="t-promo">Nova promoção</h2>
     <label class="campo">Nome<input name="nome" value="${esc(m.nome)}" required placeholder="Ex.: Semana da fé"></label>
     <div class="linha"><label class="campo">Tipo de desconto<select name="tipo"><option value="percentual" ${m.tipo === 'percentual' ? 'selected' : ''}>Porcentagem (%)</option><option value="valor" ${m.tipo === 'valor' ? 'selected' : ''}>Valor em reais</option></select></label><label class="campo">Desconto<input name="valor" inputmode="decimal" value="${esc(m.valor)}" required></label></div>
@@ -335,8 +338,8 @@ function opLinha(o) {
   return `<div class="linha op-linha" style="align-items:flex-end"><label class="campo">Nome do kit ou opção<input name="op_nome" value="${esc(o.nome)}" placeholder="Kit com 5"></label><label class="campo" style="flex:0 0 150px">Preço (R$)<input name="op_preco" inputmode="decimal" value="${esc(o.preco)}" placeholder="98,90"></label><button type="button" class="icone" data-delop aria-label="Remover esta opção" style="color:var(--erro);flex:0 0 44px;width:44px;height:44px">×</button></div>`;
 }
 function edDe(p) {
-  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })) }
-    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [] };
+  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })) }
+    : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', mao_obra_min: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [] };
 }
 async function salvaProduto(f) {
   const v = Object.fromEntries(new FormData(f));
@@ -356,7 +359,7 @@ async function salvaProduto(f) {
   const apaga = await sb.from('produto_opcoes').delete().eq('produto_id', id);
   if (apaga.error) { aviso('Não salvou os kits: ' + apaga.error.message); return; }
   if (ops.length) { const ins = await sb.from('produto_opcoes').insert(ops.map((o, i) => ({ produto_id: id, nome: o.nome, preco: o.preco, ordem: i }))); if (ins.error) { aviso('Não salvou os kits: ' + ins.error.message); return; } }
-  await sb.from('produto_custos').upsert({ produto_id: id, gramas: num(v.gramas), horas: num(v.horas), insumos: num(v.insumos) || 0, fonte: v.fonte, atualizado_em: new Date().toISOString() });
+  await sb.from('produto_custos').upsert({ produto_id: id, gramas: num(v.gramas), horas: num(v.horas), insumos: num(v.insumos) || 0, mao_obra_min: num(v.mao_obra_min) ? Math.round(num(v.mao_obra_min)) : null, fonte: v.fonte, atualizado_em: new Date().toISOString() });
   await carregaTudo(); E.ed = E.ed.id ? null : edDe(E.prods.find((p) => p.id === id)); desenha(); aviso('Produto salvo. Já aparece no site.');
 }
 async function sobeArquivos(files) {
@@ -416,7 +419,7 @@ document.addEventListener('input', (e) => {
   if (t.id === 'busca') { E.busca = t.value; desenha(); }
   if (t.id === 's-nova') { E.novaSenha = t.value; desenha(); }
   if (t.id === 's-conf') { E.confSenha = t.value; desenha(); }
-  if (E.ed && t.form && t.form.id === 'f-produto' && ['gramas', 'horas', 'insumos', 'preco'].indexOf(t.name) >= 0) { E.ed[t.name] = t.value; $('#custo-vivo').innerHTML = custoHTML(E.ed); }
+  if (E.ed && t.form && t.form.id === 'f-produto' && ['gramas', 'horas', 'insumos', 'mao_obra_min', 'preco'].indexOf(t.name) >= 0) { E.ed[t.name] = t.value; $('#custo-vivo').innerHTML = custoHTML(E.ed); }
   if (E.ed && t.form && t.form.id === 'f-produto' && t.name === 'nome' && !E.ed.id) { const s = $('#camada [name=slug]'); if (s && (!s.dataset.mexeu)) s.value = slugify(t.value); }
   if (t.form && t.form.id === 'f-produto' && t.name === 'slug') t.dataset.mexeu = '1';
 });
