@@ -41,6 +41,8 @@ try:
                  'foto': (sorted(p['produto_fotos'], key=lambda f: f['ordem']) or [{'caminho': ''}])[0]['caminho']} for p in prods]
     print('Lendo do Supabase:', len(produtos), 'produtos')
 except Exception as e:
+    if os.environ.get('MIMORI_EXIGE_BANCO'):
+        raise SystemExit('Supabase indisponível; nada foi gerado para não publicar catálogo velho: ' + str(e))
     print('Supabase indisponível, usando data/catalogo.json:', e)
     d = json.load(open(os.path.join(RAIZ, 'data', 'catalogo.json'), encoding='utf-8'))
     cats = d['categorias']
@@ -95,7 +97,7 @@ def pagina(caminho, titulo, descricao, corpo, imagem=''):
     open(os.path.join(pasta, 'index.html'), 'w', encoding='utf-8').write(h)
 
 # limpa páginas geradas antes (marcadas com o arquivo .gerada)
-for slug in [c['slug'] for c in cats] + ['catalogo', 'presentes', 'personalizados', 'para-empresas']:
+for slug in [c['slug'] for c in cats] + ['catalogo', 'presentes', 'datas-especiais', 'personalizados', 'para-empresas']:
     p = os.path.join(RAIZ, slug)
     if os.path.isdir(p) and os.path.exists(os.path.join(p, '.gerada')):
         shutil.rmtree(p)
@@ -111,7 +113,8 @@ pagina('', 'Mimori · Seu mundo em 3D',
 urls = ['']
 
 FIXAS = {'catalogo': ('Catálogo · Mimori', 'Todas as peças da Mimori: decoração, religiosos, vasos, chaveiros e brinquedos sensoriais em 3D. Monte a lista e feche no WhatsApp.'),
-         'presentes': ('Ideias de presente · Mimori', 'Ache o presente certo por quem vai ganhar e por quanto você quer gastar. Peças em 3D com a cara de quem você ama.'),
+         'presentes': ('Presentes · Mimori', 'Presentes em 3D para mãe, avó, amigos, casa nova e quem ama plantas. Filtre por quem vai ganhar e por quanto você quer gastar.'),
+         'datas-especiais': ('Datas especiais · Mimori', 'Dia das Crianças, Halloween, Natal e outras datas: as peças em 3D que a gente separou pra cada uma.'),
          'personalizados': ('Personalizados · Mimori', 'Peças com nome, data, frase ou foto, feitas em 3D. A gente confirma a grafia antes de produzir.'),
          'para-empresas': ('Brindes para empresas · Mimori', 'Brindes com o logo da empresa e o nome de cada pessoa. Peça o orçamento pelo WhatsApp.')}
 for slug, (t, d) in FIXAS.items():

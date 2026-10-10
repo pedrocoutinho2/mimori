@@ -6,18 +6,18 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Painel · Mimori</title>
 <link rel="icon" href="../assets/logo-mimori.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600&family=Nunito+Sans:wght@400;600;700;800&display=swap">
 <style>
-:root{--papel:#FBFAFD;--tinta:#241F2E;--texto2:#6E6480;--titulo:#382B55;--marca:#6E5B98;--marca-escura:#4A396F;--suave:#E7E2F3;--suave2:#EFECF4;--borda:#E3E0E8;--ok:#1F7A4F;--atencao:#8A6A10;--erro:#C4442F;--f-marca:'Grandstander',ui-rounded,system-ui,sans-serif;--f-texto:'Nunito Sans',system-ui,sans-serif}
+:root{--papel:#FBFAFD;--tinta:#241F2E;--texto2:#6E6480;--titulo:#382B55;--marca:#6E5B98;--marca-escura:#4A396F;--suave:#E7E2F3;--suave2:#EFECF4;--borda:#E3E0E8;--ok:#1F7A4F;--atencao:#8A6A10;--erro:#C4442F;--f-marca:'Grandstander',ui-rounded,system-ui,sans-serif;--f-ui:'Nunito Sans',system-ui,sans-serif;--f-texto:'Nunito Sans',system-ui,sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--f-texto);font-size:15.5px;line-height:1.5}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--marca);outline-offset:2px}
-h1,h2,h3{font-family:var(--f-marca);color:var(--titulo);margin:0;line-height:1.1}
+h1,h2,h3{font-family:var(--f-marca);font-weight:600;color:var(--titulo);margin:0;line-height:1.1}
 h1{font-size:30px}h2{font-size:22px}h3{font-size:18px}
 .sub{margin:4px 0 0;color:var(--texto2)}
-.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:0;border-radius:999px;background:var(--marca);color:#fff;font-family:var(--f-marca);font-weight:700;font-size:15px;text-decoration:none}
+.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:0;border-radius:999px;background:var(--marca);color:#fff;font-family:var(--f-ui);font-weight:700;font-size:15px;text-decoration:none}
 .btn:hover{background:var(--marca-escura)}
 .btn.claro{background:#fff;color:var(--marca-escura);border:1px solid #D0C5E7}
 .btn.perigo{background:#fff;color:var(--erro);border:1px solid #F0C9C1}
@@ -33,13 +33,13 @@ h1{font-size:30px}h2{font-size:22px}h3{font-size:18px}
 .app{display:flex;min-height:100vh}
 .lado{flex:0 0 232px;background:#fff;border-right:1px solid var(--borda);padding:22px 14px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh}
 .lado nav{display:flex;flex-direction:column;gap:4px}
-.lado nav button{min-height:44px;text-align:left;padding:0 14px;border:0;border-radius:12px;background:transparent;font-family:var(--f-marca);font-weight:700;font-size:15.5px}
+.lado nav button{min-height:44px;text-align:left;padding:0 14px;border:0;border-radius:12px;background:transparent;font-family:var(--f-ui);font-weight:700;font-size:15.5px}
 .lado nav button[aria-current=page]{background:var(--suave);color:var(--marca-escura)}
 .corpo{flex:1;min-width:0;padding:28px 36px 60px;display:flex;flex-direction:column;gap:18px}
 .topo-sec{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
 .thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--suave2);border:1px solid var(--borda);flex-shrink:0}
 .veu{position:fixed;inset:0;background:rgba(36,31,46,.4);z-index:40}
-.gaveta{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);z-index:50;background:var(--papel);padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;box-shadow:-18px 0 48px rgba(36,31,46,.18)}
+.gaveta{animation:entra .42s cubic-bezier(.22,1,.36,1);position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);z-index:50;background:var(--papel);padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;box-shadow:-18px 0 48px rgba(36,31,46,.18)}
 .modal{position:fixed;top:40px;left:50%;transform:translateX(-50%);width:min(640px,94%);max-height:calc(100% - 80px);overflow-y:auto;z-index:50;background:#fff;border-radius:22px;padding:26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 64px rgba(36,31,46,.24)}
 .bloco{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
@@ -52,11 +52,18 @@ dl.custo{margin:0;display:grid;grid-template-columns:1fr auto;gap:5px 16px;font-
 dl.custo dt{color:var(--texto2)}dl.custo dd{margin:0;text-align:right}
 dl.custo .total{color:var(--tinta);font-weight:700}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
-.kpis .card{padding:16px}.kpis b{display:block;font-family:var(--f-marca);font-size:28px;color:var(--titulo)}
+.kpis .card{padding:16px}.kpis b{display:block;font-family:var(--f-ui);font-size:28px;color:var(--titulo)}
 .barra{height:8px;border-radius:999px;background:var(--suave2);overflow:hidden}.barra i{display:block;height:100%;background:var(--marca);border-radius:999px}
 .grade2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .aviso{padding:10px 14px;border-radius:12px;font-weight:700;font-size:14px}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;padding:12px 20px;border-radius:999px;background:var(--tinta);color:#fff;font-weight:700}
+@keyframes entra{from{transform:translateX(100%)}to{transform:none}}
+.veu{animation:aparece .3s ease}@keyframes aparece{from{opacity:0}}
+.vit-item{display:flex;align-items:center;gap:10px;padding:6px;border:1px solid var(--borda);border-radius:12px;background:#fff}
+.vit-item span{flex:1;min-width:0;font-weight:700;font-size:14.5px}
+.sugest{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow:auto}
+.sugest button{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--borda);border-radius:10px;background:#fff;padding:6px}
+.sugest button:hover{background:var(--suave)}
 .login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .login .card{width:min(440px,100%);padding:34px;display:flex;flex-direction:column;gap:16px}
 @media (max-width:820px){.app{flex-direction:column}.lado{position:static;height:auto;flex-basis:auto;flex-direction:row;flex-wrap:wrap;align-items:center}.lado nav{flex-direction:row;flex-wrap:wrap}.corpo{padding:20px 16px}}
@@ -81,7 +88,7 @@ const fotoUrl = (c) => (!c ? '' : /^https?:/.test(c) ? c : /^assets\//.test(c) ?
 const hoje = () => new Date().toISOString().slice(0, 10);
 
 let sb = null;
-const E = { tela: 'carregando', aba: 'produtos', eu: null, papel: '', cats: [], prods: [], par: null, promos: [], usuarios: [], busca: '', filtroCat: '', ed: null, promo: null, periodo: 30, rel: null, erro: '', toast: '', novaSenha: '', confSenha: '', convite: null };
+const E = { cols: [], vitrineOk: false, col: null, colBusca: '', tela: 'carregando', aba: 'produtos', eu: null, papel: '', cats: [], prods: [], par: null, promos: [], usuarios: [], busca: '', filtroCat: '', ed: null, promo: null, periodo: 30, rel: null, erro: '', toast: '', novaSenha: '', confSenha: '', convite: null };
 let toastT;
 function aviso(t) { E.toast = t; clearTimeout(toastT); toastT = setTimeout(() => { E.toast = ''; desenhaToast(); }, 2800); desenhaToast(); }
 function desenhaToast() { const a = $('#toast-area'); if (a) a.innerHTML = E.toast ? `<div class="toast" role="status">${esc(E.toast)}</div>` : ''; }
@@ -105,13 +112,16 @@ const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' 
 async function carregaTudo() {
   const [cats, prods, par, promos, usu] = await Promise.all([
     sb.from('categorias').select('id,slug,nome,ordem').order('ordem'),
-    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),faixas,faixa_consulta,produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
+    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,atualizado_em,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),faixas,faixa_consulta,produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
     sb.from('parametros_custo').select('*').eq('id', 1).single(),
     sb.from('promocoes').select('*').order('inicio', { ascending: false }),
     sb.from('painel_usuarios').select('*').order('criado_em')
   ]);
   for (const r of [cats, prods, par, promos, usu]) if (r.error) throw r.error;
   E.cats = cats.data; E.par = par.data; E.promos = promos.data; E.usuarios = usu.data;
+  const cols = await sb.from('colecoes').select('*,colecao_produtos(produto_id,ordem)').order('ordem');
+  E.vitrineOk = !cols.error && (cols.data || []).some((c) => c.tipo);
+  E.cols = E.vitrineOk ? cols.data.map((c) => ({ ...c, itens: (c.colecao_produtos || []).sort((a, b) => a.ordem - b.ordem).map((x) => x.produto_id) })) : [];
   E.prods = prods.data.map((p) => ({ ...p, custo: Array.isArray(p.produto_custos) ? p.produto_custos[0] : p.produto_custos, fotos: (p.produto_fotos || []).sort((a, b) => a.ordem - b.ordem), videos: (p.produto_videos || []).sort((a, b) => a.ordem - b.ordem), cores: (p.variacoes || []).sort((a, b) => a.ordem - b.ordem).map((v) => v.cor), opcoes: (p.produto_opcoes || []).sort((a, b) => a.ordem - b.ordem) }));
 }
 const catNome = (id) => (E.cats.find((c) => c.id === id) || {}).nome || '';
@@ -138,8 +148,8 @@ function telaCriarSenha() {
     <button class="btn" type="submit">Salvar senha e entrar</button></form></div>`;
 }
 function telaApp() {
-  const abas = [['produtos', 'Produtos'], ['promocoes', 'Promoções'], ['relatorios', 'Relatórios']].concat(E.papel === 'admin' ? [['usuarios', 'Usuários']] : []).concat([['conta', 'Minha conta']]);
-  const corpo = { produtos: abaProdutos, promocoes: abaPromocoes, relatorios: abaRelatorios, usuarios: abaUsuarios, conta: abaConta }[E.aba]();
+  const abas = [['produtos', 'Produtos'], ['vitrine', 'Vitrine'], ['promocoes', 'Promoções'], ['relatorios', 'Relatórios']].concat(E.papel === 'admin' ? [['usuarios', 'Usuários']] : []).concat([['conta', 'Minha conta']]);
+  const corpo = { produtos: abaProdutos, vitrine: abaVitrine, promocoes: abaPromocoes, relatorios: abaRelatorios, usuarios: abaUsuarios, conta: abaConta }[E.aba]();
   return `<div class="app"><aside class="lado"><img src="../assets/logo-mimori.svg" alt="Mimori" style="height:34px;width:auto;align-self:flex-start;margin-left:8px">
     <nav aria-label="Painel">${abas.map((a) => `<button type="button" data-aba="${a[0]}" aria-current="${E.aba === a[0] ? 'page' : 'false'}">${a[1]}</button>`).join('')}</nav>
     <div style="margin-top:auto;font-size:13px;color:var(--texto2)">Conectado como<br><b style="color:var(--tinta);word-break:break-all">${esc(E.eu.email)}</b><br><button class="btn claro mini" type="button" id="sair" style="margin-top:8px">Sair</button></div></aside>
@@ -157,10 +167,10 @@ function abaProdutos() {
     const pv = vigente(p), preco = pv ? pv.v : Number(p.preco), c = custoDoProduto(p), l = lucroDe(preco, c), h = p.custo ? num(p.custo.horas) : null;
     const reais = p.fotos.filter((f) => f.tipo === 'real').length;
     const ft = !p.fotos.length ? ['Sem foto', '#FBE3DF', 'var(--erro)'] : reais ? ['Foto real', '#E1F2E8', 'var(--ok)'] : ['Foto do criador', '#FFF4D6', 'var(--atencao)'];
-    return `<tr><td><span style="display:flex;align-items:center;gap:12px">${p.fotos[0] ? `<img class="thumb" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb"></span>'}<span><b style="font-family:var(--f-marca)">${esc(p.nome)}</b><br><small style="color:var(--texto2)">${esc(p.sku || 'sem código')}</small></span></span></td>
+    return `<tr><td><span style="display:flex;align-items:center;gap:12px">${p.fotos[0] ? `<img class="thumb" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb"></span>'}<span><b style="font-family:var(--f-ui)">${esc(p.nome)}</b><br><small style="color:var(--texto2)">${esc(p.sku || 'sem código')}</small></span></span></td>
       <td style="color:var(--texto2)">${esc(catNome(p.categoria_id))}</td>
-      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-marca);color:var(--marca)">${brl(preco)}</b>${p.opcoes && p.opcoes.length ? `<br><small style="color:var(--texto2)">${p.opcoes.length} ${p.opcoes.length === 1 ? 'opção' : 'opções'}</small>` : ''}${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
-      <td style="white-space:nowrap"><b style="font-family:var(--f-marca);color:${corLucro(l, h)}">${l == null ? 'sem custo' : brl(l)}</b><br><small style="color:var(--texto2)">${l == null ? 'falta peso e tempo' : Math.round(l / preco * 100) + '% · ' + brl(l / h) + '/h'}</small></td>
+      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-ui);color:var(--marca)">${brl(preco)}</b>${p.opcoes && p.opcoes.length ? `<br><small style="color:var(--texto2)">${p.opcoes.length} ${p.opcoes.length === 1 ? 'opção' : 'opções'}</small>` : ''}${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
+      <td style="white-space:nowrap"><b style="font-family:var(--f-ui);color:${corLucro(l, h)}">${l == null ? 'sem custo' : brl(l)}</b><br><small style="color:var(--texto2)">${l == null ? 'falta peso e tempo' : Math.round(l / preco * 100) + '% · ' + brl(l / h) + '/h'}</small></td>
       <td><span class="pil" style="background:${ft[1]};color:${ft[2]}">${ft[0]}</span></td>
       <td><span class="pil" style="background:${p.publicado ? 'var(--suave)' : 'var(--suave2)'};color:${p.publicado ? 'var(--marca-escura)' : 'var(--texto2)'}">${p.publicado ? 'Publicado' : 'Oculto'}</span></td>
       <td style="text-align:right"><button class="btn claro mini" type="button" data-editar="${p.id}">Editar</button></td></tr>`;
@@ -205,13 +215,65 @@ function gavetaProduto() {
     <div style="display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--borda);padding-top:12px"><button class="btn" type="submit">Salvar</button><button class="btn claro" type="button" data-fechar>Cancelar</button></div>
   </form></aside>`;
 }
+function abaVitrine() {
+  if (!E.vitrineOk) return `<div><h1>Vitrine</h1><p class="sub">Prateleiras da home e datas especiais.</p></div><div class="card" style="padding:20px;max-width:640px"><p style="margin:0">A vitrine ainda está no arquivo do site. Para editar por aqui, aplique o <b>sql/017_vitrine_no_banco_e_salvar_produto.sql</b> no SQL Editor do Supabase. Enquanto isso, o site continua usando o arquivo.</p></div>`;
+  const dt = (d) => (d ? d.split('-').reverse().join('/') : '');
+  const linha = (c) => { const ativa = c.tipo === 'data' && c.inicio && c.fim && hoje() >= c.inicio && hoje() <= c.fim;
+    return `<tr><td><b>${esc(c.titulo || c.nome)}</b><br><small style="color:var(--texto2)">${esc(c.slug)}</small></td><td>${c.tipo === 'data' ? `${dt(c.inicio)} a ${dt(c.fim)}` : 'Home'}</td><td>${c.itens.filter((i) => E.prods.some((p) => p.id === i && p.publicado)).length} no site${c.itens.length !== c.itens.filter((i) => E.prods.some((p) => p.id === i && p.publicado)).length ? ` <small style="color:var(--atencao)">(${c.itens.length - c.itens.filter((i) => E.prods.some((p) => p.id === i && p.publicado)).length} fora)</small>` : ''}</td><td>${c.publicado === false ? '<span class="pil" style="background:var(--suave2);color:var(--texto2)">Escondida</span>' : ativa ? '<span class="pil" style="background:#E1F2E8;color:var(--ok)">No ar agora</span>' : c.tipo === 'data' ? (hoje() > c.fim ? '<span class="pil" style="background:var(--suave2);color:var(--texto2)">Passou</span>' : '<span class="pil" style="background:var(--suave);color:var(--marca-escura)">Agendada</span>') : '<span class="pil" style="background:#E1F2E8;color:var(--ok)">Na home</span>'}</td><td style="text-align:right"><button class="btn claro mini" type="button" data-editcol="${c.id}">Editar</button></td></tr>`; };
+  const tab = (t, lista) => `<div class="card" style="overflow-x:auto"><div style="padding:16px 16px 0"><h3>${t}</h3></div><table class="tabela" style="min-width:640px"><thead><tr><th>Nome</th><th>Quando</th><th>Peças</th><th>Situação</th><th></th></tr></thead><tbody>${lista.map(linha).join('') || '<tr><td colspan="5" style="color:var(--texto2)">Nenhuma ainda.</td></tr>'}</tbody></table></div>`;
+  return `<div class="topo-sec"><div><h1>Vitrine</h1><p class="sub">O que aparece na home e na página de datas especiais. Salvou aqui, o site já mostra.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn claro" type="button" data-novacol="prateleira">+ Prateleira</button><button class="btn" type="button" data-novacol="data">+ Data especial</button></div></div>
+    ${tab('Datas especiais', E.cols.filter((c) => c.tipo === 'data').sort((a, b) => (a.inicio < b.inicio ? -1 : 1)))}${tab('Prateleiras da home', E.cols.filter((c) => c.tipo !== 'data'))}`;
+}
+const COR_PADRAO = { fundo: '#E7E2F3', texto: '#241F2E', titulo: '#382B55', selo: '#FFFFFF', seloTexto: '#4A396F', cta: '#6E5B98', ctaTexto: '#FFFFFF' };
+function gavetaColecao() {
+  const c = E.col, data = c.tipo === 'data';
+  const pecas = c.itens.map((id) => E.prods.find((p) => p.id === id)).filter(Boolean);
+  const b = E.colBusca.toLowerCase();
+  const sug = b ? E.prods.filter((p) => c.itens.indexOf(p.id) < 0 && p.nome.toLowerCase().indexOf(b) >= 0).slice(0, 8) : [];
+  const cor = Object.assign({}, COR_PADRAO, c.cor || {});
+  const campoCor = (k, t) => `<label class="campo" style="flex:1 1 120px">${t}<input type="color" name="cor_${k}" value="${esc(cor[k])}" style="padding:4px;height:44px"></label>`;
+  return `<div class="veu" data-fecharcol></div><aside class="gaveta" role="dialog" aria-modal="true" aria-labelledby="t-col"><form id="f-col" style="display:flex;flex-direction:column;gap:14px">
+    <div class="topo-sec"><h2 id="t-col">${c.id ? 'Editar' : 'Nova'} ${data ? 'data especial' : 'prateleira'}</h2><button type="button" class="btn claro mini" data-fecharcol>Fechar</button></div>
+    <label class="campo">Título<input name="titulo" value="${esc(c.titulo || '')}" required maxlength="60"></label>
+    <label class="campo">Texto<textarea name="texto" rows="3" maxlength="240">${esc(c.texto || '')}</textarea></label>
+    ${data ? `<div class="linha"><label class="campo">Começa a aparecer em<input type="date" name="inicio" value="${esc(c.inicio || '')}" required></label><label class="campo">Sai do ar depois de<input type="date" name="fim" value="${esc(c.fim || '')}" required></label></div>
+    <div class="linha"><label class="campo">Selo da data<input name="rotulo" value="${esc(c.rotulo || '')}" placeholder="Natal, 25/12" maxlength="40"></label><label class="campo">Frase da faixa do topo<input name="faixa" value="${esc(c.faixa || '')}" placeholder="Natal é 25/12." maxlength="60"></label></div>
+    <label class="campo">Texto do botão<input name="cta" value="${esc(c.cta || '')}" placeholder="Ver presentes de Natal" maxlength="40"></label>
+    <div class="bloco"><b>Cores do bloco</b><div class="linha">${campoCor('fundo', 'Fundo')}${campoCor('titulo', 'Título')}${campoCor('texto', 'Texto')}${campoCor('cta', 'Botão')}${campoCor('ctaTexto', 'Texto do botão')}${campoCor('selo', 'Selo')}${campoCor('seloTexto', 'Texto do selo')}</div></div>`
+    : `<label class="campo">Link do “ver mais” (opcional)<input name="link" value="${esc(c.link || '')}" placeholder="vasos-de-planta"></label>`}
+    <div class="bloco"><b>Peças (${pecas.length})</b>
+      ${pecas.map((p, i) => `<div class="vit-item">${p.fotos[0] ? `<img class="thumb" style="width:40px;height:40px" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb" style="width:40px;height:40px"></span>'}<span>${esc(p.nome)}${p.publicado ? '' : ' <small style="color:var(--atencao)">(fora do site)</small>'}</span><button type="button" class="icone" data-colmover="${i}" data-d="-1" aria-label="Subir">↑</button><button type="button" class="icone" data-colmover="${i}" data-d="1" aria-label="Descer">↓</button><button type="button" class="icone" data-coltira="${p.id}" aria-label="Tirar" style="color:var(--erro)">×</button></div>`).join('') || '<p style="margin:0;color:var(--texto2)">Nenhuma peça ainda.</p>'}
+      <input type="search" id="col-busca" value="${esc(E.colBusca)}" placeholder="Buscar peça para incluir" style="min-height:44px;padding:0 14px;border-radius:12px;border:1px solid #D0C5E7">
+      ${sug.length ? `<div class="sugest">${sug.map((p) => `<button type="button" data-colpoe="${p.id}">${p.fotos[0] ? `<img class="thumb" style="width:36px;height:36px" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : ''}<span>${esc(p.nome)}</span></button>`).join('')}</div>` : ''}
+    </div>
+    <label style="display:flex;align-items:center;gap:10px;font-weight:700"><input type="checkbox" name="publicado" ${c.publicado !== false ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--marca)">Mostrar no site</label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--borda);padding-top:12px"><button class="btn" type="submit">Salvar</button><button class="btn claro" type="button" data-fecharcol>Cancelar</button></div>
+  </form></aside>`;
+}
+function guardaCamposCol() {
+  const f = $('#f-col'); if (!f || !E.col) return;
+  const v = Object.fromEntries(new FormData(f));
+  ['titulo', 'texto', 'inicio', 'fim', 'rotulo', 'faixa', 'cta', 'link'].forEach((k) => { if (k in v) E.col[k] = v[k]; });
+  E.col.publicado = !!v.publicado;
+  if (E.col.tipo === 'data') { E.col.cor = {}; Object.keys(COR_PADRAO).forEach((k) => { E.col.cor[k] = v['cor_' + k] || COR_PADRAO[k]; }); }
+}
+async function salvaColecao() {
+  guardaCamposCol(); const c = E.col;
+  if (!c.titulo) { aviso('Preencha o título.'); return; }
+  if (c.tipo === 'data' && (!c.inicio || !c.fim || c.fim < c.inicio)) { aviso('Confira as datas.'); return; }
+  const corpo = { id: c.id || '', slug: c.slug || slugify(c.titulo), tipo: c.tipo, titulo: c.titulo, texto: c.texto || '', link: c.tipo === 'data' ? 'datas-especiais#' + (c.slug || slugify(c.titulo)) : (c.link || ''), cta: c.cta || '', rotulo: c.rotulo || '', faixa: c.faixa || '', inicio: c.inicio || '', fim: c.fim || '', publicado: c.publicado !== false, itens: c.itens };
+  if (c.tipo === 'data') corpo.cor = c.cor || COR_PADRAO;
+  const r = await sb.rpc('salvar_colecao', { c: corpo });
+  if (r.error) { aviso('Não salvou: ' + r.error.message); return; }
+  E.col = null; E.colBusca = ''; await carregaTudo(); desenha(); aviso('Vitrine salva. Já aparece no site.');
+}
 function abaPromocoes() {
   return `<div class="topo-sec"><div><h1>Promoções</h1><p class="sub">Desconto por produto, por categoria ou por tag, com data pra começar e acabar.</p></div><button class="btn" type="button" id="nova-promo">+ Nova promoção</button></div>
   <div class="card" style="overflow-x:auto"><table class="tabela"><thead><tr><th>Promoção</th><th>Desconto</th><th>Vale para</th><th>Período</th><th>Produtos</th><th>Situação</th><th></th></tr></thead><tbody>
   ${E.promos.map((pr) => { const s = situacao(pr); const cor = { Ativa: ['#E1F2E8', 'var(--ok)'], Agendada: ['var(--suave)', 'var(--marca-escura)'], Encerrada: ['var(--suave2)', 'var(--texto2)'], Pausada: ['#FFF4D6', 'var(--atencao)'] }[s];
     const alvo = pr.alvo_tipo === 'produto' ? 'Produto: ' + ((E.prods.find((p) => p.id === pr.alvo_produto) || {}).nome || '') : pr.alvo_tipo === 'categoria' ? 'Categoria: ' + catNome(pr.alvo_categoria) : 'Tag: ' + pr.alvo_tag;
     const dt = (d) => d.split('-').reverse().join('/');
-    return `<tr><td><b style="font-family:var(--f-marca)">${esc(pr.nome)}</b></td><td style="color:var(--marca);font-weight:700">${pr.tipo === 'percentual' ? Number(pr.valor) + '%' : brl(pr.valor) + ' a menos'}</td><td>${esc(alvo)}</td><td style="white-space:nowrap">${dt(pr.inicio)} a ${dt(pr.fim)}</td><td>${E.prods.filter((p) => atinge(pr, p)).length}</td><td><span class="pil" style="background:${cor[0]};color:${cor[1]}">${s}</span></td>
+    return `<tr><td><b style="font-family:var(--f-ui)">${esc(pr.nome)}</b></td><td style="color:var(--marca);font-weight:700">${pr.tipo === 'percentual' ? Number(pr.valor) + '%' : brl(pr.valor) + ' a menos'}</td><td>${esc(alvo)}</td><td style="white-space:nowrap">${dt(pr.inicio)} a ${dt(pr.fim)}</td><td>${E.prods.filter((p) => atinge(pr, p)).length}</td><td><span class="pil" style="background:${cor[0]};color:${cor[1]}">${s}</span></td>
       <td style="text-align:right;white-space:nowrap">${s !== 'Encerrada' ? `<button class="btn claro mini" type="button" data-pausar="${pr.id}">${pr.pausada ? 'Retomar' : 'Pausar'}</button>` : ''} <button class="btn perigo mini" type="button" data-apagarpromo="${pr.id}">Apagar</button></td></tr>`; }).join('') || '<tr><td colspan="7" style="color:var(--texto2)">Nenhuma promoção ainda.</td></tr>'}
   </tbody></table></div><p class="sub">Se duas promoções valem para o mesmo produto, o site usa a de maior desconto. O preço com desconto termina em ,90 e aparece com o preço antigo riscado.</p>`;
 }
@@ -227,7 +289,7 @@ function modalPromo() {
     <div class="linha"><label class="campo">Tipo de desconto<select name="tipo"><option value="percentual" ${m.tipo === 'percentual' ? 'selected' : ''}>Porcentagem (%)</option><option value="valor" ${m.tipo === 'valor' ? 'selected' : ''}>Valor em reais</option></select></label><label class="campo">Desconto<input name="valor" inputmode="decimal" value="${esc(m.valor)}" required></label></div>
     <div class="linha"><label class="campo">Vale para<select name="alvo_tipo"><option value="produto" ${m.alvo_tipo === 'produto' ? 'selected' : ''}>Um produto</option><option value="categoria" ${m.alvo_tipo === 'categoria' ? 'selected' : ''}>Uma categoria</option><option value="tag" ${m.alvo_tipo === 'tag' ? 'selected' : ''}>Uma tag</option></select></label><label class="campo">Qual<select name="alvo">${opcoes.map((o) => `<option value="${esc(o[0])}" ${String(m.alvo) === String(o[0]) ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select></label></div>
     <div class="linha"><label class="campo">Começa em<input type="date" name="inicio" value="${esc(m.inicio)}" required></label><label class="campo">Termina em<input type="date" name="fim" value="${esc(m.fim)}" required></label></div>
-    <div class="bloco"><b style="font-family:var(--f-marca)">${afet.length} ${afet.length === 1 ? 'produto entra' : 'produtos entram'} nessa promoção</b>${prev}${ruim ? `<p role="alert" style="margin:0;color:var(--erro);font-weight:700">${ruim} ${ruim === 1 ? 'produto fica' : 'produtos ficam'} com prejuízo.</p>` : ''}</div>
+    <div class="bloco"><b style="font-family:var(--f-ui)">${afet.length} ${afet.length === 1 ? 'produto entra' : 'produtos entram'} nessa promoção</b>${prev}${ruim ? `<p role="alert" style="margin:0;color:var(--erro);font-weight:700">${ruim} ${ruim === 1 ? 'produto fica' : 'produtos ficam'} com prejuízo.</p>` : ''}</div>
     <div style="display:flex;gap:10px"><button class="btn" type="submit">Criar promoção</button><button class="btn claro" type="button" data-fecharpromo>Cancelar</button></div></form>`;
 }
 function abaRelatorios() {
@@ -239,7 +301,7 @@ function abaRelatorios() {
   return `<div class="topo-sec"><div><h1>Relatórios</h1><p class="sub">Visitas, cliques e o caminho até o pedido no WhatsApp.</p></div>${per}</div>
     <div class="kpis">${[['Visitas', r.visitas], ['Produtos vistos', r.vistos], ['Adicionados à lista', r.lista], ['Listas enviadas no WhatsApp', r.enviadas], ['Conversão', pct(r.sessEnv, r.sessVis)]].map((k) => `<div class="card"><span style="font-size:13.5px;font-weight:700;color:var(--texto2)">${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>
     <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px"><h3>Do clique ao pedido (pessoas)</h3>${[['Visitaram o site', r.sessVis], ['Viram um produto', r.sessProd], ['Adicionaram à lista', r.sessLista], ['Enviaram no WhatsApp', r.sessEnv]].map((e, i, a) => `<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:12px;align-items:center"><span>${e[0]}</span><div class="barra" style="height:22px"><i style="width:${r.sessVis ? Math.round(e[1] / r.sessVis * 100) : 0}%"></i></div><span style="text-align:right"><b>${e[1]}</b> ${i ? '<small style="color:var(--texto2)">' + pct(e[1], a[i - 1][1]) + '</small>' : ''}</span></div>`).join('')}</div>
-    <div class="card" style="overflow-x:auto"><div style="padding:16px 16px 0"><h3>Produtos</h3></div><table class="tabela" style="min-width:640px"><thead><tr><th>Produto</th><th>Visitas</th><th>Na lista</th><th>No WhatsApp</th><th>Conversão</th></tr></thead><tbody>${r.produtos.map((p) => `<tr><td><b style="font-family:var(--f-marca)">${esc(p[0])}</b></td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td><td style="color:var(--ok);font-weight:700">${pct(p[3], p[1])}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--texto2)">Sem dados no período.</td></tr>'}</tbody></table></div>
+    <div class="card" style="overflow-x:auto"><div style="padding:16px 16px 0"><h3>Produtos</h3></div><table class="tabela" style="min-width:640px"><thead><tr><th>Produto</th><th>Visitas</th><th>Na lista</th><th>No WhatsApp</th><th>Conversão</th></tr></thead><tbody>${r.produtos.map((p) => `<tr><td><b style="font-family:var(--f-ui)">${esc(p[0])}</b></td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td><td style="color:var(--ok);font-weight:700">${pct(p[3], p[1])}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--texto2)">Sem dados no período.</td></tr>'}</tbody></table></div>
     <div class="grade2">${barras('Páginas mais vistas', r.paginas)}${barras('De onde vêm as visitas', r.origens)}${barras('Cliques no WhatsApp', r.botoes)}${barras('O que mais buscam', r.buscas)}</div>
     <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:10px"><h3>Buscas sem resultado</h3><p class="sub" style="margin:0">O que as pessoas procuram e a Mimori ainda não tem.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${r.semResultado.map((b) => `<span class="pil" style="background:#FBE3DF;color:var(--erro)">${esc(b[0])} · ${b[1]}</span>`).join('') || '<span style="color:var(--texto2)">Nenhuma.</span>'}</div></div>`;
 }
@@ -268,7 +330,7 @@ async function carregaRelatorio() {
 function abaUsuarios() {
   return `<div class="topo-sec"><div><h1>Usuários</h1><p class="sub">Quem pode entrar no painel e mudar produtos.</p></div><button class="btn" type="button" id="novo-usuario">+ Adicionar usuário</button></div>
   <div class="card" style="overflow-x:auto"><table class="tabela" style="min-width:640px"><thead><tr><th>Nome</th><th>E-mail</th><th>Acesso</th><th></th></tr></thead><tbody>
-  ${E.usuarios.map((u) => `<tr><td><b style="font-family:var(--f-marca)">${esc(u.nome || '')}</b></td><td style="color:var(--texto2)">${esc(u.email)}</td><td>${u.papel === 'admin' ? 'Administrador' : 'Editor'}</td><td style="text-align:right">${u.user_id !== E.eu.id ? `<button class="btn perigo mini" type="button" data-remover="${esc(u.email)}">Remover acesso</button>` : ''}</td></tr>`).join('')}
+  ${E.usuarios.map((u) => `<tr><td><b style="font-family:var(--f-ui)">${esc(u.nome || '')}</b></td><td style="color:var(--texto2)">${esc(u.email)}</td><td>${u.papel === 'admin' ? 'Administrador' : 'Editor'}</td><td style="text-align:right">${u.user_id !== E.eu.id ? `<button class="btn perigo mini" type="button" data-remover="${esc(u.email)}">Remover acesso</button>` : ''}</td></tr>`).join('')}
   </tbody></table></div><p class="sub">Quem é adicionado recebe um e-mail para criar a própria senha. Ninguém define a senha de outra pessoa.</p>
   ${E.convite ? `<div class="veu" data-fecharconvite></div><form class="modal" id="f-convite" role="dialog" aria-modal="true" aria-labelledby="t-conv"><h2 id="t-conv">Adicionar usuário</h2>
     <label class="campo">Nome<input name="nome" required></label><label class="campo">E-mail<input name="email" type="email" required></label>
@@ -299,6 +361,7 @@ function desenhaCamada() {
   let h = '';
   if (E.tela === 'app' && E.ed) h += gavetaProduto();
   if (E.tela === 'app' && E.promo) h += modalPromo();
+  if (E.tela === 'app' && E.col) h += gavetaColecao();
   const ativo = document.activeElement; const nome = ativo && ativo.name; const pos = ativo && ativo.selectionStart;
   $('#camada').innerHTML = h;
   if (nome && ativo.closest && ativo.closest('#camada') === null && $('#camada [name="' + nome + '"]')) { const el = $('#camada [name="' + nome + '"]'); el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) {} }
@@ -341,7 +404,7 @@ function opLinha(o) {
   return `<div class="linha op-linha" style="align-items:flex-end"><label class="campo">Nome do kit ou opção<input name="op_nome" value="${esc(o.nome)}" placeholder="Kit com 5"></label><label class="campo" style="flex:0 0 150px">Preço (R$)<input name="op_preco" inputmode="decimal" value="${esc(o.preco)}" placeholder="98,90"></label><button type="button" class="icone" data-delop aria-label="Remover esta opção" style="color:var(--erro);flex:0 0 44px;width:44px;height:44px">×</button></div>`;
 }
 function edDe(p) {
-  return p ? { id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })), faixas: (p.faixas || []).map((x) => ({ min: String(x.min), preco: Number(x.preco).toFixed(2).replace('.', ',') })), consulta: p.faixa_consulta ? String(p.faixa_consulta) : '' }
+  return p ? { versao: p.atualizado_em, id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })), faixas: (p.faixas || []).map((x) => ({ min: String(x.min), preco: Number(x.preco).toFixed(2).replace('.', ',') })), consulta: p.faixa_consulta ? String(p.faixa_consulta) : '' }
     : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', mao_obra_min: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [], faixas: [], consulta: '' };
 }
 async function salvaProduto(f) {
@@ -355,6 +418,11 @@ async function salvaProduto(f) {
   if (new Set(ops.map((o) => o.nome.toLowerCase())).size !== ops.length) { aviso('Há dois kits com o mesmo nome.'); return; }
   const preco = ops.length ? Math.min(...ops.map((o) => o.preco)) : num(v.preco); if (!v.nome || preco == null) { aviso('Preencha nome e preço.'); return; }
   const linha = { nome: v.nome.trim(), slug: (v.slug || slugify(v.nome)).trim(), sku: v.sku || null, categoria_id: v.categoria_id, preco, selo: v.selo || null, descricao: v.descricao || '', publicado: !!v.publicado, a_partir: new Set(ops.map((o) => o.preco)).size > 1, tags: String(v.tags || '').split(',').map((t) => t.trim()).filter(Boolean), faixas, faixa_consulta: num(v.faixa_consulta) ? Math.round(num(v.faixa_consulta)) : null };
+  const coresN = String(v.cores || '').split(',').map((t) => t.trim()).filter(Boolean);
+  const custoN = { gramas: num(v.gramas), horas: num(v.horas), insumos: num(v.insumos) || 0, mao_obra_min: num(v.mao_obra_min) ? Math.round(num(v.mao_obra_min)) : null, fonte: v.fonte };
+  const rpc = await sb.rpc('salvar_produto', { p: { ...linha, id: E.ed.id || '', sku: linha.sku || '', selo: linha.selo || '', cores: coresN, opcoes: ops, custo: custoN }, p_versao: E.ed.versao || null });
+  if (!rpc.error) { const idN = rpc.data && rpc.data[0] && rpc.data[0].id; await carregaTudo(); E.ed = E.ed.id ? null : edDe(E.prods.find((p) => p.id === idN)); desenha(); aviso('Produto salvo. Já aparece no site.'); return; }
+  if (!/salvar_produto|PGRST202|could not find the function/i.test(rpc.error.message + ' ' + (rpc.error.code || ''))) { aviso(/conflito/i.test(rpc.error.message) ? rpc.error.message.replace(/^.*conflito:\s*/i, 'Não salvou: ') : 'Não salvou: ' + rpc.error.message); return; }
   let id = E.ed.id;
   const r = id ? await sb.from('produtos').update(linha).eq('id', id) : await sb.from('produtos').insert(linha).select('id').single();
   if (r.error) { aviso('Não salvou: ' + r.error.message); return; }
@@ -392,6 +460,7 @@ document.addEventListener('submit', async (e) => {
   if (f.id === 'f-login') { const v = Object.fromEntries(new FormData(f)); await entrar(v.email.trim(), v.senha); }
   if (f.id === 'f-criar') { const v = Object.fromEntries(new FormData(f)); if (v.s1 !== v.s2 || v.s1.length < 10 || !/[a-zA-Z]/.test(v.s1) || !/[0-9]/.test(v.s1)) { E.erro = 'A senha precisa ter 10 caracteres, letras e números, e as duas iguais.'; desenha(); return; } const { data, error } = await sb.auth.updateUser({ password: v.s1 }); if (error) { E.erro = error.message; desenha(); return; } history.replaceState({}, '', location.pathname); await abreSessao(data.user); }
   if (f.id === 'f-produto') await salvaProduto(f);
+  if (f.id === 'f-col') await salvaColecao();
   if (f.id === 'f-promo') { const v = Object.fromEntries(new FormData(f)); const valor = num(v.valor); if (!v.nome || !valor || !v.fim) { aviso('Preencha nome, desconto e datas.'); return; }
     const linha = { nome: v.nome, tipo: v.tipo, valor, alvo_tipo: v.alvo_tipo, alvo_produto: v.alvo_tipo === 'produto' ? v.alvo : null, alvo_categoria: v.alvo_tipo === 'categoria' ? v.alvo : null, alvo_tag: v.alvo_tipo === 'tag' ? v.alvo : null, inicio: v.inicio, fim: v.fim };
     const r = await sb.from('promocoes').insert(linha); if (r.error) { aviso('Não salvou: ' + r.error.message); return; } E.promo = null; await carregaTudo(); desenha(); aviso('Promoção criada.'); }
@@ -399,11 +468,17 @@ document.addEventListener('submit', async (e) => {
   if (f.id === 'f-senha') { const n = E.novaSenha; if (n.length < 10 || !/[a-zA-Z]/.test(n) || !/[0-9]/.test(n) || n !== E.confSenha) { aviso('A senha ainda não atende às regras.'); return; } const { error } = await sb.auth.updateUser({ password: n }); if (error) { aviso(error.message); return; } E.novaSenha = E.confSenha = ''; desenha(); aviso('Senha alterada.'); }
 });
 document.addEventListener('click', async (e) => {
-  const el = e.target.closest('button,[data-fechar],[data-fecharpromo],[data-fecharconvite]'); if (!el) return; const d = el.dataset;
+  const el = e.target.closest('button,[data-fechar],[data-fecharpromo],[data-fecharconvite],[data-fecharcol]'); if (!el) return; const d = el.dataset;
+  if (d.novacol) { E.col = { id: '', tipo: d.novacol, titulo: '', texto: '', itens: [], publicado: true, cor: d.novacol === 'data' ? { ...COR_PADRAO } : null, inicio: hoje(), fim: hoje() }; E.colBusca = ''; desenhaCamada(); return; }
+  if (d.editcol) { const c = E.cols.find((x) => x.id === d.editcol); E.col = { ...c, itens: c.itens.slice(), cor: c.cor ? { ...c.cor } : null }; E.colBusca = ''; desenhaCamada(); return; }
+  if (d.fecharcol != null) { E.col = null; desenhaCamada(); return; }
+  if (d.colpoe && E.col) { guardaCamposCol(); E.col.itens.push(d.colpoe); E.colBusca = ''; desenhaCamada(); const i = $('#col-busca'); if (i) i.focus(); return; }
+  if (d.coltira && E.col) { guardaCamposCol(); E.col.itens = E.col.itens.filter((x) => x !== d.coltira); desenhaCamada(); return; }
+  if (d.colmover && E.col) { guardaCamposCol(); const v = E.col.itens.filter((id) => E.prods.some((p) => p.id === id)); const i = Number(d.colmover), j = i + Number(d.d); if (j >= 0 && j < v.length) { [v[i], v[j]] = [v[j], v[i]]; E.col.itens = v; } desenhaCamada(); return; }
   if (el.id === 'esqueci') { const email = ($('#f-login [name=email]') || {}).value; if (!email) { E.erro = 'Digite o seu e-mail primeiro.'; desenha(); return; } await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); aviso('Se o e-mail tiver acesso, enviamos um link para criar uma nova senha.'); }
   if (el.id === 'importar') await importaCatalogo();
   if (el.id === 'sair') { await sb.auth.signOut(); E.tela = 'login'; desenha(); }
-  if (d.aba) { E.aba = d.aba; E.ed = E.promo = null; desenha(); if (d.aba === 'relatorios') carregaRelatorio(); }
+  if (d.aba) { E.aba = d.aba; E.ed = E.promo = E.col = null; desenha(); if (d.aba === 'relatorios') carregaRelatorio(); }
   if (d.editar) { E.ed = edDe(d.editar === 'novo' ? null : E.prods.find((p) => p.id === d.editar)); desenhaCamada(); }
   if (d.fechar != null) { E.ed = null; desenhaCamada(); }
   if (el.id === 'add-op') { $('#opcoes').insertAdjacentHTML('beforeend', opLinha({ nome: '', preco: '' })); const l = $('#opcoes').lastElementChild.querySelector('input'); if (l) l.focus(); }
@@ -423,6 +498,7 @@ document.addEventListener('click', async (e) => {
 document.addEventListener('input', (e) => {
   const t = e.target;
   if (t.id === 'busca') { E.busca = t.value; desenha(); }
+  if (t.id === 'col-busca' && E.col) { guardaCamposCol(); E.colBusca = t.value; desenhaCamada(); const i = $('#col-busca'); if (i) { i.focus(); i.setSelectionRange(t.value.length, t.value.length); } }
   if (t.id === 's-nova') { E.novaSenha = t.value; desenha(); }
   if (t.id === 's-conf') { E.confSenha = t.value; desenha(); }
   if (E.ed && t.form && t.form.id === 'f-produto' && ['gramas', 'horas', 'insumos', 'mao_obra_min', 'preco'].indexOf(t.name) >= 0) { E.ed[t.name] = t.value; $('#custo-vivo').innerHTML = custoHTML(E.ed); }
