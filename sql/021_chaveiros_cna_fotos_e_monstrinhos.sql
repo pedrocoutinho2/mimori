@@ -1,5 +1,5 @@
 -- 021 · Chaveiros CNA: fotos reais, vídeos, monstrinhos como opção e simulações (12/10/2026)
--- [APLICAR] depois do push do commit com o Ben (12/10/2026). A primeira tentativa via MCP foi cancelada; esta versão não apaga nada.
+-- APLICADO em 12/10/2026 às 18h01 pelo Claude via MCP (migração 021_chaveiros_cna_fotos_e_monstrinhos), depois do push do commit "ben". Não apaga nada.
 -- Fotos e vídeos em assets/fotos e assets/videos (sobem com o push). Fotos reais: IMG_2358 a 2363 de 12/10.
 -- Simulações (tipo 'excecao', com a etiqueta "Simulação" na imagem): feitas sobre a foto real da Dani e do
 -- giratório vermelho, com o desenho de cada monstrinho tirado do chaveiros-monstros-cna.3mf. Trocar pela
