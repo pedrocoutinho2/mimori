@@ -111,7 +111,7 @@ const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' 
 /* ===== dados ===== */
 async function carregaTudo() {
   const [cats, prods, par, promos, usu] = await Promise.all([
-    sb.from('categorias').select('id,slug,nome,ordem').order('ordem'),
+    sb.from('categorias').select('*').order('ordem'),
     sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,atualizado_em,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),faixas,faixa_consulta,produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
     sb.from('parametros_custo').select('*').eq('id', 1).single(),
     sb.from('promocoes').select('*').order('inicio', { ascending: false }),
@@ -164,13 +164,13 @@ function abaProdutos() {
     <select id="filtro-cat" aria-label="Categoria" style="flex:0 0 240px;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid #D0C5E7"><option value="">Todas as categorias</option>${E.cats.map((c) => `<option value="${c.id}" ${E.filtroCat === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></div>
   <div class="card" style="overflow-x:auto"><table class="tabela"><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Lucro</th><th>Fotos</th><th>No site</th><th><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden">Ações</span></th></tr></thead><tbody>
   ${vis.map((p) => {
-    const pv = vigente(p), preco = pv ? pv.v : Number(p.preco), c = custoDoProduto(p), l = lucroDe(preco, c), h = p.custo ? num(p.custo.horas) : null;
+    const pv = vigente(p), preco = pv ? pv.v : Number(p.preco), c = custoDoProduto(p), l = preco > 0 ? lucroDe(preco, c) : null, h = p.custo ? num(p.custo.horas) : null;
     const reais = p.fotos.filter((f) => f.tipo === 'real').length;
     const ft = !p.fotos.length ? ['Sem foto', '#FBE3DF', 'var(--erro)'] : reais ? ['Foto real', '#E1F2E8', 'var(--ok)'] : ['Foto do criador', '#FFF4D6', 'var(--atencao)'];
     return `<tr><td><span style="display:flex;align-items:center;gap:12px">${p.fotos[0] ? `<img class="thumb" src="${esc(fotoUrl(p.fotos[0].caminho))}" alt="">` : '<span class="thumb"></span>'}<span><b style="font-family:var(--f-ui)">${esc(p.nome)}</b><br><small style="color:var(--texto2)">${esc(p.sku || 'sem código')}</small></span></span></td>
       <td style="color:var(--texto2)">${esc(catNome(p.categoria_id))}</td>
-      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-ui);color:var(--marca)">${brl(preco)}</b>${p.opcoes && p.opcoes.length ? `<br><small style="color:var(--texto2)">${p.opcoes.length} ${p.opcoes.length === 1 ? 'opção' : 'opções'}</small>` : ''}${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
-      <td style="white-space:nowrap"><b style="font-family:var(--f-ui);color:${corLucro(l, h)}">${l == null ? 'sem custo' : brl(l)}</b><br><small style="color:var(--texto2)">${l == null ? 'falta peso e tempo' : Math.round(l / preco * 100) + '% · ' + brl(l / h) + '/h'}</small></td>
+      <td style="white-space:nowrap">${pv ? `<s style="color:var(--texto2);font-size:13px">${brl(p.preco)}</s><br>` : ''}<b style="font-family:var(--f-ui);color:var(--marca)">${preco > 0 ? brl(preco) : 'Sob orçamento'}</b>${p.opcoes && p.opcoes.length ? `<br><small style="color:var(--texto2)">${p.opcoes.length} ${p.opcoes.length === 1 ? 'opção' : 'opções'}</small>` : ''}${pv ? `<br><small style="color:var(--atencao);font-weight:700">${esc(pv.nome)}</small>` : ''}</td>
+      <td style="white-space:nowrap"><b style="font-family:var(--f-ui);color:${corLucro(l, h)}">${!(preco > 0) ? '–' : l == null ? 'sem custo' : brl(l)}</b><br><small style="color:var(--texto2)">${!(preco > 0) ? 'preço a definir' : l == null ? 'falta peso e tempo' : Math.round(l / preco * 100) + '% · ' + brl(l / h) + '/h'}</small></td>
       <td><span class="pil" style="background:${ft[1]};color:${ft[2]}">${ft[0]}</span></td>
       <td><span class="pil" style="background:${p.publicado ? 'var(--suave)' : 'var(--suave2)'};color:${p.publicado ? 'var(--marca-escura)' : 'var(--texto2)'}">${p.publicado ? 'Publicado' : 'Oculto'}</span></td>
       <td style="text-align:right"><button class="btn claro mini" type="button" data-editar="${p.id}">Editar</button></td></tr>`;
@@ -179,7 +179,7 @@ function abaProdutos() {
 function custoHTML(ed) {
   const g = num(ed.gramas), h = num(ed.horas), c = custoDe(g, h, num(ed.insumos) || 0, num(ed.mao_obra_min)), preco = num(ed.preco);
   if (!c) return '<p style="margin:0;color:var(--texto2)">Preencha filamento e tempo de produção para calcular o custo.</p>';
-  const l = preco != null ? lucroDe(preco, c) : null, P = E.par;
+  const l = preco > 0 ? lucroDe(preco, c) : null, P = E.par;
   return `<dl class="custo"><dt>Filamento</dt><dd>${String(g).replace('.', ',')} g</dd><dt>Tempo de produção</dt><dd>${String(h).replace('.', ',')} h</dd>
     <dt class="total">Custo de produção</dt><dd class="total">${brl(c.producao)}</dd>
     <dt>Embalagem</dt><dd>${brl(c.emb)}</dd><dt>Insumos</dt><dd>${brl(c.ins)}</dd><dt>Mão de obra</dt><dd>${c.mo ? brl(c.mo) : '-'}</dd>
@@ -193,7 +193,7 @@ function gavetaProduto() {
     <div class="topo-sec"><h2 id="t-ed">${ed.id ? 'Editar produto' : 'Novo produto'}</h2><button type="button" class="btn claro mini" data-fechar>Fechar</button></div>
     <label class="campo">Nome<input name="nome" value="${esc(ed.nome)}" required></label>
     <div class="linha"><label class="campo">Endereço (slug)<input name="slug" value="${esc(ed.slug)}" placeholder="gerado pelo nome"></label><label class="campo">Código (SKU)<input name="sku" value="${esc(ed.sku || '')}"></label></div>
-    <div class="linha"><label class="campo">Categoria<select name="categoria_id">${E.cats.map((c) => `<option value="${c.id}" ${ed.categoria_id === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></label><label class="campo">Preço (R$)<input name="preco" inputmode="decimal" value="${esc(ed.preco)}" required></label></div>
+    <div class="linha"><label class="campo">Categoria<select name="categoria_id">${E.cats.map((c) => `<option value="${c.id}" ${ed.categoria_id === c.id ? 'selected' : ''}>${esc(c.nome)}${c.oculta ? ' (só pelo link)' : ''}</option>`).join('')}</select></label><label class="campo">Preço (R$, 0 = sob orçamento)<input name="preco" inputmode="decimal" value="${esc(ed.preco)}" required></label></div>
     <div class="linha"><label class="campo">Selo no card<input name="selo" value="${esc(ed.selo || '')}" placeholder="Ex.: Com luz LED"></label><label class="campo">Tags (vírgula)<input name="tags" value="${esc((ed.tags || []).join(', '))}" placeholder="Fé, Para a mãe, Natal"></label></div>
     <label class="campo">Cores (vírgula)<input name="cores" value="${esc((ed.cores || []).join(', '))}" placeholder="Branco, Bege, Marrom"></label>
     <div class="bloco"><h3>Kits e opções</h3><p style="margin:0;font-size:13.5px;color:var(--texto2)">Kit (5, 10, 20 unidades), modelo (com ou sem tampa) ou versão (manto azul ou rosa), cada um com o próprio preço. O cliente escolhe na página do produto. Com opções, o preço do card passa a ser o menor deles, com "a partir de" quando os preços forem diferentes.</p>
@@ -314,7 +314,7 @@ async function carregaRelatorio() {
   const sess = (t) => new Set(data.filter((e) => e.tipo === t).map((e) => e.sessao)).size;
   const nomes = {}; E.prods.forEach((p) => { nomes[p.id] = p.nome; });
   const porProd = {}; data.forEach((e) => { if (!e.produto_id) return; const x = porProd[e.produto_id] = porProd[e.produto_id] || [nomes[e.produto_id] || 'Produto removido', 0, 0, 0]; if (e.tipo === 'produto_visto') x[1]++; if (e.tipo === 'lista_adicionou') x[2]++; if (e.tipo === 'whatsapp_clique') x[3]++; });
-  const BOT = { lista: 'Enviar a lista', produto: 'Pedir só este', brindes: 'Orçamento de brindes', personalizados: 'Personalizados', busca: 'Busca sem resultado' };
+  const BOT = { lista: 'Enviar a lista', produto: 'Pedir só este', brindes: 'Orçamento de brindes', personalizados: 'Personalizados', busca: 'Busca sem resultado', salao: 'Kit para salão', cna: 'Orçamento CNA' };
   E.rel = {
     visitas: data.filter((e) => e.tipo === 'visita').length, vistos: data.filter((e) => e.tipo === 'produto_visto').length, lista: data.filter((e) => e.tipo === 'lista_adicionou').length, enviadas: data.filter((e) => e.tipo === 'lista_enviou').length,
     sessVis: sess('visita'), sessProd: sess('produto_visto'), sessLista: sess('lista_adicionou'), sessEnv: sess('lista_enviou'),
