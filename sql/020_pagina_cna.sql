@@ -1,5 +1,6 @@
 -- 020 · Página /cna: categoria oculta Brindes CNA e 4 produtos (12/10/2026)
--- [APLICAR] DEPOIS do push do index.html e do gerar-paginas.py desta data. Aplicado antes, o site que está
+-- APLICADO em 12/10/2026 às 17h30 pelo Claude via MCP (migração 020_pagina_cna), depois do push do commit "cna".
+-- Regra: aplicar só DEPOIS do push do index.html e do gerar-paginas.py desta data. Aplicado antes, o site que está
 -- no ar mostra "Brindes CNA" no menu e preço R$ 0,00, porque o código antigo não conhece oculta nem sob orçamento.
 -- Depende do 019 (coluna categorias.oculta).
 --
