@@ -2,6 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7DWH6J6XFT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7DWH6J6XFT');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <base href="/">
 <title>Medusa Fidget Articulada · Mimori</title>
@@ -434,7 +443,7 @@ const IC = {
   sacola: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>'
 };
 
-const S = { config: {}, categorias: [], produtos: [], colecoes: {}, temas: [], promocoes: [], porSlug: {}, porNome: {}, porId: {} };
+const S = { config: {}, categorias: [], ocultas: [], produtos: [], todos: [], colecoes: {}, temas: [], promocoes: [], porSlug: {}, porNome: {}, porId: {} };
 let sb = null;
 
 /* ===== Eventos para os relatórios (sem dado pessoal) ===== */
@@ -471,7 +480,7 @@ async function carrega() {
       ]);
       if (!cats.error && !prods.error && prods.data.length) {
         const fotosCat = {}; S.categorias.forEach((c) => { fotosCat[c.slug] = c.foto; });
-        S.categorias = cats.data.map((c) => ({ slug: c.slug, nome: c.nome, ordem: c.ordem, foto: c.foto || fotosCat[c.slug] || '' }));
+        S.categorias = cats.data.map((c) => ({ slug: c.slug, nome: c.nome, ordem: c.ordem, oculta: !!c.oculta, foto: c.foto || fotosCat[c.slug] || '' }));
         const pv = {}; (precos.data || []).forEach((x) => { pv[x.id] = x; });
         S.produtos = prods.data.map((p) => ({
           id: p.id, sku: p.sku, slug: p.slug, nome: p.nome, categoria: p.categoria ? p.categoria.slug : '', preco: Number(p.preco), aPartir: !!p.a_partir,
@@ -495,12 +504,17 @@ async function carrega() {
       }
     } catch (e) { console.warn('Supabase indisponível, usando o catálogo do arquivo.', e); }
   }
+  /* categoria oculta (ex.: /cna): fora do menu, da home, do catálogo e da busca; abre só pelo endereço direto */
+  S.ocultas = S.categorias.filter((c) => c.oculta); S.categorias = S.categorias.filter((c) => !c.oculta);
+  S.todos = S.produtos; S.produtos = S.todos.filter((p) => !S.ocultas.some((c) => c.slug === p.categoria));
   S.porSlug = {}; S.porNome = {}; S.porId = {};
-  S.produtos.forEach((p) => { p.opcoes = p.opcoes || []; p.faixas = p.faixas || []; p.consulta = p.consulta || null; S.porSlug[p.slug] = p; S.porNome[p.nome] = p; if (p.id) S.porId[p.id] = p; });
+  S.todos.forEach((p) => { p.opcoes = p.opcoes || []; p.faixas = p.faixas || []; p.consulta = p.consulta || null; S.porSlug[p.slug] = p; S.porNome[p.nome] = p; if (p.id) S.porId[p.id] = p; });
   S.temas.sort((a, b) => (a.inicio < b.inicio ? -1 : 1));
 }
-const catDe = (slug) => S.categorias.find((c) => c.slug === slug);
+const catDe = (slug) => S.categorias.find((c) => c.slug === slug) || S.ocultas.find((c) => c.slug === slug);
 const precoAtual = (p) => (p.promo ? p.promo.preco : p.preco);
+/* preço 0 no painel = sob orçamento (valor combinado no WhatsApp) */
+const sobOrcamento = (p) => !(Number(p.preco) > 0);
 const opcaoDe = (p, nome) => (p.opcoes || []).find((o) => o.nome === nome) || null;
 const precoBase = (p, nome) => { const o = opcaoDe(p, nome); if (!o) return precoAtual(p); return p.promo ? Math.round(o.preco * p.promo.preco / p.preco * 100) / 100 : o.preco; };
 /* Preço por quantidade: a faixa vale para o preço base; nas opções aplica a mesma proporção, terminando em ,90 */
@@ -529,11 +543,15 @@ function adiciona(slug, qtd, cor, op) {
 }
 const totalQtd = () => lista.reduce((a, i) => a + i.qtd, 0);
 const totalValor = () => lista.reduce((a, i) => { const p = S.porSlug[i.slug]; return a + (p ? precoItem(p, i.op, qtdNaLista(i.slug)) * i.qtd : 0); }, 0);
+const ehOrc = (i) => { const p = S.porSlug[i.slug]; return !!p && sobOrcamento(p); };
+const todoOrcamento = () => lista.length > 0 && lista.every(ehOrc);
 let cep = '';
 function mensagemLista() {
-  const linhas = lista.map((i) => { const p = S.porSlug[i.slug]; if (!p) return ''; return '• ' + p.nome + (i.op ? ' (' + i.op + ')' : '') + (i.cor ? ' (Cor: ' + i.cor + ')' : (p.cores.length ? ' (cor a combinar)' : '')) + '\n  Quantidade: ' + i.qtd + ' · ' + brl(precoItem(p, i.op, qtdNaLista(i.slug))) + ' cada'; }).filter(Boolean);
+  const linhas = lista.map((i) => { const p = S.porSlug[i.slug]; if (!p) return ''; return '• ' + p.nome + (i.op ? ' (' + i.op + ')' : '') + (i.cor ? ' (Cor: ' + i.cor + ')' : (p.cores.length ? ' (cor a combinar)' : '')) + '\n  Quantidade: ' + i.qtd + (sobOrcamento(p) ? ' · sob orçamento' : ' · ' + brl(precoItem(p, i.op, qtdNaLista(i.slug))) + ' cada'); }).filter(Boolean);
   const consulta = [...new Set(lista.map((i) => i.slug))].some((sl) => { const p = S.porSlug[sl]; return p && p.consulta && qtdNaLista(sl) >= p.consulta; });
-  return 'Oi, Mimori! Montei meu pedido no site:\n\n' + linhas.join('\n\n') + '\n\nTotal das peças: ' + brl(totalValor()) + ' (sem frete)' + (consulta ? '\nPedido grande: o valor final a gente combina na conversa.' : '') + '\nMeu CEP para o frete: ' + cep;
+  const orc = lista.some(ehOrc);
+  const total = todoOrcamento() ? 'Quero o orçamento dessas peças.' : 'Total das peças: ' + brl(totalValor()) + ' (sem frete)' + (orc ? '\nAs peças sob orçamento a gente combina na conversa.' : '');
+  return 'Oi, Mimori! Montei meu pedido no site:\n\n' + linhas.join('\n\n') + '\n\n' + total + (consulta ? '\nPedido grande: o valor final a gente combina na conversa.' : '') + '\nMeu CEP para o frete: ' + cep;
 }
 let gavetaAberta = false;
 function atualizaLista() {
@@ -581,14 +599,14 @@ function desenhaCamadas() {
       const ops = p.opcoes.length ? `<select aria-label="Opção de ${esc(p.nome)}" data-op="${esc(i.chave)}">${p.opcoes.map((o) => `<option value="${esc(o.nome)}" ${o.nome === i.op ? 'selected' : ''}>${esc(o.nome)}</option>`).join('')}</select>` : '';
       const opcoes = p.cores.length ? `<select aria-label="Cor de ${esc(p.nome)}" data-cor="${esc(i.chave)}"><option value="">Escolha a cor</option>${p.cores.map((c) => `<option ${c === i.cor ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>` : '';
       return `<div class="item${i.chave === ultimoItem ? ' novo' : ''}">${p.fotos[0] ? `<img src="${esc(p.fotos[0].src)}" alt="">` : '<span class="semfoto"></span>'}
-        <div class="t"><b>${esc(p.nome)}</b>${ops}${opcoes}<span style="font-weight:800;color:var(--marca)">${brl(precoItem(p, i.op, qtdNaLista(i.slug)) * i.qtd)}</span><button type="button" class="remover" data-remover="${esc(i.chave)}">Remover</button></div>
+        <div class="t"><b>${esc(p.nome)}</b>${ops}${opcoes}<span style="font-weight:800;color:var(--marca)">${sobOrcamento(p) ? 'Sob orçamento' : brl(precoItem(p, i.op, qtdNaLista(i.slug)) * i.qtd)}</span><button type="button" class="remover" data-remover="${esc(i.chave)}">Remover</button></div>
         <div class="mini"><button type="button" aria-label="Diminuir" data-qtd="${esc(i.chave)}" data-d="-1">−</button><output>${i.qtd}</output><button type="button" aria-label="Aumentar" data-qtd="${esc(i.chave)}" data-d="1">+</button></div></div>`;
     }).join('');
     ultimoItem = '';
     h += `<div class="veu" data-acao="fechar-lista"></div><aside class="painel${entra}" role="dialog" aria-modal="true" aria-labelledby="t-lista">
       <div class="painel-topo"><h2 id="t-lista" class="titulo">Seu pedido</h2><button type="button" class="fechar" data-acao="fechar-lista" aria-label="Fechar">×</button></div>
       ${lista.length ? itens + `
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:17px">Total das peças</b><b style="font-weight:800;font-size:22px;color:var(--marca)">${brl(totalValor())}</b></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:17px">Total das peças</b><b style="font-weight:800;font-size:22px;color:var(--marca)">${todoOrcamento() ? 'Sob orçamento' : brl(totalValor())}</b></div>
       <p style="margin:0;color:var(--texto2);font-size:14px">O frete sai pelo seu CEP e a gente informa antes do pagamento.</p>
       <label class="campo">Seu CEP <span style="font-weight:400;color:var(--texto2)">(opcional, pro frete)</span><input id="cep" inputmode="numeric" placeholder="00000-000" value="${esc(cep)}"></label>
       <details><summary style="cursor:pointer;font-weight:700">Ver a mensagem que vai pro WhatsApp</summary><pre class="msg">${esc(mensagemLista())}</pre></details>
@@ -611,7 +629,7 @@ function cardHTML(p) {
         ${p.video ? `<video muted loop playsinline preload="none" data-src="${esc(p.video)}"></video><span class="play" title="Tem vídeo">${IC.play}</span>` : ''}
         ${selo}${f.length > 1 ? `<span class="pontos">${f.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</span>` : ''}</span>
       <span class="nome">${esc(p.nome)}</span>
-      <span class="preco">${p.aPartir ? '<small>a partir de</small>' : ''}${p.promo ? `<s>${brl(p.preco)}</s>` : ''}<strong>${brl(precoAtual(p))}</strong>${p.faixas.length ? `<small class="faixa-card">${p.faixas[p.faixas.length - 1].min}+ un: ${brl(p.faixas[p.faixas.length - 1].preco)} cada</small>` : ''}</span>
+      ${sobOrcamento(p) ? '<span class="preco"><strong>Sob orçamento</strong></span>' : `<span class="preco">${p.aPartir ? '<small>a partir de</small>' : ''}${p.promo ? `<s>${brl(p.preco)}</s>` : ''}<strong>${brl(precoAtual(p))}</strong>${p.faixas.length ? `<small class="faixa-card">${p.faixas[p.faixas.length - 1].min}+ un: ${brl(p.faixas[p.faixas.length - 1].preco)} cada</small>` : ''}</span>`}
     </a>
     ${p.cores.length ? `<div class="cores" role="group" aria-label="Cor de ${esc(p.nome)}">${p.cores.slice(0, 6).map((c) => `<button type="button" data-cardcor="${esc(p.slug)}" data-c="${esc(c)}" aria-pressed="${cardSel[p.slug] === c}" aria-label="${esc(c)}" title="${esc(c)}" style="background:${COR[c] || '#C9C9CE'}"></button>`).join('')}${p.cores.length > 6 ? `<span class="mais-cores">+${p.cores.length - 6}</span>` : ''}</div>` : ''}
     ${f.length > 1 ? `<button type="button" class="fotonav ant" data-fotonav="-1" aria-label="Foto anterior de ${esc(p.nome)}">${IC.ant}</button><button type="button" class="fotonav prox" data-fotonav="1" aria-label="Próxima foto de ${esc(p.nome)}">${IC.prox}</button>` : ''}
@@ -771,10 +789,10 @@ function paginaProduto(p) {
   if (galeria >= midias.length) galeria = 0;
   const m = midias[galeria];
   const cat = catDe(p.categoria);
-  const combina = S.produtos.filter((x) => x.categoria === p.categoria && x.slug !== p.slug).slice(0, 10);
+  const combina = S.todos.filter((x) => x.categoria === p.categoria && x.slug !== p.slug).slice(0, 10);
   const op = opProduto || (p.opcoes.length === 1 ? p.opcoes[0].nome : '');
   const faltaCor = faltaProduto && p.cores.length && !corProduto, faltaOp = faltaProduto && p.opcoes.length > 1 && !op;
-  const consultaP = p.consulta && qtdProduto >= p.consulta;
+  const consultaP = sobOrcamento(p) || (p.consulta && qtdProduto >= p.consulta);
   const msg = 'Oi, Mimori! Quero pedir:\n\n• ' + p.nome + (op ? ' (' + op + ')' : '') + (corProduto ? ' (Cor: ' + corProduto + ')' : '') + '\n  Quantidade: ' + qtdProduto + (consultaP ? ' (quero o valor para essa quantidade)' : ' · ' + brl(precoItem(p, op, qtdProduto)) + ' cada') + '\n\nMeu CEP para o frete: ';
   return `<div class="wrap pagina-peca">
     <nav aria-label="Você está em" style="font-size:14px;color:var(--texto2)"><a href="./" data-rota>Início</a> / <a href="${esc(p.categoria)}" data-rota>${esc(cat ? cat.nome : '')}</a> / <span aria-current="page">${esc(p.nome)}</span></nav>
@@ -787,7 +805,7 @@ function paginaProduto(p) {
       <div class="info">
         <a class="pilula" style="align-self:flex-start;text-decoration:none" href="${esc(p.categoria)}" data-rota>${esc(cat ? cat.nome : '')}</a>
         <h1 class="titulo">${esc(p.nome)}</h1>
-        <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px">${p.aPartir && !op ? '<small style="color:var(--texto2)">a partir de</small>' : ''}${p.promo ? `<s style="color:var(--texto2)">${brl(op ? opcaoDe(p, op).preco : p.preco)}</s>` : ''}<span class="valor">${brl(precoItem(p, op, qtdProduto))}</span>${faixaDe(p, qtdProduto) ? `<span style="color:var(--texto2)">cada, a partir de ${faixaDe(p, qtdProduto).min} un</span>` : ''}${p.promo ? `<span class="pilula" style="background:var(--destaque);color:var(--tinta)">${esc(p.promo.nome || 'Promoção')}</span>` : ''}</div>
+        <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px">${p.aPartir && !op ? '<small style="color:var(--texto2)">a partir de</small>' : ''}${p.promo ? `<s style="color:var(--texto2)">${brl(op ? opcaoDe(p, op).preco : p.preco)}</s>` : ''}<span class="valor">${sobOrcamento(p) ? 'Sob orçamento' : brl(precoItem(p, op, qtdProduto))}</span>${faixaDe(p, qtdProduto) ? `<span style="color:var(--texto2)">cada, a partir de ${faixaDe(p, qtdProduto).min} un</span>` : ''}${p.promo ? `<span class="pilula" style="background:var(--destaque);color:var(--tinta)">${esc(p.promo.nome || 'Promoção')}</span>` : ''}</div>
         ${faixasHTML(p, op)}
         ${p.opcoes.length ? `<div class="caixa${faltaOp ? ' erro' : ''}"><b>Opção${op ? ': ' + esc(op) : ''}</b>${faltaOp ? '<span class="falta">Escolha uma opção</span>' : ''}<div class="chips">${p.opcoes.map((o) => `<button type="button" class="chip" aria-pressed="${o.nome === op}" data-opproduto="${esc(o.nome)}">${esc(o.nome)} · ${brl(o.preco)}</button>`).join('')}</div></div>` : ''}
         ${p.cores.length ? `<div class="caixa${faltaCor ? ' erro' : ''}"><b>Cor${corProduto ? ': ' + esc(corProduto) : ''}</b>${faltaCor ? '<span class="falta">Escolha uma cor</span>' : ''}<div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${corProduto === c}" data-corproduto="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
@@ -796,14 +814,14 @@ function paginaProduto(p) {
           <button type="button" class="btn" style="flex:1 1 220px;min-height:56px;font-size:17px" data-addproduto="${esc(p.slug)}" id="add-principal">${IC.sacola}Adicionar ao pedido</button>
         </div>
         <a class="btn" style="background:#fff;color:var(--whats);border:1.5px solid var(--whats)" href="${esc(wa(msg))}" target="_blank" rel="noopener" data-whats="produto" data-produto="${esc(p.slug)}">${IC.whats}Pedir só este pelo WhatsApp</a>
-        <div class="caixa"><span><b>Produção:</b> de 3 a 5 dias úteis depois do pagamento.</span><span><b>Envio:</b> pra todo o Brasil. O frete sai pelo seu CEP e a gente informa antes do pagamento.</span></div>
+        <div class="caixa"><span><b>Produção:</b> ${sobOrcamento(p) ? 'de 3 a 5 dias úteis depois do pagamento em pedido pequeno. Em lote, o prazo a gente combina com você pela quantidade.' : 'de 3 a 5 dias úteis depois do pagamento.'}</span><span><b>Envio:</b> pra todo o Brasil. O frete sai pelo seu CEP e a gente informa antes do pagamento.</span></div>
         <p style="margin:0;font-size:14px;color:var(--texto2)">Pagamento pelo link · A gente confirma tudo com você no WhatsApp</p>
       </div>
     </div>
     ${p.descricao ? `<section class="descricao" aria-label="Sobre a peça">${descricaoHTML(p.descricao)}</section>` : ''}
   </div>
   ${prateleira('combina', 'Combina com', '', combina, p.categoria, 'Ver mais')}
-  <div class="barra-compra" role="region" aria-label="Comprar"><span class="v"><small>${esc(corProduto ? 'Cor: ' + corProduto : p.cores.length ? 'Escolha a cor acima' : p.nome)}</small><strong>${brl(precoItem(p, op, qtdProduto))}</strong></span><button type="button" class="btn" data-addproduto="${esc(p.slug)}">${IC.sacola}Adicionar ao pedido</button></div>`;
+  <div class="barra-compra" role="region" aria-label="Comprar"><span class="v"><small>${esc(corProduto ? 'Cor: ' + corProduto : p.cores.length ? 'Escolha a cor acima' : p.nome)}</small><strong>${sobOrcamento(p) ? 'Sob orçamento' : brl(precoItem(p, op, qtdProduto))}</strong></span><button type="button" class="btn" data-addproduto="${esc(p.slug)}">${IC.sacola}Adicionar ao pedido</button></div>`;
 }
 function descricaoHTML(t) {
   const blocos = t.split(/\n\s*\n/);
@@ -860,6 +878,26 @@ function paginaEmpresas() {
     ${lote.length ? `<section><h2 class="titulo" style="margin-bottom:18px">Peças que já saem em lote</h2><div class="grade">${lote.map(cardHTML).join('')}</div></section>` : ''}
   </div>`;
 }
+/* páginas de categoria oculta: abrem só pelo endereço direto e não entram no Google */
+const RESERVADAS = {
+  cna: { selo: 'Para unidades CNA', titulo: 'Brindes com os monstrinhos do CNA', texto: 'Chaveiros, microfone e plaquinhas de pintar com a marca e os monstrinhos do CNA, feitos em 3D pra sua unidade presentear alunos e famílias. 💜',
+    passos: ['Escolha as peças e a quantidade', 'A gente manda o orçamento e o prazo', 'A produção começa depois da aprovação e do pagamento'],
+    secao: 'Peças para a sua unidade', sub: 'O valor sai pela quantidade. Adicione as peças e envie o pedido pelo WhatsApp.',
+    whats: 'Oi, Mimori! Sou do CNA e quero um orçamento de brindes.\nUnidade: \nPeças: \nQuantidade: \nData de entrega: ' }
+};
+function paginaReservada(cat) {
+  const it = S.todos.filter((p) => p.categoria === cat.slug);
+  const T = RESERVADAS[cat.slug] || { selo: cat.nome, titulo: cat.nome, texto: '', passos: [], secao: 'Peças', sub: '', whats: 'Oi, Mimori! Quero um orçamento.' };
+  const capa = it.find((p) => p.fotos[0]);
+  return `<div class="wrap" style="display:flex;flex-direction:column;gap:40px">
+    <div class="faixa-forte" style="background:var(--titulo);color:#fff"><div class="txt"><span class="pilula" style="align-self:flex-start;background:#fff">${esc(T.selo)}</span><h1 class="titulo" style="color:#fff">${esc(T.titulo)}</h1><p style="margin:0;font-size:17px">${esc(T.texto)}</p>
+      ${T.passos.length ? `<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-weight:600">${T.passos.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
+      <a class="btn whats" style="align-self:flex-start" href="${esc(wa(T.whats))}" target="_blank" rel="noopener" data-whats="${esc(cat.slug)}">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
+      ${capa ? `<div class="img" style="background:var(--marca-escura)"><img src="${esc(capa.fotos[0].src)}" alt="" loading="lazy"></div>` : ''}</div>
+    <section aria-labelledby="h-reservada"><div class="cab-secao"><div><h2 class="titulo" id="h-reservada">${esc(T.secao)}</h2>${T.sub ? `<p class="sub">${esc(T.sub)}</p>` : ''}</div></div>
+      ${it.length ? `<div class="grade">${it.map(cardHTML).join('')}</div>` : semResultado('As peças entram aqui em breve.')}</section>
+  </div>`;
+}
 function paginaBusca(q) {
   const r = busca(q);
   registra('busca', { termo: q, resultados: r.length });
@@ -899,11 +937,14 @@ function render() {
   else if (c === 'personalizados') { html = paginaPersonalizados(); titulo = 'Personalizados · Mimori'; }
   else if (c === 'para-empresas') { html = paginaEmpresas(); titulo = 'Brindes para empresas · Mimori'; }
   else if (c === 'busca') { html = paginaBusca(params.get('q') || ''); titulo = 'Busca · Mimori'; }
-  else if (partes.length === 1 && catDe(partes[0])) { const cat = catDe(partes[0]); html = paginaCatalogo(cat.slug); titulo = cat.nome + ' · Mimori'; }
+  else if (partes.length === 1 && catDe(partes[0])) { const cat = catDe(partes[0]); html = cat.oculta ? paginaReservada(cat) : paginaCatalogo(cat.slug); titulo = cat.nome + ' · Mimori'; }
   else if (partes.length === 2 && S.porSlug[partes[1]]) { const p = S.porSlug[partes[1]]; html = paginaProduto(p); titulo = p.nome + ' · Mimori'; if (render._ultimo !== p.slug) { registra('produto_visto', { produto: p.slug }); render._ultimo = p.slug; } }
   else { html = `<div class="wrap">${semResultado('Essa página não existe.')}</div>`; titulo = 'Página não encontrada · Mimori'; }
   $('#conteudo').innerHTML = html;
   document.title = titulo;
+  const reservada = partes.length > 0 && S.ocultas.some((x) => x.slug === partes[0]);
+  let rb = document.querySelector('meta[name="robots"]');
+  if (reservada) { if (!rb) { rb = document.createElement('meta'); rb.name = 'robots'; document.head.appendChild(rb); } rb.content = 'noindex, nofollow'; } else if (rb) rb.remove();
   document.body.classList.toggle('na-peca', partes.length === 2 && !!S.porSlug[partes[1]]);
   if (perso.entra) perso.entra = false;
   if (F.painel) desenhaCamadas();
