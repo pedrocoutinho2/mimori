@@ -11,7 +11,7 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 | pastas de categoria e produto | Páginas fixas geradas pelo script, uma por endereço, para o Google indexar |
 | `sitemap.xml` e `robots.txt` | Gerados pelo script. O painel `/admin` fica fora do Google |
 | `admin/index.html` | Painel: produtos com custo e lucro, fotos e vídeo, promoções, relatórios, usuários e troca de senha |
-| `data/catalogo.json` | Reserva: o site só usa se o Supabase não responder. A vitrine e a configuração passaram para o banco no SQL 015 |
+| `data/catalogo.json` | Reserva: o site só usa se o Supabase não responder. A vitrine e a configuração passaram para o banco no SQL 017 |
 | `assets/` | Logo, fotos e vídeos das peças |
 | `ferramentas/gerar-paginas.py` | Gera as páginas fixas, o sitemap, o robots e o 404 |
 | `sql/` | Banco, na ordem em que foi aplicado. O 004 é só alternativa à importação e não deve ser rodado |
@@ -22,7 +22,7 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 ## No ar
 
 - Site: https://mimori3d.com.br (GitHub Pages, domínio pela Hostinger, HTTPS ativo).
-- Supabase: projeto `ydnanmpqwbjzskovnhyh`. SQL 001, 002, 003, 005, 006, 007, 008, 009, 010, 011, 012, 014, 015 e 016 aplicados (013 pendente de confirmação). Preço por quantidade (`faixas`, `faixa_consulta`) desde 10/10/2026, editável no painel; brindes para salão em dois blocos pelo campo `grupos` (`lembrancinha` e `presente`). Categoria Brindes para salão desde 09/10/2026 (26 produtos; licença comercial dos modelos do 011 a cargo do Pedro). Catálogo importado em 03/10/2026. Kits e opções com preço (tabela `produto_opcoes`) desde 04/10/2026, editáveis no painel.
+- Supabase: projeto `ydnanmpqwbjzskovnhyh`. SQL 001, 002, 003, 005, 006, 007, 008, 009, 010, 011, 012, 014, 015, 016, 017, 019 e 020 aplicados (013 pendente de confirmação). Vitrine (prateleiras e datas especiais), configuração do site e fotos de categoria no banco desde 12/10/2026 (SQL 017). Preço por quantidade (`faixas`, `faixa_consulta`) desde 10/10/2026, editável no painel; brindes para salão em dois blocos pelo campo `grupos` (`lembrancinha` e `presente`). Categoria Brindes para salão desde 09/10/2026 (26 produtos; licença comercial dos modelos do 011 a cargo do Pedro). Catálogo importado em 03/10/2026. Kits e opções com preço (tabela `produto_opcoes`) desde 04/10/2026, editáveis no painel.
 - Painel: https://mimori3d.com.br/admin (Pedro e Kamilla como administradores).
 - Google Analytics 4 (`G-7DWH6J6XFT`) no `<head>` do `index.html` desde 12/10/2026; o script de páginas fixas leva a tag para todas as páginas e para o 404. Fora do `/admin` (tráfego interno) e do `gamer/`.
 - Categoria oculta (`categorias.oculta`, SQL 019, aplicado em 12/10/2026): fica fora do menu, da home, do catálogo, da busca e do sitemap, sai com noindex e abre só pelo endereço direto. Primeira: `/cna` (Brindes CNA, SQL 020). Preço 0 no painel = "Sob orçamento" no site.
@@ -41,7 +41,6 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 - Página /cna no ar desde 12/10/2026 (SQL 019 e 020 aplicados). Falta subir as fotos reais dos quatro produtos pelo painel.
 
 - `[DECIDIR]` data-limite de pedidos de Halloween e Natal (a frase saiu das faixas em 04/10/2026). O texto da data especial de Natal ainda tem `[data-limite]` e entra no ar em 01/11: corrigir pela aba Vitrine.
-- `[APLICAR]` `sql/017_vitrine_no_banco_e_salvar_produto.sql` no SQL Editor. Sem ele, a aba Vitrine fica bloqueada e o site usa a vitrine do arquivo.
 - `[CONFIRMAR]` taxa do link de pagamento e valor da hora de mão de obra (`parametros_custo`).
 - `[CONFIRMAR]` CNPJ no rodapé, aviso de cookies e licença de uso de cada modelo e foto do criador.
 - Fotos do criador e da exceção da §11: trocar pela foto da peça real pelo painel, conforme imprimir.

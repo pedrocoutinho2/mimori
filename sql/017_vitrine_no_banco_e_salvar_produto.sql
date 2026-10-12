@@ -1,4 +1,6 @@
 -- 017 · Vitrine e configuração no banco, e salvamento do produto numa transação só (10/10/2026)
+-- APLICADO em 12/10/2026 às 17h56 pelo Pedro no SQL Editor. Conferido: 7 coleções (54 itens), 5 chaves em site_config,
+-- 6 fotos de categoria, funções salvar_produto e salvar_colecao criadas.
 --
 -- Por quê: até aqui, prateleiras da home, datas especiais (temas), WhatsApp e fotos de categoria
 -- moravam só em data/catalogo.json, e as prateleiras ligavam o produto pelo NOME. Renomear uma peça
