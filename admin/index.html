@@ -112,7 +112,7 @@ const corLucro = (l, h) => (l == null ? 'var(--texto2)' : l < 0 ? 'var(--erro)' 
 async function carregaTudo() {
   const [cats, prods, par, promos, usu] = await Promise.all([
     sb.from('categorias').select('*').order('ordem'),
-    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,atualizado_em,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem),faixas,faixa_consulta,produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
+    sb.from('produtos').select('id,slug,sku,nome,preco,descricao,publicado,destaque,ordem,tags,selo,a_partir,grupos,categoria_id,atualizado_em,produto_fotos(id,caminho,tipo,ordem),produto_videos(id,caminho,ordem),variacoes(id,cor,ordem),produto_opcoes(id,nome,preco,ordem,foto),faixas,faixa_consulta,produto_custos(gramas,horas,insumos,mao_obra_min,fonte)').order('ordem'),
     sb.from('parametros_custo').select('*').eq('id', 1).single(),
     sb.from('promocoes').select('*').order('inicio', { ascending: false }),
     sb.from('painel_usuarios').select('*').order('criado_em')
@@ -401,17 +401,19 @@ async function abreSessao(user) {
   E.tela = 'app'; desenha();
 }
 function opLinha(o) {
-  return `<div class="linha op-linha" style="align-items:flex-end"><label class="campo">Nome do kit ou opção<input name="op_nome" value="${esc(o.nome)}" placeholder="Kit com 5"></label><label class="campo" style="flex:0 0 150px">Preço (R$)<input name="op_preco" inputmode="decimal" value="${esc(o.preco)}" placeholder="98,90"></label><button type="button" class="icone" data-delop aria-label="Remover esta opção" style="color:var(--erro);flex:0 0 44px;width:44px;height:44px">×</button></div>`;
+  const fotos = (E.ed && E.ed.fotos) || [];
+  const nomeFoto = (c) => String(c || '').split('/').pop().split('?')[0];
+  return `<div class="linha op-linha" style="align-items:flex-end"><label class="campo">Nome do kit ou opção<input name="op_nome" value="${esc(o.nome)}" placeholder="Kit com 5"></label><label class="campo" style="flex:0 0 150px">Preço (R$)<input name="op_preco" inputmode="decimal" value="${esc(o.preco)}" placeholder="98,90"></label><label class="campo" style="flex:1 1 180px">Foto da opção<select name="op_foto"><option value="">Sem foto</option>${fotos.map((f) => `<option value="${esc(f.caminho)}" ${f.caminho === o.foto ? 'selected' : ''}>${esc(nomeFoto(f.caminho))}</option>`).join('')}${o.foto && !fotos.some((f) => f.caminho === o.foto) ? `<option value="${esc(o.foto)}" selected>${esc(nomeFoto(o.foto))}</option>` : ''}</select></label><button type="button" class="icone" data-delop aria-label="Remover esta opção" style="color:var(--erro);flex:0 0 44px;width:44px;height:44px">×</button></div>`;
 }
 function edDe(p) {
-  return p ? { versao: p.atualizado_em, id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ',') })), faixas: (p.faixas || []).map((x) => ({ min: String(x.min), preco: Number(x.preco).toFixed(2).replace('.', ',') })), consulta: p.faixa_consulta ? String(p.faixa_consulta) : '' }
+  return p ? { versao: p.atualizado_em, id: p.id, nome: p.nome, slug: p.slug, sku: p.sku, categoria_id: p.categoria_id, preco: String(p.preco).replace('.', ','), selo: p.selo, tags: p.tags || [], cores: p.cores, descricao: p.descricao, publicado: p.publicado, gramas: p.custo && p.custo.gramas != null ? String(p.custo.gramas).replace('.', ',') : '', horas: p.custo && p.custo.horas != null ? String(p.custo.horas).replace('.', ',') : '', insumos: p.custo && p.custo.insumos ? String(p.custo.insumos).replace('.', ',') : '', mao_obra_min: p.custo && p.custo.mao_obra_min ? String(p.custo.mao_obra_min) : '', fonte: p.custo ? p.custo.fonte : '', fotos: p.fotos, videos: p.videos, opcoes: (p.opcoes || []).map((o) => ({ nome: o.nome, preco: Number(o.preco).toFixed(2).replace('.', ','), foto: o.foto || '' })), faixas: (p.faixas || []).map((x) => ({ min: String(x.min), preco: Number(x.preco).toFixed(2).replace('.', ',') })), consulta: p.faixa_consulta ? String(p.faixa_consulta) : '' }
     : { id: null, nome: '', slug: '', sku: '', categoria_id: E.cats[0] && E.cats[0].id, preco: '', selo: '', tags: [], cores: [], descricao: '', publicado: false, gramas: '', horas: '', insumos: '', mao_obra_min: '', fonte: 'suposição', fotos: [], videos: [], opcoes: [], faixas: [], consulta: '' };
 }
 async function salvaProduto(f) {
   const v = Object.fromEntries(new FormData(f));
-  const fd = new FormData(f), opN = fd.getAll('op_nome').map((x) => String(x).trim()), opP = fd.getAll('op_preco');
+  const fd = new FormData(f), opN = fd.getAll('op_nome').map((x) => String(x).trim()), opP = fd.getAll('op_preco'), opF = fd.getAll('op_foto');
   if (opN.some((n, i) => (n && num(opP[i]) == null) || (!n && String(opP[i]).trim()))) { aviso('Cada kit ou opção precisa de nome e preço.'); return; }
-  const ops = opN.map((n, i) => ({ nome: n, preco: num(opP[i]) })).filter((o) => o.nome);
+  const ops = opN.map((n, i) => ({ nome: n, preco: num(opP[i]), foto: String(opF[i] || '') })).filter((o) => o.nome);
   const fxM = fd.getAll('fx_min'), fxP = fd.getAll('fx_preco');
   const faixas = fxM.map((m, i) => ({ min: Math.round(num(m) || 0), preco: num(fxP[i]) })).filter((x) => x.min > 1 && x.preco != null).sort((a, b) => a.min - b.min);
   if (fxM.some((m, i) => (String(m).trim() === '') !== (String(fxP[i]).trim() === ''))) { aviso('Cada faixa de quantidade precisa de quantidade e preço.'); return; }
@@ -432,7 +434,7 @@ async function salvaProduto(f) {
   if (cores.length) await sb.from('variacoes').insert(cores.map((c, i) => ({ produto_id: id, cor: c, ordem: i })));
   const apaga = await sb.from('produto_opcoes').delete().eq('produto_id', id);
   if (apaga.error) { aviso('Não salvou os kits: ' + apaga.error.message); return; }
-  if (ops.length) { const ins = await sb.from('produto_opcoes').insert(ops.map((o, i) => ({ produto_id: id, nome: o.nome, preco: o.preco, ordem: i }))); if (ins.error) { aviso('Não salvou os kits: ' + ins.error.message); return; } }
+  if (ops.length) { const ins = await sb.from('produto_opcoes').insert(ops.map((o, i) => ({ produto_id: id, nome: o.nome, preco: o.preco, ordem: i, foto: o.foto || null }))); if (ins.error) { aviso('Não salvou os kits: ' + ins.error.message); return; } }
   await sb.from('produto_custos').upsert({ produto_id: id, gramas: num(v.gramas), horas: num(v.horas), insumos: num(v.insumos) || 0, mao_obra_min: num(v.mao_obra_min) ? Math.round(num(v.mao_obra_min)) : null, fonte: v.fonte, atualizado_em: new Date().toISOString() });
   await carregaTudo(); E.ed = E.ed.id ? null : edDe(E.prods.find((p) => p.id === id)); desenha(); aviso('Produto salvo. Já aparece no site.');
 }

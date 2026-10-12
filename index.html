@@ -138,6 +138,19 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .trilho>*{flex:0 0 var(--col)}
 .trilho::-webkit-scrollbar{display:none}
 .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:32px 20px}
+/* página de categoria oculta (/cna): cabeçalho compacto e galeria menor */
+.cab-res{background:var(--titulo);color:#fff;border-radius:var(--r2);padding:22px 28px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 32px}
+.cab-res .txt{flex:1 1 440px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.cab-res h1{font-size:clamp(24px,2.4vw,30px);color:#fff}
+.cab-res p{margin:0;font-size:15.5px;max-width:60ch}
+.cab-res ol{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 18px;font-weight:600;font-size:14px;color:#E7E2F3}
+.cab-res ol b{display:inline-flex;width:20px;height:20px;margin-right:6px;border-radius:50%;background:#fff;color:var(--titulo);font-size:12px;align-items:center;justify-content:center}
+.cab-res .btn{flex-shrink:0}
+body.reservada .galeria{flex:0 1 540px;max-width:540px}
+body.reservada .miniaturas{flex-basis:72px}
+body.reservada .miniaturas button{width:72px;height:72px}
+.chip.com-thumb{padding:3px 14px 3px 3px;min-height:44px;gap:8px}
+.chip.com-thumb img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
 
 /* card */
 .card{position:relative;display:flex;flex-direction:column;gap:8px;scroll-snap-align:start;min-width:0}
@@ -473,7 +486,7 @@ async function carrega() {
       const urlFoto = (c) => (/^(https?:|assets\/)/.test(c) ? c : SUPABASE_URL + '/storage/v1/object/public/produtos/' + c);
       const [cats, prods, precos, cols, conf] = await Promise.all([
         sb.from('categorias').select('*').order('ordem'),
-        sb.from('produtos').select('id,slug,sku,nome,preco,descricao,destaque,ordem,tags,selo,a_partir,grupos,categoria:categorias(slug),produto_fotos(caminho,tipo,ordem),produto_videos(caminho,ordem),variacoes(cor,ordem),produto_opcoes(nome,preco,ordem),faixas,faixa_consulta').eq('publicado', true).order('ordem'),
+        sb.from('produtos').select('id,slug,sku,nome,preco,descricao,destaque,ordem,tags,selo,a_partir,grupos,categoria:categorias(slug),produto_fotos(caminho,tipo,ordem),produto_videos(caminho,ordem),variacoes(cor,ordem),produto_opcoes(nome,preco,ordem,foto),faixas,faixa_consulta').eq('publicado', true).order('ordem'),
         sb.from('produtos_preco_vigente').select('id,preco_cheio,preco_vigente,promocao'),
         sb.from('colecoes').select('*,colecao_produtos(produto_id,ordem)').order('ordem'),
         sb.from('site_config').select('chave,valor')
@@ -487,7 +500,7 @@ async function carrega() {
           selo: p.selo || '', tags: p.tags || [], grupos: p.grupos || [], descricao: p.descricao || '', ordem: p.ordem,
           faixas: (p.faixas || []).map((x) => ({ min: Number(x.min), preco: Number(x.preco) })).sort((a, b) => a.min - b.min), consulta: p.faixa_consulta || null,
           cores: (p.variacoes || []).sort((a, b) => a.ordem - b.ordem).map((v) => v.cor),
-          opcoes: (p.produto_opcoes || []).sort((a, b) => a.ordem - b.ordem).map((o) => ({ nome: o.nome, preco: Number(o.preco) })),
+          opcoes: (p.produto_opcoes || []).sort((a, b) => a.ordem - b.ordem).map((o) => ({ nome: o.nome, preco: Number(o.preco), foto: o.foto ? urlFoto(o.foto) : '' })),
           fotos: (p.produto_fotos || []).sort((a, b) => a.ordem - b.ordem).map((f) => ({ src: urlFoto(f.caminho), tipo: f.tipo })),
           video: (p.produto_videos || []).length ? urlFoto(p.produto_videos.sort((a, b) => a.ordem - b.ordem)[0].caminho) : '',
           promo: pv[p.id] && Number(pv[p.id].preco_vigente) < Number(p.preco) ? { preco: Number(pv[p.id].preco_vigente), nome: pv[p.id].promocao } : null
@@ -516,6 +529,9 @@ const precoAtual = (p) => (p.promo ? p.promo.preco : p.preco);
 /* preço 0 no painel = sob orçamento (valor combinado no WhatsApp) */
 const sobOrcamento = (p) => !(Number(p.preco) > 0);
 const opcaoDe = (p, nome) => (p.opcoes || []).find((o) => o.nome === nome) || null;
+/* botões de opção: com preços iguais mostra só o nome; com foto, mostra a miniatura do modelo */
+const opChips = (p, sel, attr) => { const igual = sobOrcamento(p) || p.opcoes.every((o) => o.preco === p.opcoes[0].preco);
+  return p.opcoes.map((o) => `<button type="button" class="chip${o.foto ? ' com-thumb' : ''}" aria-pressed="${o.nome === sel}" ${attr}="${esc(o.nome)}">${o.foto ? `<img src="${esc(o.foto)}" alt="" loading="lazy">` : ''}${esc(o.nome)}${igual ? '' : ' · ' + brl(o.preco)}</button>`).join(''); };
 const precoBase = (p, nome) => { const o = opcaoDe(p, nome); if (!o) return precoAtual(p); return p.promo ? Math.round(o.preco * p.promo.preco / p.preco * 100) / 100 : o.preco; };
 /* Preço por quantidade: a faixa vale para o preço base; nas opções aplica a mesma proporção, terminando em ,90 */
 const r90 = (x) => { const b = Math.floor(x) + 0.9; return Math.round((b >= x - 1e-9 ? b : b + 1) * 100) / 100; };
@@ -576,7 +592,7 @@ function escolhaHTML() {
     <div class="painel-topo"><h2 id="t-escolha" class="titulo" style="font-size:22px">${esc(p.nome)}</h2><button type="button" class="fechar" data-acao="fechar-escolha" aria-label="Fechar">×</button></div>
     ${p.fotos[0] ? `<img src="${esc(p.fotos[0].src)}" alt="" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:18px;max-height:280px">` : ''}
     <div class="preco">${sobOrcamento(p) ? '<strong style="font-size:22px">Sob orçamento</strong>' : `<small>${p.opcoes.length > 1 && !escolha.op ? 'a partir de' : ''}</small><strong style="font-size:22px">${brl(preco)}</strong>`}</div>
-    ${p.opcoes.length > 1 ? `<div class="caixa${escolha.erro && !escolha.op ? ' erro' : ''}"><b>Opção${escolha.op ? ': ' + esc(escolha.op) : ''}</b><div class="chips">${p.opcoes.map((o) => `<button type="button" class="chip" aria-pressed="${o.nome === escolha.op}" data-escop="${esc(o.nome)}">${esc(o.nome)}${sobOrcamento(p) ? '' : ' · ' + brl(o.preco)}</button>`).join('')}</div></div>` : ''}
+    ${p.opcoes.length > 1 ? `<div class="caixa${escolha.erro && !escolha.op ? ' erro' : ''}"><b>Opção${escolha.op ? ': ' + esc(escolha.op) : ''}</b><div class="chips">${opChips(p, escolha.op, 'data-escop')}</div></div>` : ''}
     ${p.cores.length ? `<div class="caixa${escolha.erro && !escolha.cor ? ' erro' : ''}"><b>Cor${escolha.cor ? ': ' + esc(escolha.cor) : ''}</b><div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${c === escolha.cor}" data-esccor="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
     ${escolha.erro ? `<span class="falta" role="alert">${esc(escolha.erro)}</span>` : ''}
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div class="qtd" role="group" aria-label="Quantidade"><button type="button" data-escqtd="-1" aria-label="Diminuir">−</button><output aria-live="polite">${escolha.qtd}</output><button type="button" data-escqtd="1" aria-label="Aumentar">+</button></div>
@@ -807,7 +823,7 @@ function paginaProduto(p) {
         <h1 class="titulo">${esc(p.nome)}</h1>
         <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px">${p.aPartir && !op ? '<small style="color:var(--texto2)">a partir de</small>' : ''}${p.promo ? `<s style="color:var(--texto2)">${brl(op ? opcaoDe(p, op).preco : p.preco)}</s>` : ''}<span class="valor">${sobOrcamento(p) ? 'Sob orçamento' : brl(precoItem(p, op, qtdProduto))}</span>${faixaDe(p, qtdProduto) ? `<span style="color:var(--texto2)">cada, a partir de ${faixaDe(p, qtdProduto).min} un</span>` : ''}${p.promo ? `<span class="pilula" style="background:var(--destaque);color:var(--tinta)">${esc(p.promo.nome || 'Promoção')}</span>` : ''}</div>
         ${faixasHTML(p, op)}
-        ${p.opcoes.length ? `<div class="caixa${faltaOp ? ' erro' : ''}"><b>Opção${op ? ': ' + esc(op) : ''}</b>${faltaOp ? '<span class="falta">Escolha uma opção</span>' : ''}<div class="chips">${p.opcoes.map((o) => `<button type="button" class="chip" aria-pressed="${o.nome === op}" data-opproduto="${esc(o.nome)}">${esc(o.nome)}${sobOrcamento(p) ? '' : ' · ' + brl(o.preco)}</button>`).join('')}</div></div>` : ''}
+        ${p.opcoes.length ? `<div class="caixa${faltaOp ? ' erro' : ''}"><b>Opção${op ? ': ' + esc(op) : ''}</b>${faltaOp ? '<span class="falta">Escolha uma opção</span>' : ''}<div class="chips">${opChips(p, op, 'data-opproduto')}</div></div>` : ''}
         ${p.cores.length ? `<div class="caixa${faltaCor ? ' erro' : ''}"><b>Cor${corProduto ? ': ' + esc(corProduto) : ''}</b>${faltaCor ? '<span class="falta">Escolha uma cor</span>' : ''}<div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${corProduto === c}" data-corproduto="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
           <div class="qtd" role="group" aria-label="Quantidade"><button type="button" data-qtdp="-1" aria-label="Diminuir">−</button><output aria-live="polite">${qtdProduto}</output><button type="button" data-qtdp="1" aria-label="Aumentar">+</button></div>
@@ -888,12 +904,10 @@ const RESERVADAS = {
 function paginaReservada(cat) {
   const it = S.todos.filter((p) => p.categoria === cat.slug);
   const T = RESERVADAS[cat.slug] || { selo: cat.nome, titulo: cat.nome, texto: '', passos: [], secao: 'Peças', sub: '', whats: 'Oi, Mimori! Quero um orçamento.' };
-  const capa = it.find((p) => p.fotos[0]);
-  return `<div class="wrap" style="display:flex;flex-direction:column;gap:40px">
-    <div class="faixa-forte" style="background:var(--titulo);color:#fff"><div class="txt"><span class="pilula" style="align-self:flex-start;background:#fff">${esc(T.selo)}</span><h1 class="titulo" style="color:#fff">${esc(T.titulo)}</h1><p style="margin:0;font-size:17px">${esc(T.texto)}</p>
-      ${T.passos.length ? `<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-weight:600">${T.passos.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
-      <a class="btn whats" style="align-self:flex-start" href="${esc(wa(T.whats))}" target="_blank" rel="noopener" data-whats="${esc(cat.slug)}">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
-      ${capa ? `<div class="img" style="background:var(--marca-escura)"><img src="${esc(capa.fotos[0].src)}" alt="" loading="lazy"></div>` : ''}</div>
+  return `<div class="wrap" style="display:flex;flex-direction:column;gap:32px">
+    <div class="cab-res"><div class="txt"><span class="pilula" style="align-self:flex-start;background:#fff">${esc(T.selo)}</span><h1 class="titulo">${esc(T.titulo)}</h1><p>${esc(T.texto)}</p>
+      ${T.passos.length ? `<ol>${T.passos.map((x, k) => `<li><b>${k + 1}</b>${esc(x)}</li>`).join('')}</ol>` : ''}</div>
+      <a class="btn whats" href="${esc(wa(T.whats))}" target="_blank" rel="noopener" data-whats="${esc(cat.slug)}">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
     <section aria-labelledby="h-reservada"><div class="cab-secao"><div><h2 class="titulo" id="h-reservada">${esc(T.secao)}</h2>${T.sub ? `<p class="sub">${esc(T.sub)}</p>` : ''}</div></div>
       ${it.length ? `<div class="grade">${it.map(cardHTML).join('')}</div>` : semResultado('As peças entram aqui em breve.')}</section>
   </div>`;
@@ -946,6 +960,7 @@ function render() {
   let rb = document.querySelector('meta[name="robots"]');
   if (reservada) { if (!rb) { rb = document.createElement('meta'); rb.name = 'robots'; document.head.appendChild(rb); } rb.content = 'noindex, nofollow'; } else if (rb) rb.remove();
   document.body.classList.toggle('na-peca', partes.length === 2 && !!S.porSlug[partes[1]]);
+  document.body.classList.toggle('reservada', reservada);
   if (perso.entra) perso.entra = false;
   if (F.painel) desenhaCamadas();
   document.querySelectorAll('.nav a[data-rota], .menu-lista a[data-rota]').forEach((a) => { const h = new URL(a.href).pathname.slice(BASE.length).replace(/^\/+|\/+$/g, ''); a.setAttribute('aria-current', h && (c === h || c.indexOf(h + '/') === 0) ? 'page' : 'false'); });
@@ -992,7 +1007,7 @@ document.addEventListener('click', (e) => {
   if (d.galeria != null && d.galeria !== '') { galeria = Number(d.galeria); render(); return; }
   if (d.qtdp) { qtdProduto = Math.max(1, Math.min(99, qtdProduto + Number(d.qtdp))); render(); return; }
   if (d.qtdfaixa) { qtdProduto = Math.min(99, Number(d.qtdfaixa)); render(); return; }
-  if (d.opproduto) { opProduto = d.opproduto; render(); return; }
+  if (d.opproduto) { opProduto = d.opproduto; const pp = S.porSlug[caminho().split('/')[1]], oo = pp && opcaoDe(pp, d.opproduto); if (oo && oo.foto) { const k = pp.fotos.findIndex((f) => f.src === oo.foto); if (k >= 0) galeria = k; } render(); return; }
   if (d.cardcor) { cardSel[d.cardcor] = cardSel[d.cardcor] === d.c ? '' : d.c; document.querySelectorAll('[data-cardcor]').forEach((b) => { if (b.dataset.cardcor === d.cardcor) b.setAttribute('aria-pressed', String(b.dataset.c === cardSel[d.cardcor])); }); return; }
   if (d.escop != null && escolha) { escolha.op = d.escop; escolha.erro = ''; desenhaCamadas(); return; }
   if (d.esccor != null && escolha) { escolha.cor = d.esccor; cardSel[escolha.slug] = d.esccor; escolha.erro = ''; desenhaCamadas(); return; }
