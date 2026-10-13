@@ -1,5 +1,5 @@
 -- 025 · salvar_produto passa a gravar a foto da opção (12/10/2026)
--- [APLICAR] no SQL Editor. A aplicação pelo Claude via MCP foi cancelada (a função contém delete, que pede confirmação).
+-- APLICADO em 12/10/2026 às 21h06 pelo Pedro no SQL Editor (conferido pelo Claude: a função grava a foto da opção).
 -- Sem ele, salvar no painel um produto com opções apaga a foto de cada opção (a miniatura some do site).
 -- É a mesma função do 017, com a coluna foto no insert de produto_opcoes. Depende do 024 (coluna produto_opcoes.foto).
 create or replace function public.salvar_produto(p jsonb, p_versao timestamptz default null)
