@@ -139,7 +139,7 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .trilho>*{flex:0 0 var(--col)}
 .trilho::-webkit-scrollbar{display:none}
 .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:32px 20px}
-/* página de categoria oculta (/cna): cabeçalho compacto e galeria menor */
+/* página de categoria oculta (/cna): cabeçalho compacto (a página de produto é a mesma de todo o site) */
 .cab-res{background:var(--titulo);color:#fff;border-radius:var(--r2);padding:22px 28px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 32px}
 .cab-res .txt{flex:1 1 440px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .cab-res h1{font-size:clamp(24px,2.4vw,30px);color:#fff}
@@ -147,10 +147,6 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .cab-res ol{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 18px;font-weight:600;font-size:14px;color:#E7E2F3}
 .cab-res ol b{display:inline-flex;width:20px;height:20px;margin-right:6px;border-radius:50%;background:#fff;color:var(--titulo);font-size:12px;align-items:center;justify-content:center}
 .cab-res .btn{flex-shrink:0}
-body.reservada .galeria{flex:0 1 430px;max-width:430px}
-body.reservada .miniaturas{flex-basis:60px;gap:8px}
-body.reservada .miniaturas button{width:60px;height:60px;border-radius:12px}
-body.reservada .produto{gap:40px}
 .chip.com-thumb{padding:3px 14px 3px 3px;min-height:44px;gap:8px}
 .chip.com-thumb img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
 
@@ -262,24 +258,28 @@ body.reservada .produto{gap:40px}
 .vazio{padding:40px;border:1.5px dashed #D0C5E7;border-radius:var(--r2);text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
 
 /* produto */
-.produto{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start}
-.galeria{flex:1.15 1 520px;min-width:0;display:flex;gap:16px}
-.miniaturas{flex:0 0 88px;display:flex;flex-direction:column;gap:10px;contain:size;overflow-y:auto;scrollbar-width:none}
+/* página de produto: padrão único para todas as peças (12/10/2026), na escala compacta */
+.produto{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}
+.galeria{flex:0 1 480px;max-width:480px;min-width:0;display:flex;gap:12px}
+.miniaturas{flex:0 0 64px;display:flex;flex-direction:column;gap:8px;contain:size;overflow-y:auto;scrollbar-width:none}
 .miniaturas::-webkit-scrollbar{display:none}
 .miniaturas button{flex-shrink:0}
-.miniaturas button{position:relative;width:88px;height:88px;padding:0;border-radius:14px;border:2px solid var(--borda);overflow:hidden;background:#fff}
+.miniaturas button{position:relative;width:64px;height:64px;padding:0;border-radius:12px;border:2px solid var(--borda);overflow:hidden;background:#fff}
 .miniaturas button[aria-pressed=true]{border-color:var(--marca)}
 .miniaturas img{width:100%;height:100%;object-fit:cover}
 .miniaturas .playmini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(36,31,46,.35);color:#fff}
 .palco{flex:1 1 auto;min-width:0;position:relative;aspect-ratio:1/1;align-self:flex-start;border-radius:var(--r2);overflow:hidden;background:#fff;border:1px solid var(--borda)}
 .palco img,.palco video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .palco video{object-fit:contain;background:var(--tinta)}
-.palco .fotonav{width:48px;height:48px;top:calc(50% - 24px);margin-top:0;opacity:.95;border:1px solid var(--borda)}
-.palco .fotonav svg{width:18px;height:18px}
-.legenda{position:absolute;left:14px;bottom:14px;padding:6px 12px;border-radius:var(--pilula);background:#fff;font-size:13.5px;font-weight:600}
-.info{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:18px}
-.info h1{font-size:clamp(28px,3vw,38px)}
-.info .valor{font-family:var(--f-ui);font-weight:800;font-size:32px;color:var(--marca)}
+.palco .fotonav{width:40px;height:40px;top:calc(50% - 20px);margin-top:0;opacity:.95;border:1px solid var(--borda)}
+.palco .fotonav svg{width:16px;height:16px}
+.legenda{position:absolute;left:12px;bottom:12px;padding:4px 10px;border-radius:var(--pilula);background:#fff;font-size:13px;font-weight:600}
+.info{flex:1 1 380px;max-width:560px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.info h1{font-size:clamp(24px,2.4vw,30px)}
+.info .valor{font-family:var(--f-ui);font-weight:800;font-size:26px;color:var(--marca)}
+.info .caixa{padding:14px 16px;gap:8px;font-size:15px}
+.info .btn{min-height:48px;font-size:16px}
+.info .qtd button{height:48px}
 .caixa{padding:16px 18px;border-radius:16px;background:#fff;border:1px solid var(--borda);display:flex;flex-direction:column;gap:10px}
 .faixas{display:flex;flex-direction:column;gap:6px}
 .faixas button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--borda);background:#fff;text-align:left}
@@ -376,9 +376,9 @@ footer a:hover{text-decoration:underline}
   .cab-res ol{display:none}
   .cab-res .btn{width:100%;min-height:46px}
   .miniaturas{flex-direction:row;overflow-x:auto;flex-basis:auto;contain:none}
-  .miniaturas button{flex:0 0 64px;width:64px;height:64px}
-  body.reservada .galeria{flex-basis:100%;max-width:360px;margin-inline:auto}
-  body.reservada .miniaturas button{flex:0 0 56px;width:56px;height:56px}
+  .miniaturas button{flex:0 0 56px;width:56px;height:56px}
+  .galeria{flex-basis:100%;max-width:420px;margin-inline:auto}
+  .info{max-width:none}
   .descricao{padding:22px}
   .fotonav{display:none}
   .produto{gap:24px}
@@ -389,7 +389,7 @@ footer a:hover{text-decoration:underline}
   .barra-compra .v{display:flex;flex-direction:column;line-height:1.15}
   .barra-compra .v small{font-size:12.5px;color:var(--texto2);font-weight:600;max-width:42vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .barra-compra .v strong{font-weight:800;font-size:19px;color:var(--marca)}
-  .barra-compra .btn{flex:1;min-height:48px;padding:0 14px}
+  .barra-compra .btn{flex:1;min-height:48px;padding:0 14px;white-space:nowrap}
   .painel{width:100%;max-width:none;padding-left:16px;padding-right:16px}
 }
 @keyframes sobe-barra{from{transform:translateY(100%)}to{transform:none}}
@@ -422,7 +422,7 @@ footer a:hover{text-decoration:underline}
   </div>
   <div class="menu-cat" id="menu-cat"><div class="wrap"><nav aria-label="Categorias" id="menu-cat-lista"></nav></div></div>
 </header>
-<main id="conteudo" tabindex="-1"><!--estatico--><div class="wrap estatico"><p><a href="./">Início</a> › <a href="cna/">Brindes CNA</a> › Plaquinhas de Pintar Monstrinhos CNA</p><h1>Plaquinhas de Pintar Monstrinhos CNA</h1><p>🎨 Plaquinhas com os monstrinhos do CNA, com o contorno preto em relevo sobre a base branca, prontas pra pintar. A criança colore cada pedacinho e leva pra casa um monstrinho do jeito dela.</p><p>O contorno em relevo ajuda a pintar sem sair da linha.</p><p>📦 O QUE VEM NO PEDIDO<br>1 kit com 3 plaquinhas dos monstrinhos que você escolher<br>As canetinhas não acompanham. Se quiser o kit com canetinhas, a gente combina no WhatsApp</p><p>📏 FICHA TÉCNICA<br>Material: PLA<br>Base branca com contorno preto em relevo<br>Monstrinhos: Ben e a turma de monstrinhos do CNA, a gente confirma quais com você</p><p>🏫 PARA A SUA UNIDADE<br>Atividade pro Dia das Crianças, aula especial, colônia de férias ou evento com as famílias. A partir de 10 kits o preço baixa, e acima de 50 a gente combina com você no WhatsApp.</p><p>⏱️ PRAZO<br>Pedido pequeno: de 3 a 5 dias úteis depois do pagamento.<br>Lote: o prazo a gente combina com você pela quantidade.</p><p>🧼 CUIDADOS<br>Limpar com pano seco.<br>Não deixar ao sol direto ou dentro do carro. O PLA pode deformar em temperatura alta.<br>Pintura com acompanhamento de um adulto. Não indicado para menores de 3 anos.</p><p>Cada peça é feita sob encomenda, na cor que você escolhe, e o pedido fecha com a gente no WhatsApp.</p><h2>Mais em Brindes CNA</h2><ul><li><a href="cna/chaveiro-giratorio-cna/"><img src="/assets/fotos/chaveiro-giratorio-cna-1.jpg?v=20261012b" alt="Chaveiro Giratório CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Giratório CNA</strong></a><p>Um chaveiro com um disco que gira dentro da moldura vermelha. De um lado, o rostinho de um monstrinho do CNA. Do outro, a logo do CNA. É…</p></li><li><a href="cna/chaveiro-monstrinho-cna/"><img src="/assets/fotos/chaveiro-monstrinho-cna-1.jpg?v=20261012b" alt="Chaveiro Monstrinho CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Monstrinho CNA</strong></a><p>Um chaveiro no formato do rostinho de um monstrinho do CNA, com o desenho em preto na frente e a logo do CNA atrás. Leve e fininho, fica…</p></li><li><a href="cna/microfone-cna/"><img src="/assets/fotos/microfone-cna-1.jpg?v=20261012b" alt="Microfone CNA" width="160" height="160" loading="lazy"><strong>Microfone CNA</strong></a><p>Um mini microfone de repórter com a canopla vermelha e o CNA em preto. Pra gravar vídeo com aluno, entrevista em evento, apresentação de…</p></li></ul></div><!--/estatico--></main>
+<main id="conteudo" tabindex="-1"><!--estatico--><div class="wrap estatico"><p><a href="./">Início</a> › <a href="cna/">Brindes CNA</a> › Plaquinhas de Pintar Monstrinhos CNA</p><h1>Plaquinhas de Pintar Monstrinhos CNA</h1><p>🎨 Plaquinhas com os monstrinhos do CNA, com o contorno preto em relevo sobre a base branca, prontas pra pintar. A criança colore cada pedacinho e leva pra casa um monstrinho do jeito dela.</p><p>O contorno em relevo ajuda a pintar sem sair da linha.</p><p>📦 O QUE VEM NO PEDIDO<br>1 kit com 3 plaquinhas dos monstrinhos que você escolher<br>As canetinhas não acompanham. Se quiser o kit com canetinhas, a gente combina no WhatsApp</p><p>📏 FICHA TÉCNICA<br>Material: PLA<br>Base branca com contorno preto em relevo<br>Monstrinhos: Ben e a turma de monstrinhos do CNA, a gente confirma quais com você</p><p>🏫 PARA A SUA UNIDADE<br>Atividade pro Dia das Crianças, aula especial, colônia de férias ou evento com as famílias. A partir de 10 kits o preço baixa, e acima de 50 a gente combina com você no WhatsApp.</p><p>⏱️ PRAZO<br>Pedido pequeno: de 3 a 5 dias úteis depois do pagamento.<br>Lote: o prazo a gente combina com você pela quantidade.</p><p>🧼 CUIDADOS<br>Limpar com pano seco.<br>Não deixar ao sol direto ou dentro do carro. O PLA pode deformar em temperatura alta.<br>Pintura com acompanhamento de um adulto. Não indicado para menores de 3 anos.</p><p>Cada peça é feita sob encomenda, na cor que você escolhe, e o pedido fecha com a gente no WhatsApp.</p><h2>Mais em Brindes CNA</h2><ul><li><a href="cna/microfone-cna/"><img src="/assets/fotos/microfone-cna-1.jpg?v=20261012b" alt="Microfone CNA" width="160" height="160" loading="lazy"><strong>Microfone CNA</strong></a><p>Um mini microfone de repórter com a canopla vermelha e o CNA em preto. Pra gravar vídeo com aluno, entrevista em evento, apresentação de…</p></li><li><a href="cna/chaveiro-giratorio-cna/"><img src="/assets/fotos/chaveiro-giratorio-cna-1.jpg?v=20261012c" alt="Chaveiro Giratório CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Giratório CNA</strong></a><p>Um chaveiro com um disco que gira dentro da moldura vermelha. De um lado, o rostinho de um monstrinho do CNA. Do outro, a logo do CNA. É…</p></li><li><a href="cna/chaveiro-monstrinho-cna/"><img src="/assets/fotos/chaveiro-monstrinho-cna-1.jpg?v=20261012b" alt="Chaveiro Monstrinho CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Monstrinho CNA</strong></a><p>Um chaveiro no formato do rostinho de um monstrinho do CNA, com o desenho em preto na frente e a logo do CNA atrás. Leve e fininho, fica…</p></li></ul></div><!--/estatico--></main>
 <footer>
   <div class="wrap">
     <div class="marca">
@@ -840,7 +840,7 @@ function paginaProduto(p) {
         ${p.cores.length ? `<div class="caixa${faltaCor ? ' erro' : ''}"><b>Cor${corProduto ? ': ' + esc(corProduto) : ''}</b>${faltaCor ? '<span class="falta">Escolha uma cor</span>' : ''}<div class="chips">${p.cores.map((c) => `<button type="button" class="chip cor" aria-pressed="${corProduto === c}" data-corproduto="${esc(c)}" aria-label="${esc(c)}" title="${esc(c)}"><i style="background:${COR[c] || '#C9C9CE'}"></i></button>`).join('')}</div></div>` : ''}
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
           <div class="qtd" role="group" aria-label="Quantidade"><button type="button" data-qtdp="-1" aria-label="Diminuir">−</button><output aria-live="polite">${qtdProduto}</output><button type="button" data-qtdp="1" aria-label="Aumentar">+</button></div>
-          <button type="button" class="btn" style="flex:1 1 220px;min-height:56px;font-size:17px" data-addproduto="${esc(p.slug)}" id="add-principal">${IC.sacola}Adicionar ao pedido</button>
+          <button type="button" class="btn" style="flex:1 1 220px" data-addproduto="${esc(p.slug)}" id="add-principal">${IC.sacola}Adicionar ao pedido</button>
         </div>
         <a class="btn" style="background:#fff;color:var(--whats);border:1.5px solid var(--whats)" href="${esc(wa(msg))}" target="_blank" rel="noopener" data-whats="produto" data-produto="${esc(p.slug)}">${IC.whats}Pedir só este pelo WhatsApp</a>
         <div class="caixa"><span><b>Produção:</b> ${sobOrcamento(p) ? 'de 3 a 5 dias úteis depois do pagamento em pedido pequeno. Em lote, o prazo a gente combina com você pela quantidade.' : 'de 3 a 5 dias úteis depois do pagamento.'}</span><span><b>Envio:</b> pra todo o Brasil. O frete sai pelo seu CEP e a gente informa antes do pagamento.</span></div>
