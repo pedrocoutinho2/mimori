@@ -219,12 +219,6 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .faixa-forte .txt{flex:1 1 420px;display:flex;flex-direction:column;justify-content:center;gap:14px}
 .faixa-forte .img{flex:1.2 1 440px;min-height:320px;position:relative;border-radius:18px;overflow:hidden;background:#fff}
 .faixa-forte .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.orcamentos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:20px}
-.orcamento{border-radius:var(--r2);padding:36px;display:flex;flex-direction:column;gap:14px;color:#fff}
-.orcamento .titulo{color:#fff;font-size:clamp(26px,2.8vw,36px)}
-.orcamento p{margin:0;font-size:17px;max-width:46ch}
-.orcamento .btn{align-self:flex-start;margin-top:auto}
-.orcamento .btn svg{color:var(--whats)}
 .passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:20px;list-style:none;margin:0;padding:0}
 .passos li{background:#fff;border:1px solid var(--borda);border-radius:var(--r2);padding:28px 24px;display:flex;flex-direction:column;gap:12px}
 .passos .ic{position:relative;width:72px;height:72px;border-radius:var(--pilula);background:var(--suave);color:var(--marca);display:flex;align-items:center;justify-content:center}
@@ -264,13 +258,14 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .vazio{padding:40px;border:1.5px dashed #D0C5E7;border-radius:var(--r2);text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
 
 /* produto */
-/* página de produto: padrão único para todas as peças (12/10/2026), na escala compacta */
-.produto{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}
-.galeria{flex:0 1 480px;max-width:480px;min-width:0;display:flex;gap:12px}
-.miniaturas{flex:0 0 64px;display:flex;flex-direction:column;gap:8px;contain:size;overflow-y:auto;scrollbar-width:none}
+/* página de produto: padrão único para todas as peças. Duas colunas iguais que preenchem a largura;
+   a galeria fica presa ao rolar e a descrição vem na coluna da direita, logo abaixo da compra */
+.produto{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.galeria{position:sticky;top:calc(96px + env(safe-area-inset-top,0));min-width:0;display:flex;gap:12px}
+.miniaturas{flex:0 0 72px;display:flex;flex-direction:column;gap:10px;contain:size;overflow-y:auto;scrollbar-width:none}
 .miniaturas::-webkit-scrollbar{display:none}
 .miniaturas button{flex-shrink:0}
-.miniaturas button{position:relative;width:64px;height:64px;padding:0;border-radius:12px;border:2px solid var(--borda);overflow:hidden;background:#fff}
+.miniaturas button{position:relative;width:72px;height:72px;padding:0;border-radius:12px;border:2px solid var(--borda);overflow:hidden;background:#fff}
 .miniaturas button[aria-pressed=true]{border-color:var(--marca)}
 .miniaturas img{width:100%;height:100%;object-fit:cover}
 .miniaturas .playmini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(36,31,46,.35);color:#fff}
@@ -280,12 +275,15 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .palco .fotonav{width:40px;height:40px;top:calc(50% - 20px);margin-top:0;opacity:.95;border:1px solid var(--borda)}
 .palco .fotonav svg{width:16px;height:16px}
 .legenda{position:absolute;left:12px;bottom:12px;padding:4px 10px;border-radius:var(--pilula);background:#fff;font-size:13px;font-weight:600}
-.info{flex:1 1 380px;max-width:560px;min-width:0;display:flex;flex-direction:column;gap:14px}
-.info h1{font-size:clamp(24px,2.4vw,30px)}
-.info .valor{font-family:var(--f-ui);font-weight:800;font-size:26px;color:var(--marca)}
-.info .caixa{padding:14px 16px;gap:8px;font-size:15px}
-.info .btn{min-height:48px;font-size:16px}
-.info .qtd button{height:48px}
+.info{min-width:0;display:flex;flex-direction:column;gap:16px}
+.info h1{font-size:clamp(26px,2.5vw,34px);line-height:1.1}
+.info .valor{font-family:var(--f-ui);font-weight:800;font-size:28px;color:var(--marca)}
+.info .caixa{padding:16px 18px;gap:8px;font-size:15px}
+.info .btn{min-height:52px;font-size:16px}
+.info .qtd button{height:52px}
+.info .descricao{margin-top:12px;padding:24px 26px;font-size:15.5px}
+.info .descricao>h3:first-child{margin-top:0}
+.info .descricao h3{font-size:17.5px}
 .caixa{padding:16px 18px;border-radius:16px;background:#fff;border:1px solid var(--borda);display:flex;flex-direction:column;gap:10px}
 .faixas{display:flex;flex-direction:column;gap:6px}
 .faixas button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--borda);background:#fff;text-align:left}
@@ -344,6 +342,9 @@ footer a:hover{text-decoration:underline}
   .nav a.so-largo{display:none}
 }
 @media (max-width:900px){
+  .produto{gap:32px}
+  .miniaturas{flex-basis:56px}
+  .miniaturas button{width:56px;height:56px}
   .nav{display:none}
   .busca{margin-left:auto}
 }
@@ -369,7 +370,7 @@ footer a:hover{text-decoration:underline}
   .hero .btn{min-height:46px;padding:0 14px;font-size:14.5px}
   .confianca{font-size:13.5px}
   .faixa{font-size:12.5px;min-height:32px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:32px;padding:0 12px}
-  .tema,.faixa-forte,.orcamento{padding:24px}
+  .tema,.faixa-forte{padding:24px}
   .catalogo{flex-direction:column}
   .lateral{position:static;flex-basis:auto;flex-direction:row;overflow-x:auto;width:100%;scrollbar-width:none}
   .lateral a{flex-shrink:0;border:1px solid var(--borda);background:#fff}
@@ -383,8 +384,9 @@ footer a:hover{text-decoration:underline}
   .cab-res .btn{width:100%;min-height:46px}
   .miniaturas{flex-direction:row;overflow-x:auto;flex-basis:auto;contain:none}
   .miniaturas button{flex:0 0 56px;width:56px;height:56px}
-  .galeria{flex-basis:100%;max-width:420px;margin-inline:auto}
-  .info{max-width:none}
+  .produto{grid-template-columns:minmax(0,1fr)}
+  .galeria{position:static;width:100%;max-width:480px;margin-inline:auto}
+  .info .descricao{padding:20px}
   .descricao{padding:22px}
   .fotonav{display:none}
   .produto{gap:24px}
@@ -428,7 +430,7 @@ footer a:hover{text-decoration:underline}
   </div>
   <div class="menu-cat" id="menu-cat"><div class="wrap"><nav aria-label="Categorias" id="menu-cat-lista"></nav></div></div>
 </header>
-<main id="conteudo" tabindex="-1"><!--estatico--><div class="wrap estatico"><p><a href="./">Início</a> › Brindes CNA</p><h1>Brindes CNA</h1><p>4 peças de brindes cna feitas em 3D sob encomenda, na cor que você escolhe. Monte a lista e feche no WhatsApp.</p><h2>Peças</h2><ul><li><a href="cna/plaquinhas-de-pintar-monstrinhos-cna/"><strong>Plaquinhas de Pintar Monstrinhos CNA</strong></a><p>Plaquinhas com os monstrinhos do CNA, com o contorno preto em relevo sobre a base branca, prontas pra pintar. A criança colore cada…</p></li><li><a href="cna/chaveiro-giratorio-cna/"><img src="/assets/fotos/chaveiro-giratorio-cna-1.jpg?v=20261012c" alt="Chaveiro Giratório CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Giratório CNA</strong></a><p>Um chaveiro com um disco que gira dentro da moldura vermelha. De um lado, o rostinho de um monstrinho do CNA. Do outro, a logo do CNA. É…</p></li><li><a href="cna/microfone-cna/"><img src="/microfone-cna/1791858392733-t1d4.jpg" alt="Microfone CNA" width="160" height="160" loading="lazy"><strong>Microfone CNA</strong></a><p>Um mini microfone de repórter com a canopla vermelha e o CNA em preto. Pra gravar vídeo com aluno, entrevista em evento, apresentação de…</p></li><li><a href="cna/chaveiro-monstrinho-cna/"><img src="/assets/fotos/chaveiro-monstrinho-cna-1.jpg?v=20261012b" alt="Chaveiro Monstrinho CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Monstrinho CNA</strong></a><p>Um chaveiro no formato do rostinho de um monstrinho do CNA, com o desenho em preto na frente e a logo do CNA atrás. Leve e fininho, fica…</p></li></ul><h2>Categorias</h2><ul><li><a href="produtos-religiosos/">Religiosos</a> (7 peças)</li><li><a href="vasos-de-planta/">Vasos</a> (39 peças)</li><li><a href="chaveiros/">Chaveiros e lembrancinhas</a> (2 peças)</li><li><a href="casa-e-organizacao/">Casa e organização</a> (2 peças)</li><li><a href="jogos-e-fidget/">Jogos e fidget</a> (15 peças)</li><li><a href="brindes-para-salao/">Brindes para salão</a> (18 peças)</li></ul></div><!--/estatico--></main>
+<main id="conteudo" tabindex="-1"><!--estatico--><div class="wrap estatico"><p><a href="./">Início</a> › Brindes CNA</p><h1>Brindes CNA</h1><p>4 peças de brindes cna feitas em 3D sob encomenda, na cor que você escolhe. Monte a lista e feche no WhatsApp.</p><h2>Peças</h2><ul><li><a href="cna/plaquinhas-de-pintar-monstrinhos-cna/"><strong>Plaquinhas de Pintar Monstrinhos CNA</strong></a><p>Plaquinhas com os monstrinhos do CNA, com o contorno preto em relevo sobre a base branca, prontas pra pintar. A criança colore cada…</p></li><li><a href="cna/microfone-cna/"><strong>Microfone CNA</strong></a><p>Um mini microfone de repórter com a canopla vermelha e o CNA em preto. Pra gravar vídeo com aluno, entrevista em evento, apresentação de…</p></li><li><a href="cna/chaveiro-giratorio-cna/"><img src="/assets/fotos/chaveiro-giratorio-cna-1.jpg?v=20261012c" alt="Chaveiro Giratório CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Giratório CNA</strong></a><p>Um chaveiro com um disco que gira dentro da moldura vermelha. De um lado, o rostinho de um monstrinho do CNA. Do outro, a logo do CNA. É…</p></li><li><a href="cna/chaveiro-monstrinho-cna/"><img src="/assets/fotos/chaveiro-monstrinho-cna-1.jpg?v=20261012b" alt="Chaveiro Monstrinho CNA" width="160" height="160" loading="lazy"><strong>Chaveiro Monstrinho CNA</strong></a><p>Um chaveiro no formato do rostinho de um monstrinho do CNA, com o desenho em preto na frente e a logo do CNA atrás. Leve e fininho, fica…</p></li></ul><h2>Categorias</h2><ul><li><a href="produtos-religiosos/">Religiosos</a> (7 peças)</li><li><a href="vasos-de-planta/">Vasos</a> (39 peças)</li><li><a href="chaveiros/">Chaveiros e lembrancinhas</a> (2 peças)</li><li><a href="casa-e-organizacao/">Casa e organização</a> (2 peças)</li><li><a href="jogos-e-fidget/">Jogos e fidget</a> (15 peças)</li><li><a href="brindes-para-salao/">Brindes para salão</a> (18 peças)</li></ul></div><!--/estatico--></main>
 <footer>
   <div class="wrap">
     <div class="marca">
@@ -702,13 +704,15 @@ function paginaHome() {
   ${pr('religiosos', 'Ver os religiosos', 'produtos-religiosos')}
   ${pr('vasos', 'Ver todos os vasos', 'vasos-de-planta')}
   ${pr('ate35', 'Ver mais até R$ 35', 'catalogo?ate=35')}
-  ${comoFunciona()}
-  <section class="wrap" aria-label="Orçamento de personalizados"><div class="orcamentos">
-    <div class="orcamento" style="background:var(--marca)"><span class="pilula" style="align-self:flex-start;background:#fff">Presentes personalizados</span><h2 class="titulo">Um presente com a cara de quem você ama</h2><p>Nome, data, frase ou foto na peça. Conta a sua ideia e a gente manda o orçamento! 💜</p>
-      <a class="btn claro" href="${esc(wa('Oi, Mimori! Quero um orçamento de presente personalizado.\nOcasião: \nIdeia (nome, data, frase ou foto): \nQuantidade: \nPra quando: '))}" target="_blank" rel="noopener" data-whats="personalizado">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
-    <div class="orcamento" style="background:var(--titulo)"><span class="pilula" style="align-self:flex-start;background:#fff">Brindes corporativos</span><h2 class="titulo">Brindes com a cara da sua empresa</h2><p>Logo da empresa e nome de cada pessoa. Conta a ocasião, a quantidade e a data e a gente manda o orçamento! 💜</p>
-      <a class="btn claro" href="${esc(wa('Oi, Mimori! Quero um orçamento de brindes corporativos.\nEmpresa: \nOcasião: \nQuantidade: \nData de entrega: '))}" target="_blank" rel="noopener" data-whats="brindes">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
-  </div></section>`;
+  <section class="wrap"><div class="faixa-forte" style="background:var(--marca);color:#fff">
+    <div class="txt"><span class="pilula" style="align-self:flex-start;background:#fff">Personalizados</span><h2 class="titulo" style="color:#fff;font-size:clamp(30px,3.6vw,44px)">Um presente com a cara de quem você ama</h2><p style="margin:0;font-size:17px">Nome, data, frase ou foto na peça. A gente confirma tudo com você antes de produzir! 💜</p><a class="btn claro" style="align-self:flex-start" href="personalizados" data-rota>Personalizar uma peça${IC.prox}</a></div>
+    <div class="img"><img src="assets/fotos/chaveiro-camera-porta-foto-3x4-1.jpg" alt="Chaveiro câmera com foto, feito em 3D" loading="lazy"></div></div></section>
+  <section class="wrap"><div class="faixa-forte" style="background:var(--titulo);color:#fff">
+    <div class="txt"><span class="pilula" style="align-self:flex-start;background:#fff">Brindes corporativos</span><h2 class="titulo" style="color:#fff;font-size:clamp(30px,3.6vw,44px)">Brindes com a cara da sua empresa</h2><p style="margin:0;font-size:17px">Imagina a sua equipe recebendo um presente com o logo da empresa e o nome de cada um! 💜</p>
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-weight:600"><li>Conte a ocasião, a quantidade e a data</li><li>Veja como fica e aprove</li><li>Receba no prazo combinado</li></ol>
+      <div style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn whats" href="${esc(wa('Oi, Mimori! Quero um orçamento de brindes corporativos.\nEmpresa: \nOcasião: \nQuantidade: \nData de entrega: '))}" target="_blank" rel="noopener" data-whats="brindes">${IC.whats}Pedir orçamento pelo WhatsApp</a><a class="btn claro" href="para-empresas" data-rota>Ver como funciona</a></div></div>
+    <div class="img" style="background:var(--marca-escura)"><img src="assets/fotos/kit-ore-e-confie-com-bandeja-e-porta-vela-1.jpg" alt="" loading="lazy"></div></div></section>
+  ${comoFunciona()}`;
 }
 function temaHTML(t, semLink) {
   const c = Object.assign({ fundo: '#E7E2F3', texto: '#241F2E', titulo: '#382B55', selo: '#FFFFFF', seloTexto: '#4A396F', cta: '#6E5B98', ctaTexto: '#FFFFFF' }, t.cor || {});
@@ -849,9 +853,9 @@ function paginaProduto(p) {
         <a class="btn" style="background:#fff;color:var(--whats);border:1.5px solid var(--whats)" href="${esc(wa(msg))}" target="_blank" rel="noopener" data-whats="produto" data-produto="${esc(p.slug)}">${IC.whats}Pedir só este pelo WhatsApp</a>
         <div class="caixa"><span><b>Produção:</b> ${sobOrcamento(p) ? 'de 3 a 5 dias úteis depois do pagamento em pedido pequeno. Em lote, o prazo a gente combina com você pela quantidade.' : 'de 3 a 5 dias úteis depois do pagamento.'}</span><span><b>Envio:</b> pra todo o Brasil. O frete sai pelo seu CEP e a gente informa antes do pagamento.</span></div>
         <p style="margin:0;font-size:14px;color:var(--texto2)">Pagamento pelo link · A gente confirma tudo com você no WhatsApp</p>
+        ${p.descricao ? `<section class="descricao" aria-label="Sobre a peça">${descricaoHTML(p.descricao)}</section>` : ''}
       </div>
     </div>
-    ${p.descricao ? `<section class="descricao" aria-label="Sobre a peça">${descricaoHTML(p.descricao)}</section>` : ''}
   </div>
   ${prateleira('combina', 'Combina com', '', combina, p.categoria, 'Ver mais')}
   <div class="barra-compra" role="region" aria-label="Comprar"><span class="v"><small>${esc(corProduto ? 'Cor: ' + corProduto : p.cores.length ? 'Escolha a cor acima' : p.nome)}</small><strong>${sobOrcamento(p) ? 'Sob orçamento' : brl(precoItem(p, op, qtdProduto))}</strong></span><button type="button" class="btn" data-addproduto="${esc(p.slug)}">${IC.sacola}Adicionar ao pedido</button></div>`;
