@@ -613,10 +613,19 @@ const origem = (() => {
   if (/instagram/.test(r)) return 'instagram'; if (/google/.test(r)) return 'google'; if (/whatsapp|wa\.me/.test(r)) return 'whatsapp'; if (/shopee/.test(r)) return 'shopee'; if (/tiktok/.test(r)) return 'tiktok';
   return 'outros';
 })();
+/* Aparelho da equipe: marcado ao abrir o painel ou pelo link ?interno=1 (?interno=0 desmarca). Não entra no relatório. */
+const interno = (() => {
+  try {
+    const q = new URLSearchParams(location.search).get('interno');
+    if (q === '1') localStorage.setItem('mimori_interno', '1');
+    if (q === '0') localStorage.removeItem('mimori_interno');
+    return localStorage.getItem('mimori_interno') === '1';
+  } catch (e) { return false; }
+})();
 function registra(tipo, extra) {
   if (!sb) return;
   const p = extra && extra.produto ? S.porSlug[extra.produto] : null;
-  sb.from('eventos').insert({ tipo, pagina: location.pathname.slice(0, 200), produto_id: p && p.id && /^[0-9a-f-]{36}$/.test(p.id) ? p.id : null, botao: extra && extra.botao || null, termo: extra && extra.termo ? String(extra.termo).slice(0, 80) : null, resultados: extra && extra.resultados != null ? extra.resultados : null, origem, sessao }).then(() => {}, () => {});
+  sb.from('eventos').insert({ tipo, pagina: location.pathname.slice(0, 200), produto_id: p && p.id && /^[0-9a-f-]{36}$/.test(p.id) ? p.id : null, botao: extra && extra.botao || null, termo: extra && extra.termo ? String(extra.termo).slice(0, 80) : null, resultados: extra && extra.resultados != null ? extra.resultados : null, origem, sessao, interno }).then(() => {}, () => {});
 }
 
 /* ===== Dados ===== */
