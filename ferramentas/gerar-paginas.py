@@ -55,6 +55,8 @@ NOME_CAT = {c['slug']: c['nome'] for c in cats}
 OCULTAS = {c['slug'] for c in cats if c.get('oculta')}
 VIS_CATS = [c for c in cats if c['slug'] not in OCULTAS]
 VIS = [p for p in produtos if p['categoria'] not in OCULTAS]
+# Imagem de compartilhamento (og:image) própria por categoria; sem entrada, usa a padrão.
+OG_CAT = {'cna': 'assets/fotos/og-cna.jpg'}
 e = html.escape
 
 def resumo(t, n=155):
@@ -133,7 +135,7 @@ for c in cats:
     d = f"{len(ps)} peças de {c['nome'].lower()} feitas em 3D sob encomenda, na cor que você escolhe. Monte a lista e feche no WhatsApp."
     corpo = f'<p><a href="./">Início</a> › {e(c["nome"])}</p><h1>{e(c["nome"])}</h1><p>{e(d)}</p>' + lista_produtos(ps) + lista_categorias()
     oculta = c['slug'] in OCULTAS
-    pagina(c['slug'], f"{c['nome']} · Mimori", d, corpo, indexar=not oculta)
+    pagina(c['slug'], f"{c['nome']} · Mimori", d, corpo, OG_CAT.get(c['slug'], ''), indexar=not oculta)
     open(os.path.join(RAIZ, c['slug'], '.gerada'), 'w').close()
     if not oculta: urls.append(c['slug'])
 
