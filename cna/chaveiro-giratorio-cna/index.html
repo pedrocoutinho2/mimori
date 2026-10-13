@@ -264,13 +264,14 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .vazio{padding:40px;border:1.5px dashed #D0C5E7;border-radius:var(--r2);text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
 
 /* produto */
-/* página de produto: padrão único para todas as peças (12/10/2026), na escala compacta */
-.produto{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}
-.galeria{flex:0 1 480px;max-width:480px;min-width:0;display:flex;gap:12px}
-.miniaturas{flex:0 0 64px;display:flex;flex-direction:column;gap:8px;contain:size;overflow-y:auto;scrollbar-width:none}
+/* página de produto: padrão único para todas as peças. Duas colunas iguais que preenchem a largura;
+   a galeria fica presa ao rolar e a descrição vem na coluna da direita, logo abaixo da compra */
+.produto{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.galeria{position:sticky;top:calc(96px + env(safe-area-inset-top,0));min-width:0;display:flex;gap:12px}
+.miniaturas{flex:0 0 72px;display:flex;flex-direction:column;gap:10px;contain:size;overflow-y:auto;scrollbar-width:none}
 .miniaturas::-webkit-scrollbar{display:none}
 .miniaturas button{flex-shrink:0}
-.miniaturas button{position:relative;width:64px;height:64px;padding:0;border-radius:12px;border:2px solid var(--borda);overflow:hidden;background:#fff}
+.miniaturas button{position:relative;width:72px;height:72px;padding:0;border-radius:12px;border:2px solid var(--borda);overflow:hidden;background:#fff}
 .miniaturas button[aria-pressed=true]{border-color:var(--marca)}
 .miniaturas img{width:100%;height:100%;object-fit:cover}
 .miniaturas .playmini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(36,31,46,.35);color:#fff}
@@ -280,12 +281,15 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 .palco .fotonav{width:40px;height:40px;top:calc(50% - 20px);margin-top:0;opacity:.95;border:1px solid var(--borda)}
 .palco .fotonav svg{width:16px;height:16px}
 .legenda{position:absolute;left:12px;bottom:12px;padding:4px 10px;border-radius:var(--pilula);background:#fff;font-size:13px;font-weight:600}
-.info{flex:1 1 380px;max-width:560px;min-width:0;display:flex;flex-direction:column;gap:14px}
-.info h1{font-size:clamp(24px,2.4vw,30px)}
-.info .valor{font-family:var(--f-ui);font-weight:800;font-size:26px;color:var(--marca)}
-.info .caixa{padding:14px 16px;gap:8px;font-size:15px}
-.info .btn{min-height:48px;font-size:16px}
-.info .qtd button{height:48px}
+.info{min-width:0;display:flex;flex-direction:column;gap:16px}
+.info h1{font-size:clamp(26px,2.5vw,34px);line-height:1.1}
+.info .valor{font-family:var(--f-ui);font-weight:800;font-size:28px;color:var(--marca)}
+.info .caixa{padding:16px 18px;gap:8px;font-size:15px}
+.info .btn{min-height:52px;font-size:16px}
+.info .qtd button{height:52px}
+.info .descricao{margin-top:12px;padding:24px 26px;font-size:15.5px}
+.info .descricao>h3:first-child{margin-top:0}
+.info .descricao h3{font-size:17.5px}
 .caixa{padding:16px 18px;border-radius:16px;background:#fff;border:1px solid var(--borda);display:flex;flex-direction:column;gap:10px}
 .faixas{display:flex;flex-direction:column;gap:6px}
 .faixas button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--borda);background:#fff;text-align:left}
@@ -344,6 +348,9 @@ footer a:hover{text-decoration:underline}
   .nav a.so-largo{display:none}
 }
 @media (max-width:900px){
+  .produto{gap:32px}
+  .miniaturas{flex-basis:56px}
+  .miniaturas button{width:56px;height:56px}
   .nav{display:none}
   .busca{margin-left:auto}
 }
@@ -383,8 +390,9 @@ footer a:hover{text-decoration:underline}
   .cab-res .btn{width:100%;min-height:46px}
   .miniaturas{flex-direction:row;overflow-x:auto;flex-basis:auto;contain:none}
   .miniaturas button{flex:0 0 56px;width:56px;height:56px}
-  .galeria{flex-basis:100%;max-width:420px;margin-inline:auto}
-  .info{max-width:none}
+  .produto{grid-template-columns:minmax(0,1fr)}
+  .galeria{position:static;width:100%;max-width:480px;margin-inline:auto}
+  .info .descricao{padding:20px}
   .descricao{padding:22px}
   .fotonav{display:none}
   .produto{gap:24px}
@@ -849,9 +857,9 @@ function paginaProduto(p) {
         <a class="btn" style="background:#fff;color:var(--whats);border:1.5px solid var(--whats)" href="${esc(wa(msg))}" target="_blank" rel="noopener" data-whats="produto" data-produto="${esc(p.slug)}">${IC.whats}Pedir só este pelo WhatsApp</a>
         <div class="caixa"><span><b>Produção:</b> ${sobOrcamento(p) ? 'de 3 a 5 dias úteis depois do pagamento em pedido pequeno. Em lote, o prazo a gente combina com você pela quantidade.' : 'de 3 a 5 dias úteis depois do pagamento.'}</span><span><b>Envio:</b> pra todo o Brasil. O frete sai pelo seu CEP e a gente informa antes do pagamento.</span></div>
         <p style="margin:0;font-size:14px;color:var(--texto2)">Pagamento pelo link · A gente confirma tudo com você no WhatsApp</p>
+        ${p.descricao ? `<section class="descricao" aria-label="Sobre a peça">${descricaoHTML(p.descricao)}</section>` : ''}
       </div>
     </div>
-    ${p.descricao ? `<section class="descricao" aria-label="Sobre a peça">${descricaoHTML(p.descricao)}</section>` : ''}
   </div>
   ${prateleira('combina', 'Combina com', '', combina, p.categoria, 'Ver mais')}
   <div class="barra-compra" role="region" aria-label="Comprar"><span class="v"><small>${esc(corProduto ? 'Cor: ' + corProduto : p.cores.length ? 'Escolha a cor acima' : p.nome)}</small><strong>${sobOrcamento(p) ? 'Sob orçamento' : brl(precoItem(p, op, qtdProduto))}</strong></span><button type="button" class="btn" data-addproduto="${esc(p.slug)}">${IC.sacola}Adicionar ao pedido</button></div>`;
