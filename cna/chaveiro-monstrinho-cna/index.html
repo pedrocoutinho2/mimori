@@ -152,10 +152,10 @@ main{display:flex;flex-direction:column;gap:72px;padding:28px 0 0}
 
 /* ===== Tema CNA (/cna e as peças dela): vermelho do CNA no lugar do roxo, assinatura mimori × CNA ===== */
 body.tema-cna{--marca:#E91D3C;--marca-escura:#B8122B;--suave:#FDECEF;--suave2:#FBF1F2;--borda:#F0E2E4;--titulo:#211A1F;--papel:#FFF8F6;--lilas:#F5A3B1}
-.logo-cna{display:none;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-left:-6px}
-.logo-cna span{font-family:var(--f-marca);font-size:18px;color:var(--texto2)}
-.logo-cna img{height:22px;width:auto}
-body.tema-cna .logo-cna{display:inline-flex}
+.assina-cna{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.assina-cna img{height:34px;width:auto}
+.assina-cna img.cna-logo{height:28px}
+.assina-cna span{font-family:var(--f-marca);font-size:22px;color:var(--texto2);line-height:1}
 body.tema-cna #faixa{display:none}
 body.tema-cna .nav a,body.tema-cna .nav-cat{color:var(--tinta)}
 .cna{display:flex;flex-direction:column;gap:64px}
@@ -250,7 +250,7 @@ body.tema-cna .nav a,body.tema-cna .nav-cat{color:var(--tinta)}
 .cna-final>div{position:relative;z-index:1}
 @media (max-width:1080px){.cgrade{grid-template-columns:repeat(2,minmax(0,1fr))}.monstros{grid-template-columns:repeat(4,minmax(0,1fr))}.kit{grid-template-columns:1fr}}
 @media (max-width:760px){
-  .logo-cna img{height:16px}.logo-cna span{font-size:14px}.logo-cna{gap:5px;margin-left:2px}
+  .assina-cna{gap:10px;margin-bottom:16px}.assina-cna img{height:28px}.assina-cna img.cna-logo{height:23px}.assina-cna span{font-size:18px}
   .cna{gap:44px}
   .cna-hero{grid-template-columns:1fr;padding:20px;gap:24px;border-radius:22px}
   .vitrine{justify-self:center;max-width:400px;order:-1}.vitrine .m2{left:0}
@@ -541,7 +541,6 @@ footer a:hover{text-decoration:underline}
 <header class="topo" id="topo">
   <div class="wrap">
     <a class="logo" href="./" data-rota aria-label="Mimori, página inicial"><img src="assets/logo-mimori.svg" alt="Mimori" width="138" height="36"></a>
-    <a class="logo-cna" href="cna" data-rota aria-label="Brindes CNA"><span aria-hidden="true">×</span><img src="assets/logo-cna.svg" alt="CNA" width="83" height="22"></a>
     <nav class="nav" aria-label="Menu principal">
       <button type="button" class="nav-cat" id="abrir-categorias" aria-expanded="false" aria-controls="menu-cat">Catálogo<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
       <a href="datas-especiais" data-rota>Datas especiais</a>
@@ -1139,7 +1138,7 @@ function paginaCNA(cat) {
   it.forEach((p) => kitDe(p.slug));
   return `<div class="wrap cna">
     <section class="cna-hero">
-      <div><span class="pilula">${esc(T.selo)}</span>
+      <div><div class="assina-cna"><img src="assets/logo-mimori.svg" alt="Mimori" width="138" height="36"><span aria-hidden="true">×</span><img class="cna-logo" src="assets/logo-cna.svg" alt="CNA" width="105" height="28"></div><span class="pilula">${esc(T.selo)}</span>
         <h1 class="titulo">Os monstrinhos do CNA <em>na mochila</em> dos seus alunos</h1>
         <p class="lead">${esc(T.texto)}</p>
         <div class="ctas"><a class="btn" href="cna#kit" data-pula="kit">Montar o kit da unidade</a><a class="btn claro" href="cna#pecas" data-pula="pecas">Ver as peças</a></div>
