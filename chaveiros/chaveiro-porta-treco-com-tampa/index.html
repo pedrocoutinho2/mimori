@@ -182,7 +182,7 @@ body.tema-cna .nav a,body.tema-cna .nav-cat{color:var(--tinta)}
 .mst b{font-family:var(--f-marca);font-size:18px}
 .mst[aria-pressed=true]{border-color:var(--c);box-shadow:0 10px 24px -14px var(--c)}
 .cgrade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
-.ccard{background:#fff;border:1px solid var(--borda);border-radius:var(--r2);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.ccard{cursor:pointer;background:#fff;border:1px solid var(--borda);border-radius:var(--r2);overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .ccard .midia{position:relative;aspect-ratio:1/1;background:var(--suave2)}
 .cslides{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
 .cslides::-webkit-scrollbar{display:none}
@@ -1080,12 +1080,12 @@ function ccardHTML(p) {
   const fo = fotoOpcao(p, cnaM); if (fo) f = [fo].concat(f.filter((x) => x !== fo));
   const m = f.map((src) => ({ t: 'f', src })).concat(p.video ? [{ t: 'v', src: p.video }] : []);
   const link = p.categoria + '/' + p.slug;
-  return `<article class="ccard" data-ccard="${esc(p.slug)}">
+  return `<article class="ccard" data-ccard="${esc(p.slug)}" data-href="${esc(link)}">
     <div class="midia">${m.length ? `<div class="cslides" data-cslides>${m.map((x, i) => x.t === 'v' ? `<video src="${esc(x.src)}" muted loop playsinline controls preload="metadata" aria-label="Vídeo de ${esc(p.nome)}"></video>` : `<img src="${esc(x.src)}" alt="${i ? '' : esc(p.nome)}" loading="lazy" draggable="false">`).join('')}</div>` : '<span class="vazia">Foto em breve</span>'}
       ${p.selo ? `<span class="selo">${esc(p.selo)}</span>` : ''}
       ${m.length > 1 ? `<button type="button" class="cnav ant" data-cnav="-1" aria-label="Foto anterior de ${esc(p.nome)}">${IC.ant}</button><button type="button" class="cnav prox" data-cnav="1" aria-label="Próxima foto de ${esc(p.nome)}">${IC.prox}</button><span class="cpontos">${m.map((x, i) => `<i class="${x.t === 'v' ? 'vid' : ''}${i ? '' : ' on'}"></i>`).join('')}</span>` : ''}</div>
     <div class="corpo"><h3><a href="${esc(link)}" data-rota>${esc(p.nome)}</a></h3>${escadaHTML(p)}
-      <div class="acoes-card"><a class="btn claro" href="${esc(link)}" data-rota>Ver a peça</a><button type="button" class="btn" data-add="${esc(p.slug)}">${IC.sacola}Adicionar</button></div></div>
+      <div class="acoes-card"><a class="btn claro" href="${esc(link)}" data-rota>Ver produto</a><button type="button" class="btn" data-add="${esc(p.slug)}">${IC.sacola}Adicionar</button></div></div>
   </article>`;
 }
 function kitLinhas() {
@@ -1246,6 +1246,8 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('#abrir-categorias')) { menuCategorias(); return; }
   if (e.target.closest('#abrir-busca')) { const t = $('#topo'), ab = !t.classList.contains('busca-aberta'); t.classList.toggle('busca-aberta', ab); $('#abrir-busca').setAttribute('aria-expanded', String(ab)); if (ab) inp.focus(); return; }
   if ($('#menu-cat').classList.contains('aberto') && (!e.target.closest('#menu-cat') || e.target.closest('#menu-cat a'))) menuCategorias(false);
+  const cc = e.target.closest('[data-ccard]');
+  if (cc && !e.target.closest('a,button,video,select,input')) { galeria = 0; qtdProduto = 1; corProduto = ''; opProduto = ''; faltaProduto = false; navega(cc.dataset.href); return; }
   const el = e.target.closest('a,button,[data-acao],[data-perso]');
   if (!el) return;
   const d = el.dataset;
