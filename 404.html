@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="facebook-domain-verification" content="r5xkq3n6fl4y2s4lnw5e4228xplqmv" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-7DWH6J6XFT"></script>
 <script>
@@ -22,8 +23,9 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '2137822373794053');
-fbq('track', 'PageView');
+/* aparelho da equipe (painel ou ?interno=1) não entra no Pixel, para não sujar públicos e conversões */
+(function () { var i = false; try { i = localStorage.getItem('mimori_interno') === '1' || new URLSearchParams(location.search).get('interno') === '1'; } catch (e) {}
+  window.mimoriPixel = !i; if (!i) { fbq('init', '2137822373794053'); fbq('track', 'PageView'); } })();
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=2137822373794053&ev=PageView&noscript=1"
@@ -655,11 +657,16 @@ function analytics(tipo, x) {
   const item = p ? { item_id: p.slug, item_name: p.nome, item_category: p.categoria, item_variant: [x.op, x.cor].filter(Boolean).join(' · ') || undefined, price: preco, quantity: qtd } : null;
   const r2 = (v) => Math.round(v * 100) / 100;
   if (tipo === 'clique') gtag('event', 'clique_botao', { botao: x.botao, produto: p ? p.nome : undefined });
+  else if (tipo === 'produto_visto' && item) gtag('event', 'view_item', { currency: 'BRL', value: r2(preco), items: [item] });
+  else if (tipo === 'busca') gtag('event', 'search', { search_term: String(x.termo || '').slice(0, 80) });
   else if (tipo === 'lista_adicionou' && item) gtag('event', 'add_to_cart', { currency: 'BRL', value: r2(preco * qtd), items: [item] });
   else if (tipo === 'whatsapp_clique') gtag('event', 'clique_whatsapp', { botao: x.botao, produto: p ? p.nome : undefined, currency: 'BRL', value: r2(x.valor != null ? x.valor : preco) });
   /* Meta Pixel: as mesmas duas conversões, nos eventos padrão AddToCart e Contact */
-  if (typeof fbq === 'function') {
-    if (tipo === 'lista_adicionou' && item) fbq('track', 'AddToCart', { content_ids: [p.slug], content_name: p.nome, content_type: 'product', currency: 'BRL', value: r2(preco * qtd) });
+  if (typeof fbq === 'function' && window.mimoriPixel) {
+    if (tipo === 'visita') { if (analytics._pv) fbq('track', 'PageView'); analytics._pv = true; } /* a 1ª PageView sai do código do Pixel no head; as seguintes são navegação interna */
+    else if (tipo === 'produto_visto' && item) fbq('track', 'ViewContent', { content_ids: [p.slug], content_name: p.nome, content_category: p.categoria, content_type: 'product', currency: 'BRL', value: r2(preco) });
+    else if (tipo === 'busca') fbq('track', 'Search', { search_string: String(x.termo || '').slice(0, 80) });
+    else if (tipo === 'lista_adicionou' && item) fbq('track', 'AddToCart', { content_ids: [p.slug], content_name: p.nome, content_type: 'product', currency: 'BRL', value: r2(preco * qtd) });
     else if (tipo === 'whatsapp_clique') fbq('track', 'Contact', { content_name: x.botao, currency: 'BRL', value: r2(x.valor != null ? x.valor : preco) });
   }
 }
