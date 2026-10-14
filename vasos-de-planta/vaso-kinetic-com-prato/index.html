@@ -9,8 +9,26 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-7DWH6J6XFT');
+  /* aparelho da equipe (abriu o painel ou ?interno=1) sai como tráfego interno no Analytics */
+  gtag('config', 'G-7DWH6J6XFT', (function () { try { return localStorage.getItem('mimori_interno') === '1' || new URLSearchParams(location.search).get('interno') === '1' ? { traffic_type: 'internal' } : {}; } catch (e) { return {}; } })());
 </script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2137822373794053');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2137822373794053&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <base href="/">
 <title>Vaso Kinetic com Prato · Mimori</title>
@@ -630,9 +648,27 @@ const interno = (() => {
   } catch (e) { return false; }
 })();
 function registra(tipo, extra) {
+  try { analytics(tipo, extra || {}); } catch (e) {}
   if (!sb) return;
   const p = extra && extra.produto ? S.porSlug[extra.produto] : null;
   sb.from('eventos').insert({ tipo, pagina: location.pathname.slice(0, 200), produto_id: p && p.id && /^[0-9a-f-]{36}$/.test(p.id) ? p.id : null, botao: extra && extra.botao || null, termo: extra && extra.termo ? String(extra.termo).slice(0, 80) : null, resultados: extra && extra.resultados != null ? extra.resultados : null, origem, sessao, interno }).then(() => {}, () => {});
+}
+
+/* Google Analytics: todo clique vira clique_botao. As conversões são add_to_cart (colocou no pedido) e clique_whatsapp (foi para o WhatsApp). */
+function analytics(tipo, x) {
+  if (typeof gtag !== 'function') return;
+  const p = x.produto ? S.porSlug[x.produto] : null;
+  const qtd = x.qtd || 1, preco = p && !sobOrcamento(p) ? Number(precoItem(p, x.op, qtd)) || 0 : 0;
+  const item = p ? { item_id: p.slug, item_name: p.nome, item_category: p.categoria, item_variant: [x.op, x.cor].filter(Boolean).join(' · ') || undefined, price: preco, quantity: qtd } : null;
+  const r2 = (v) => Math.round(v * 100) / 100;
+  if (tipo === 'clique') gtag('event', 'clique_botao', { botao: x.botao, produto: p ? p.nome : undefined });
+  else if (tipo === 'lista_adicionou' && item) gtag('event', 'add_to_cart', { currency: 'BRL', value: r2(preco * qtd), items: [item] });
+  else if (tipo === 'whatsapp_clique') gtag('event', 'clique_whatsapp', { botao: x.botao, produto: p ? p.nome : undefined, currency: 'BRL', value: r2(x.valor != null ? x.valor : preco) });
+  /* Meta Pixel: as mesmas duas conversões, nos eventos padrão AddToCart e Contact */
+  if (typeof fbq === 'function') {
+    if (tipo === 'lista_adicionou' && item) fbq('track', 'AddToCart', { content_ids: [p.slug], content_name: p.nome, content_type: 'product', currency: 'BRL', value: r2(preco * qtd) });
+    else if (tipo === 'whatsapp_clique') fbq('track', 'Contact', { content_name: x.botao, currency: 'BRL', value: r2(x.valor != null ? x.valor : preco) });
+  }
 }
 
 /* ===== Dados ===== */
@@ -715,7 +751,7 @@ function adiciona(slug, qtd, cor, op) {
   const chave = slug + '|' + (cor || '') + '|' + (op || '');
   const ex = lista.find((i) => i.chave === chave);
   if (ex) ex.qtd = Math.min(999, ex.qtd + (qtd || 1)); else lista.push({ chave, slug, qtd: qtd || 1, cor: cor || '', op: op || '' });
-  ultimoItem = chave; salvaLista(); if (!gavetaAberta) aviso(p.nome + ' entrou no pedido.'); registra('lista_adicionou', { produto: slug });
+  ultimoItem = chave; salvaLista(); if (!gavetaAberta) aviso(p.nome + ' entrou no pedido.'); registra('lista_adicionou', { produto: slug, qtd: qtd || 1, op, cor });
 }
 const totalQtd = () => lista.reduce((a, i) => a + i.qtd, 0);
 const totalValor = () => lista.reduce((a, i) => { const p = S.porSlug[i.slug]; return a + (p ? precoItem(p, i.op, qtdNaLista(i.slug)) * i.qtd : 0); }, 0);
@@ -1248,6 +1284,25 @@ function menuCategorias(abrir) {
   m.classList.toggle('aberto', v); b.setAttribute('aria-expanded', String(v));
 }
 const fechaCamada = (fn) => fechaComCalma($('#camadas'), () => { fn(); desenhaCamadas(); });
+/* Todo clique em botão ou link vira evento 'clique' (painel e Analytics), com um rótulo legível. */
+const ROT = { add: 'Adicionar (card)', addproduto: 'Adicionar ao pedido (produto)', cardcor: 'Cor (card)', corproduto: 'Cor (produto)', opproduto: 'Opção (produto)', fotonav: 'Trocar foto (card)', galeria: 'Galeria de fotos', qtdp: 'Quantidade (produto)', qtdfaixa: 'Faixa de quantidade', qtd: 'Quantidade (pedido)', remover: 'Remover do pedido', rolar: 'Rolar prateleira', escop: 'Opção (escolha)', esccor: 'Cor (escolha)', escqtd: 'Quantidade (escolha)', kd: 'Quantidade (kit CNA)', cnam: 'Modelo CNA', cnav: 'Trocar foto (CNA)', perso: 'Personalizado', persocor: 'Cor (personalizado)', pula: 'Pular para seção' };
+function rotuloClique(el) {
+  const d = el.dataset;
+  if (d.whats) return 'WhatsApp · ' + d.whats;
+  if (d.filtro) return d.filtro === 'limpar' ? 'Filtros: limpar' : 'Filtro: ' + d.filtro;
+  if (d.acao) return 'Ação: ' + d.acao;
+  for (const k in ROT) if (d[k] != null) return ROT[k];
+  if (el.matches('[data-card] a.corpo')) return 'Card do produto';
+  if (el.matches('[data-ccard]')) return 'Card CNA';
+  const t = (el.textContent || '').replace(/\s+/g, ' ').trim() || el.getAttribute('aria-label') || el.title || el.id || el.tagName.toLowerCase();
+  return (el.closest('#menu-lateral') ? 'Menu: ' : el.closest('footer') ? 'Rodapé: ' : '') + t;
+}
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('a,button,[data-ccard]'); if (!el) return;
+  const d = el.dataset, card = el.closest('[data-card],[data-ccard]'), pg = caminho().split('/')[1];
+  const slug = d.add || d.addproduto || d.produto || d.cardcor || (card && (card.dataset.card || card.dataset.ccard)) || (pg && S.porSlug[pg] ? pg : '');
+  registra('clique', { botao: rotuloClique(el).slice(0, 80), produto: slug || undefined });
+}, true);
 document.addEventListener('click', (e) => {
   if (e.target.closest('#abrir-menu')) { menuLateral(true); return; }
   if (e.target.closest('#fechar-menu') || e.target.id === 'veu-menu') { menuLateral(false); return; }
@@ -1263,7 +1318,7 @@ document.addEventListener('click', (e) => {
   if (d.whats === 'produto') { const pp = S.porSlug[caminho().split('/')[1]]; if (pp && faltaEscolha(pp, corProduto, opProduto || (pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''))) { e.preventDefault(); faltaProduto = true; render(); const c = $('.caixa.erro'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } }
   if (d.whats) registra('whatsapp_clique', { botao: d.whats, produto: d.produto });
   if (el.id === 'enviar-lista' && lista.some((i) => { const p = S.porSlug[i.slug]; return p && faltaEscolha(p, i.cor, i.op); })) { e.preventDefault(); aviso('Escolha a cor de todas as peças do pedido.'); return; }
-  if (el.id === 'enviar-lista') { registra('lista_enviou', {}); registra('whatsapp_clique', { botao: 'lista' }); return; }
+  if (el.id === 'enviar-lista') { registra('lista_enviou', {}); registra('whatsapp_clique', { botao: 'lista', valor: todoOrcamento() ? 0 : totalValor() }); return; }
   if (d.acao === 'abrir-lista' || el.id === 'abrir-lista') { gavetaAberta = true; desenhaCamadas(); return; }
   if (d.acao === 'fechar-lista') { if (el.tagName === 'A') { gavetaAberta = false; desenhaCamadas(); } else { fechaCamada(() => { gavetaAberta = false; }); return; } }
   if (el.tagName === 'A' && el.hasAttribute('data-rota')) { e.preventDefault(); galeria = 0; qtdProduto = 1; corProduto = ''; opProduto = ''; faltaProduto = false; navega(el.getAttribute('href')); return; }

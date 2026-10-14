@@ -299,8 +299,9 @@ function abaRelatorios() {
   const barras = (titulo, lista) => `<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:10px"><h3>${titulo}</h3>${lista.length ? lista.map((x) => `<div><div style="display:flex;justify-content:space-between;gap:8px;font-size:14.5px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x[0])}</span><b>${x[1]}</b></div><div class="barra"><i style="width:${Math.round(x[1] / lista[0][1] * 100)}%"></i></div></div>`).join('') : '<p style="margin:0;color:var(--texto2)">Sem dados no período.</p>'}</div>`;
   const pct = (a, b) => (b ? (Math.round(a / b * 1000) / 10).toString().replace('.', ',') + '%' : '–');
   return `<div class="topo-sec"><div><h1>Relatórios</h1><p class="sub">Visitas, cliques e o caminho até o pedido no WhatsApp.</p></div>${per}</div>
-    <div class="kpis">${[['Visitas', r.visitas], ['Produtos vistos', r.vistos], ['Adicionados à lista', r.lista], ['Listas enviadas no WhatsApp', r.enviadas], ['Conversão', pct(r.sessEnv, r.sessVis)]].map((k) => `<div class="card"><span style="font-size:13.5px;font-weight:700;color:var(--texto2)">${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>
-    <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px"><h3>Do clique ao pedido (pessoas)</h3>${[['Visitaram o site', r.sessVis], ['Viram um produto', r.sessProd], ['Adicionaram à lista', r.sessLista], ['Enviaram no WhatsApp', r.sessEnv]].map((e, i, a) => `<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:12px;align-items:center"><span>${e[0]}</span><div class="barra" style="height:22px"><i style="width:${r.sessVis ? Math.round(e[1] / r.sessVis * 100) : 0}%"></i></div><span style="text-align:right"><b>${e[1]}</b> ${i ? '<small style="color:var(--texto2)">' + pct(e[1], a[i - 1][1]) + '</small>' : ''}</span></div>`).join('')}</div>
+    <div class="kpis">${[['Visitas', r.visitas], ['Cliques em botões', r.cliques], ['Produtos vistos', r.vistos], ['Colocaram no carrinho', r.lista, 1], ['Foram para o WhatsApp', r.whats, 1], ['Listas enviadas', r.enviadas], ['Conversão no carrinho', pct(r.sessLista, r.sessVis), 1], ['Conversão no WhatsApp', pct(r.sessWhats, r.sessVis), 1]].map((k) => `<div class="card"${k[2] ? ' style="border-color:var(--ok)"' : ''}><span style="font-size:13.5px;font-weight:700;color:var(--texto2)">${k[0]}${k[2] ? ' <span class="pil" style="background:#E3F3EA;color:var(--ok);font-size:11.5px;padding:1px 8px">conversão</span>' : ''}</span><b>${k[1]}</b></div>`).join('')}</div>
+    <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px"><h3>Do clique ao pedido (pessoas)</h3><p class="sub" style="margin:0">Percentual sobre quem visitou o site.</p>${[['Visitaram o site', r.sessVis], ['Clicaram em algum botão', r.sessClique], ['Viram um produto', r.sessProd], ['Colocaram no carrinho', r.sessLista], ['Foram para o WhatsApp', r.sessWhats], ['Enviaram a lista', r.sessEnv]].map((e, i) => `<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:12px;align-items:center"><span>${e[0]}</span><div class="barra" style="height:22px"><i style="width:${r.sessVis ? Math.min(100, Math.round(e[1] / r.sessVis * 100)) : 0}%"></i></div><span style="text-align:right"><b>${e[1]}</b> ${i ? '<small style="color:var(--texto2)">' + pct(e[1], r.sessVis) + '</small>' : ''}</span></div>`).join('')}</div>
+    <div class="card" style="overflow-x:auto"><div style="padding:16px 16px 0"><h3>Cliques por botão</h3><p class="sub" style="margin:4px 0 0">Todo clique em botão e link do site. Os marcados como conversão são os que colocam no carrinho ou levam ao WhatsApp.</p></div><table class="tabela" style="min-width:560px"><thead><tr><th>Botão</th><th>Cliques</th><th>Pessoas</th><th>% das visitas</th></tr></thead><tbody>${r.porBotao.map((b) => `<tr><td><b style="font-family:var(--f-ui)">${esc(b[0])}</b>${b[3] ? ' <span class="pil" style="background:#E3F3EA;color:var(--ok)">conversão</span>' : ''}</td><td>${b[1]}</td><td>${b[2]}</td><td>${pct(b[2], r.sessVis)}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--texto2)">Sem cliques no período. A contagem de cliques começou nesta versão do site.</td></tr>'}</tbody></table></div>
     <div class="card" style="overflow-x:auto"><div style="padding:16px 16px 0"><h3>Produtos</h3></div><table class="tabela" style="min-width:640px"><thead><tr><th>Produto</th><th>Visitas</th><th>Na lista</th><th>No WhatsApp</th><th>Conversão</th></tr></thead><tbody>${r.produtos.map((p) => `<tr><td><b style="font-family:var(--f-ui)">${esc(p[0])}</b></td><td>${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td><td style="color:var(--ok);font-weight:700">${pct(p[3], p[1])}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--texto2)">Sem dados no período.</td></tr>'}</tbody></table></div>
     <div class="grade2">${barras('Páginas mais vistas', r.paginas)}${barras('De onde vêm as visitas', r.origens)}${barras('Cliques no WhatsApp', r.botoes)}${barras('O que mais buscam', r.buscas)}</div>
     <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:10px"><h3>Buscas sem resultado</h3><p class="sub" style="margin:0">O que as pessoas procuram e a Mimori ainda não tem.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${r.semResultado.map((b) => `<span class="pil" style="background:#FBE3DF;color:var(--erro)">${esc(b[0])} · ${b[1]}</span>`).join('') || '<span style="color:var(--texto2)">Nenhuma.</span>'}</div></div>
@@ -322,19 +323,35 @@ function blocoEquipe() {
 async function carregaRelatorio() {
   E.rel = null; desenha();
   const desde = new Date(Date.now() - E.periodo * 864e5).toISOString();
-  let q = sb.from('eventos').select('tipo,pagina,produto_id,botao,termo,resultados,origem,sessao').gte('criado_em', desde).limit(20000);
-  if (!E.incluiInternos) q = q.eq('interno', false);
-  const [{ data, error }, rede, redes] = await Promise.all([q, sb.rpc('rede_atual_interna'), sb.from('redes_internas').select('ip_hash,apelido,visto_em').order('visto_em', { ascending: false })]);
+  /* O Supabase devolve no máximo 1.000 linhas por consulta: lê em páginas até acabar. */
+  const lerTudo = async () => {
+    const tudo = [];
+    for (let de = 0; de < 200000; de += 1000) {
+      let q = sb.from('eventos').select('tipo,pagina,produto_id,botao,termo,resultados,origem,sessao').gte('criado_em', desde).order('id').range(de, de + 999);
+      if (!E.incluiInternos) q = q.eq('interno', false);
+      const r = await q;
+      if (r.error) return r;
+      tudo.push(...r.data);
+      if (r.data.length < 1000) break;
+    }
+    return { data: tudo, error: null };
+  };
+  const [{ data, error }, rede, redes] = await Promise.all([lerTudo(), sb.rpc('rede_atual_interna'), sb.from('redes_internas').select('ip_hash,apelido,visto_em').order('visto_em', { ascending: false })]);
   E.redeInterna = rede.error ? null : !!rede.data; E.redes = redes.data || [];
   if (error) { aviso('Não foi possível ler os eventos: ' + error.message); return; }
   const conta = (f) => { const m = {}; data.forEach((e) => { const k = f(e); if (k) m[k] = (m[k] || 0) + 1; }); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
   const sess = (t) => new Set(data.filter((e) => e.tipo === t).map((e) => e.sessao)).size;
   const nomes = {}; E.prods.forEach((p) => { nomes[p.id] = p.nome; });
   const porProd = {}; data.forEach((e) => { if (!e.produto_id) return; const x = porProd[e.produto_id] = porProd[e.produto_id] || [nomes[e.produto_id] || 'Produto removido', 0, 0, 0]; if (e.tipo === 'produto_visto') x[1]++; if (e.tipo === 'lista_adicionou') x[2]++; if (e.tipo === 'whatsapp_clique') x[3]++; });
-  const BOT = { lista: 'Enviar a lista', produto: 'Pedir só este', brindes: 'Orçamento de brindes', personalizados: 'Personalizados', busca: 'Busca sem resultado', salao: 'Kit para salão', cna: 'Orçamento CNA' };
+  const BOT = { lista: 'Enviar a lista', produto: 'Pedir só este', brindes: 'Orçamento de brindes', personalizados: 'Personalizados', personalizado: 'Orçamento de personalizado', 'personalizados-ideia': 'Contar a minha ideia', busca: 'Busca sem resultado', salao: 'Kit para salão', cna: 'Orçamento CNA', 'cna-kit': 'Kit CNA', rodape: 'Ícone do rodapé', menu: 'Ícone do menu' };
+  const ehConv = (b) => /^WhatsApp · |^Adicionar/.test(b) || b === 'Ação: confirmar-escolha' || b === 'Ação: kit-pedido' || b === 'Enviar pedido pelo WhatsApp';
+  const nomeBotao = (b) => (/^WhatsApp · /.test(b) ? 'WhatsApp · ' + (BOT[b.slice(11)] || b.slice(11)) : b);
+  const pb = {}; data.forEach((e) => { if (e.tipo !== 'clique' || !e.botao) return; const x = pb[e.botao] = pb[e.botao] || [nomeBotao(e.botao), 0, new Set(), ehConv(e.botao)]; x[1]++; x[2].add(e.sessao); });
   E.rel = {
     visitas: data.filter((e) => e.tipo === 'visita').length, vistos: data.filter((e) => e.tipo === 'produto_visto').length, lista: data.filter((e) => e.tipo === 'lista_adicionou').length, enviadas: data.filter((e) => e.tipo === 'lista_enviou').length,
-    sessVis: sess('visita'), sessProd: sess('produto_visto'), sessLista: sess('lista_adicionou'), sessEnv: sess('lista_enviou'),
+    sessVis: sess('visita'), sessProd: sess('produto_visto'), sessLista: sess('lista_adicionou'), sessEnv: sess('lista_enviou'), sessWhats: sess('whatsapp_clique'), sessClique: sess('clique'),
+    cliques: data.filter((e) => e.tipo === 'clique').length, whats: data.filter((e) => e.tipo === 'whatsapp_clique').length,
+    porBotao: Object.values(pb).map((x) => [x[0], x[1], x[2].size, x[3]]).sort((a, b) => b[1] - a[1]).slice(0, 40),
     produtos: Object.values(porProd).sort((a, b) => b[1] - a[1]).slice(0, 15),
     paginas: conta((e) => (e.tipo === 'visita' ? e.pagina || '/' : null)).slice(0, 6),
     origens: conta((e) => (e.tipo === 'visita' ? e.origem || 'direto' : null)).slice(0, 6),
