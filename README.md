@@ -26,6 +26,7 @@ Catálogo da Mimori com pedido pelo WhatsApp e painel admin. HTML de arquivo ún
 - Painel: https://mimori3d.com.br/admin (Pedro e Kamilla como administradores).
 - Google Analytics 4 (`G-7DWH6J6XFT`) no `<head>` do `index.html` desde 12/10/2026; o script de páginas fixas leva a tag para todas as páginas e para o 404. Fora do `/admin` (tráfego interno) e do `gamer/`.
 - Categoria oculta (`categorias.oculta`, SQL 019, aplicado em 12/10/2026): fica fora do menu, da home, do catálogo, da busca e do sitemap, sai com noindex e abre só pelo endereço direto. Primeira: `/cna` (Brindes CNA, SQL 020). Preço 0 no painel = "Sob orçamento" no site.
+- WhatsApp do CNA (SQL 034, aplicado em 14/10/2026): na `/cna`, nas peças do CNA e no pedido que tiver peça do CNA, os botões abrem o WhatsApp do Pedro (`site_config.whatsappCna`, hoje 5521995215332). O resto do site segue no `whatsapp` da Mimori.
 
 ## Dia a dia
 

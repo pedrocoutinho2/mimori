@@ -747,7 +747,11 @@ const hojeISO = () => { const d = new Date(); return new Date(d.getTime() - d.ge
 const temaAtivo = () => { const h = hojeISO(); return S.temas.find((t) => h >= t.inicio && h <= t.fim) || null; };
 /* peças de uma prateleira ou data: pelo id (banco) ou, no arquivo antigo, pelo nome */
 const pecasDe = (c) => (!c ? [] : c.ids ? c.ids.map((i) => S.porId[i]).filter(Boolean) : (c.itens || []).map((n) => S.porNome[n]).filter(Boolean));
-const wa = (txt) => 'https://wa.me/' + S.config.whatsapp + '?text=' + encodeURIComponent(txt);
+/* página /cna e peças do CNA: o pedido vai para o WhatsApp do Pedro (site_config.whatsappCna); o resto do site segue no da Mimori */
+const ehCNA = () => caminho().split('/')[0] === 'cna';
+const listaTemCNA = () => lista.some((i) => { const p = S.porSlug[i.slug]; return p && p.categoria === 'cna'; });
+const numeroWa = (cna) => (cna && (S.config.whatsappCna || '5521995215332')) || S.config.whatsapp;
+const wa = (txt, cna) => 'https://wa.me/' + numeroWa(cna === undefined ? ehCNA() : cna) + '?text=' + encodeURIComponent(txt);
 
 /* ===== Lista ===== */
 let lista = [], ultimoItem = '';
@@ -830,7 +834,7 @@ function desenhaCamadas() {
       <p style="margin:0;color:var(--texto2);font-size:14px">O frete sai pelo seu CEP e a gente informa antes do pagamento.</p>
       <label class="campo">Seu CEP <span style="font-weight:400;color:var(--texto2)">(opcional, pro frete)</span><input id="cep" inputmode="numeric" placeholder="00000-000" value="${esc(cep)}"></label>
       <details><summary style="cursor:pointer;font-weight:700">Ver a mensagem que vai pro WhatsApp</summary><pre class="msg">${esc(mensagemLista())}</pre></details>
-      <a class="btn whats" id="enviar-lista" href="${esc(wa(mensagemLista()))}" target="_blank" rel="noopener">${IC.whats}Enviar pedido pelo WhatsApp</a>
+      <a class="btn whats" id="enviar-lista" href="${esc(wa(mensagemLista(), ehCNA() || listaTemCNA()))}" target="_blank" rel="noopener">${IC.whats}Enviar pedido pelo WhatsApp</a>
       <p style="margin:0;color:var(--texto2);font-size:14px">A gente confirma cor, prazo e frete com você. A produção leva de 3 a 5 dias úteis depois do pagamento pelo link.</p>
       <button type="button" class="btn claro" data-acao="fechar-lista">Continuar escolhendo</button>` : `<div class="vazio"><b class="titulo" style="font-size:20px">Seu pedido está vazio.</b><p style="margin:0">Escolha a cor de uma peça e clique em Adicionar. O pedido vai pronto pro WhatsApp.</p><a class="btn" href="catalogo" data-rota data-acao="fechar-lista">Ver o catálogo</a></div>`}
     </aside>`;
@@ -1272,6 +1276,8 @@ function render() {
   document.body.classList.toggle('na-peca', partes.length === 2 && !!S.porSlug[partes[1]]);
   document.body.classList.toggle('reservada', reservada);
   document.body.classList.toggle('tema-cna', partes[0] === 'cna');
+  /* na /cna o ícone do WhatsApp do rodapé e do menu também vai para o número do CNA */
+  document.querySelectorAll('#rodape-whats, a[data-whats="menu"]').forEach((a) => { a.href = 'https://wa.me/' + numeroWa(partes[0] === 'cna'); });
   if (perso.entra) perso.entra = false;
   if (F.painel) desenhaCamadas();
   document.querySelectorAll('.nav a[data-rota], .menu-lista a[data-rota]').forEach((a) => { const h = new URL(a.href).pathname.slice(BASE.length).replace(/^\/+|\/+$/g, ''); a.setAttribute('aria-current', h && (c === h || c.indexOf(h + '/') === 0) ? 'page' : 'false'); });
@@ -1369,7 +1375,7 @@ document.addEventListener('change', (e) => {
 });
 document.addEventListener('input', (e) => {
   if (e.target.dataset && e.target.dataset.kq) { kitDe(e.target.dataset.kq).q = Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0)); kitAtualiza(); return; }
-  if (e.target.id === 'cep') { cep = e.target.value; const a = $('#enviar-lista'); if (a) a.href = wa(mensagemLista()); const pre = $('.painel .msg'); if (pre) pre.textContent = mensagemLista(); }
+  if (e.target.id === 'cep') { cep = e.target.value; const a = $('#enviar-lista'); if (a) a.href = wa(mensagemLista(), ehCNA() || listaTemCNA()); const pre = $('.painel .msg'); if (pre) pre.textContent = mensagemLista(); }
   if (e.target.id === 'perso-texto') { const pos = e.target.selectionStart; perso.texto = e.target.value; render(); const i = $('#perso-texto'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } }
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('#menu-lateral').classList.contains('aberto')) { menuLateral(false); $('#abrir-menu').focus(); } if ($('#menu-cat').classList.contains('aberto')) { menuCategorias(false); $('#abrir-categorias').focus(); } if (escolha || gavetaAberta || F.painel) fechaCamada(() => { escolha = null; gavetaAberta = false; F.painel = false; }); if (perso.sel >= 0) { perso.sel = -1; render(); } $('#sugestoes').hidden = true; } });
