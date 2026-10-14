@@ -1329,9 +1329,9 @@ document.addEventListener('click', (e) => {
   if (!el) return;
   const d = el.dataset;
   if (d.whats === 'produto') { const pp = S.porSlug[caminho().split('/')[1]]; if (pp && faltaEscolha(pp, corProduto, opProduto || (pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''))) { e.preventDefault(); faltaProduto = true; render(); const c = $('.caixa.erro'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } }
-  if (d.whats) registra('whatsapp_clique', { botao: d.whats, produto: d.produto });
+  if (d.whats) registra('whatsapp_clique', { botao: d.whats, produto: d.produto || (d.whats === 'produto' ? caminho().split('/')[1] : undefined) });
   if (el.id === 'enviar-lista' && lista.some((i) => { const p = S.porSlug[i.slug]; return p && faltaEscolha(p, i.cor, i.op); })) { e.preventDefault(); aviso('Escolha a cor de todas as peças do pedido.'); return; }
-  if (el.id === 'enviar-lista') { registra('lista_enviou', {}); registra('whatsapp_clique', { botao: 'lista', valor: todoOrcamento() ? 0 : totalValor() }); return; }
+  if (el.id === 'enviar-lista') { registra('lista_enviou', {}); registra('whatsapp_clique', { botao: 'lista', produto: lista.length === 1 ? lista[0].slug : undefined, termo: lista.map((i) => i.qtd + 'x ' + ((S.porSlug[i.slug] || {}).nome || i.slug)).join(', '), valor: todoOrcamento() ? 0 : totalValor() }); return; }
   if (d.acao === 'abrir-lista' || el.id === 'abrir-lista') { gavetaAberta = true; desenhaCamadas(); return; }
   if (d.acao === 'fechar-lista') { if (el.tagName === 'A') { gavetaAberta = false; desenhaCamadas(); } else { fechaCamada(() => { gavetaAberta = false; }); return; } }
   if (el.tagName === 'A' && el.hasAttribute('data-rota')) { e.preventDefault(); galeria = 0; qtdProduto = 1; corProduto = ''; opProduto = ''; faltaProduto = false; navega(el.getAttribute('href')); return; }
