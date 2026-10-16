@@ -913,6 +913,13 @@ function paginaDatas() {
   return `<div class="wrap"><h1 class="titulo">Datas especiais</h1><p class="sub">As próximas datas e as peças que a gente separou pra cada uma.</p></div>
   ${vem.length ? `<div class="datas">${vem.map((t) => `${h >= t.inicio ? '' : `<p class="wrap data-agora" style="margin:0 auto -28px;color:var(--texto2)">A partir de ${dt(t.inicio)}</p>`}${temaHTML(t, true)}`).join('')}</div>` : `<div class="wrap">${semResultado('Nenhuma data especial agora.')}</div>`}`;
 }
+/* página própria de uma data especial (ex.: /natal): cabeçalho nas cores da data e todas as peças dela em grade */
+function paginaTema(t) {
+  const c = Object.assign({ fundo: '#E7E2F3', texto: '#241F2E', titulo: '#382B55', selo: '#FFFFFF', seloTexto: '#4A396F' }, t.cor || {});
+  const it = pecasDe(t);
+  return `<section class="wrap"><div class="tema" style="background:${c.fundo};color:${c.texto};display:block"><div class="txt">${t.data ? `<span class="pilula" style="display:inline-block;margin-bottom:12px;background:${c.selo};color:${c.seloTexto}">${esc(t.data)}</span>` : ''}<h1 class="titulo" style="color:${c.titulo};font-size:clamp(30px,3.6vw,44px)">${esc(t.titulo)}</h1><p>${esc(t.texto)}</p></div></div></section>
+  <div class="wrap" style="padding-top:8px;padding-bottom:40px">${it.length ? `<div class="grade">${it.map(cardHTML).join('')}</div>` : semResultado('As peças desta data entram em breve.')}</div>`;
+}
 function comoFunciona() {
   const P = [['M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5 M12 11.5v5 M9.5 14h5', 'Monte sua lista', 'Escolha a cor de cada peça e clique em Adicionar.'], ['M4.2 12a7.8 7.8 0 1 1 3.3 6.4L4 19.5l1.1-3.3A7.7 7.7 0 0 1 4.2 12Z', 'Envie pelo WhatsApp', 'A mensagem vai pronta. A gente confirma cor, prazo e frete com você.'], ['M3.5 6.5h17v11h-17Z M3.5 10h17 M7 14.5h4', 'Pague pelo link', 'O pagamento é antes, e a produção leva de 3 a 5 dias úteis.'], ['M3 7h11v9H3Z M14 10h4l3 3v3h-7 M7.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z M18.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z', 'Receba em casa', 'A gente envia pra todo o Brasil, bem embalado.']];
   return `<section class="wrap" aria-labelledby="h-como"><div class="cab-secao"><div><h2 class="titulo" id="h-como">Como funciona</h2><p class="sub">Da escolha da peça até a sua casa, em quatro passos.</p></div></div>
@@ -1261,6 +1268,7 @@ function render() {
   else if (c === 'catalogo') { html = paginaCatalogo(null); titulo = 'Catálogo · Mimori'; }
   else if (c === 'presentes') { html = paginaCatalogo(null, 'Presentes'); titulo = 'Presentes · Mimori'; }
   else if (c === 'datas-especiais') { html = paginaDatas(); titulo = 'Datas especiais · Mimori'; }
+  else if (partes.length === 1 && !catDe(partes[0]) && (S.temas || []).some((t) => t.id === partes[0])) { const t = S.temas.find((x) => x.id === partes[0]); html = paginaTema(t); titulo = t.titulo + ' · Mimori'; }
   else if (c === 'personalizados') { html = paginaPersonalizados(); titulo = 'Personalizados · Mimori'; }
   else if (c === 'para-empresas') { html = paginaEmpresas(); titulo = 'Brindes para empresas · Mimori'; }
   else if (c === 'busca') { html = paginaBusca(params.get('q') || ''); titulo = 'Busca · Mimori'; }

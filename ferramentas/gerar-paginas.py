@@ -105,7 +105,7 @@ def pagina(caminho, titulo, descricao, corpo, imagem='', indexar=True):
     open(os.path.join(pasta, 'index.html'), 'w', encoding='utf-8').write(h)
 
 # limpa páginas geradas antes (marcadas com o arquivo .gerada)
-for slug in [c['slug'] for c in cats] + ['catalogo', 'presentes', 'datas-especiais', 'personalizados', 'para-empresas']:
+for slug in [c['slug'] for c in cats] + ['catalogo', 'presentes', 'datas-especiais', 'natal', 'personalizados', 'para-empresas']:
     p = os.path.join(RAIZ, slug)
     if os.path.isdir(p) and os.path.exists(os.path.join(p, '.gerada')):
         shutil.rmtree(p)
@@ -123,6 +123,7 @@ urls = ['']
 FIXAS = {'catalogo': ('Catálogo · Mimori', 'Todas as peças da Mimori: decoração, religiosos, vasos, chaveiros e brinquedos sensoriais em 3D. Monte a lista e feche no WhatsApp.'),
          'presentes': ('Presentes · Mimori', 'Presentes em 3D para mãe, avó, amigos, casa nova e quem ama plantas. Filtre por quem vai ganhar e por quanto você quer gastar.'),
          'datas-especiais': ('Datas especiais · Mimori', 'Dia das Crianças, Halloween, Natal e outras datas: as peças em 3D que a gente separou pra cada uma.'),
+         'natal': ('Natal · Mimori', 'Presentes e decoração de Natal em 3D, feitos sob encomenda. Monte a lista e feche o pedido no WhatsApp.'),
          'personalizados': ('Personalizados · Mimori', 'Peças com nome, data, frase ou foto, feitas em 3D. A gente confirma a grafia antes de produzir.'),
          'para-empresas': ('Brindes para empresas · Mimori', 'Brindes com o logo da empresa e o nome de cada pessoa. Peça o orçamento pelo WhatsApp.')}
 for slug, (t, d) in FIXAS.items():
