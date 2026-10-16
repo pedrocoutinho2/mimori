@@ -63,8 +63,21 @@ def resumo(t, n=155):
     t = re.sub(r'\s+', ' ', re.sub(r'[^\w\s,.!?À-ú$%-]', ' ', t or '')).strip()
     return (t[:n - 1].rsplit(' ', 1)[0] + '…') if len(t) > n else t
 
+# Foto enviada pelo painel fica no Storage do Supabase (bucket produtos) e vem do banco como
+# 'slug/arquivo.webp'; foto antiga do repositório vem como 'assets/fotos/...'. Corrigido em 16/10/2026:
+# antes as duas viravam endereço do site, e a do painel dava 404 no og:image e na imagem fixa.
+STORAGE = f'{url}/storage/v1/object/public/produtos/'
+
+def abs_foto(foto):
+    if not foto: return ''
+    if foto.startswith('http'): return foto
+    f = foto.lstrip('/')
+    return f'{SITE}/{f}' if f.startswith('assets/') else STORAGE + f
+
 def src(foto):
-    return foto if foto.startswith('http') else ('/' + foto.lstrip('/') if foto else '')
+    if not foto: return ''
+    f = foto.lstrip('/')
+    return '/' + f if f.startswith('assets/') else abs_foto(foto)
 
 # ---------- conteúdo fixo, lido pelo Google sem JavaScript ----------
 def lista_categorias():
@@ -91,7 +104,7 @@ def pagina(caminho, titulo, descricao, corpo, imagem='', indexar=True):
     h = re.sub(r'<title>.*?</title>', f'<title>{e(titulo)}</title>', h, count=1)
     h = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{e(descricao)}">', h, count=1)
     endereco = f'{SITE}/{caminho}/' if caminho else f'{SITE}/'
-    img = imagem if imagem.startswith('http') else (f'{SITE}/{imagem.lstrip("/")}' if imagem else f'{SITE}/assets/fotos/categoria-religiosos.jpg')
+    img = abs_foto(imagem) or f'{SITE}/assets/fotos/categoria-religiosos.jpg'
     extra = (f'<!--seo--><link rel="canonical" href="{endereco}">\n<meta property="og:title" content="{e(titulo)}">\n'
              f'<meta property="og:description" content="{e(descricao)}">\n<meta property="og:image" content="{e(img)}">\n'
              f'<meta property="og:type" content="website">\n<meta property="og:url" content="{endereco}">\n'
