@@ -35,7 +35,7 @@ def supabase(caminho):
     return json.load(urllib.request.urlopen(req, timeout=30))
 
 try:
-    cats = supabase('categorias?select=slug,nome,oculta&order=ordem')
+    cats = supabase('categorias?select=slug,nome,oculta,foto&order=ordem')
     prods = supabase('produtos?select=slug,nome,descricao,categoria:categorias(slug),produto_fotos(caminho,ordem)&publicado=eq.true')
     produtos = [{'slug': p['slug'], 'nome': p['nome'], 'descricao': p['descricao'] or '', 'categoria': (p['categoria'] or {}).get('slug', ''),
                  'foto': (sorted(p['produto_fotos'], key=lambda f: f['ordem']) or [{'caminho': ''}])[0]['caminho']} for p in prods]
@@ -55,8 +55,16 @@ NOME_CAT = {c['slug']: c['nome'] for c in cats}
 OCULTAS = {c['slug'] for c in cats if c.get('oculta')}
 VIS_CATS = [c for c in cats if c['slug'] not in OCULTAS]
 VIS = [p for p in produtos if p['categoria'] not in OCULTAS]
-# Imagem de compartilhamento (og:image) própria por categoria; sem entrada, usa a padrão.
-OG_CAT = {'cna': 'assets/fotos/og-cna.jpg'}
+# Imagem de compartilhamento (og:image), revisto em 17/10/2026.
+# Ordem: 1) arquivo assets/fotos/og-<endereço>.jpg, se existir no repositório (og-home.jpg para a home,
+# og-vasos-de-planta.jpg para Vasos e assim por diante); 2) na categoria, a foto da categoria (a mesma
+# do bloco da home, coluna categorias.foto); 3) a foto do primeiro produto da categoria; 4) a padrão.
+def og_arquivo(nome):
+    f = f'assets/fotos/og-{nome}.jpg'
+    return f if os.path.exists(os.path.join(RAIZ, f)) else ''
+
+def og_categoria(c, ps):
+    return og_arquivo(c['slug']) or (c.get('foto') or '') or next((p['foto'] for p in ps if p['foto']), '')
 e = html.escape
 
 def resumo(t, n=155):
@@ -130,7 +138,8 @@ open(os.path.join(RAIZ, '404.html'), 'w', encoding='utf-8').write(base)
 pagina('', 'Mimori · Seu mundo em 3D',
        re.search(r'<meta name="description" content="([^"]*)">', base).group(1),
        '<h1>Seu mundo em 3D</h1><p>A Mimori faz decoração, presentes e personalizados em 3D: peças religiosas, vasos de planta, chaveiros, '
-       'organização para casa, jogos e brinquedos sensoriais.</p>' + RODAPE + lista_categorias() + lista_produtos(VIS[:24], 'Algumas peças'))
+       'organização para casa, jogos e brinquedos sensoriais.</p>' + RODAPE + lista_categorias() + lista_produtos(VIS[:24], 'Algumas peças'),
+       og_arquivo('home'))
 urls = ['']
 
 FIXAS = {'catalogo': ('Catálogo · Mimori', 'Todas as peças da Mimori: decoração, religiosos, vasos, chaveiros e brinquedos sensoriais em 3D. Monte a lista e feche no WhatsApp.'),
@@ -142,14 +151,14 @@ FIXAS = {'catalogo': ('Catálogo · Mimori', 'Todas as peças da Mimori: decora�
 for slug, (t, d) in FIXAS.items():
     corpo = f'<h1>{e(t.split(" · ")[0])}</h1><p>{e(d)}</p>'
     corpo += ''.join(lista_produtos([p for p in produtos if p['categoria'] == c['slug']], c['nome']) for c in VIS_CATS) if slug == 'catalogo' else lista_categorias()
-    pagina(slug, t, d, corpo); open(os.path.join(RAIZ, slug, '.gerada'), 'w').close(); urls.append(slug)
+    pagina(slug, t, d, corpo, og_arquivo(slug)); open(os.path.join(RAIZ, slug, '.gerada'), 'w').close(); urls.append(slug)
 
 for c in cats:
     ps = [p for p in produtos if p['categoria'] == c['slug']]
     d = f"{len(ps)} peças de {c['nome'].lower()} feitas em 3D sob encomenda, na cor que você escolhe. Monte a lista e feche no WhatsApp."
     corpo = f'<p><a href="./">Início</a> › {e(c["nome"])}</p><h1>{e(c["nome"])}</h1><p>{e(d)}</p>' + lista_produtos(ps) + lista_categorias()
     oculta = c['slug'] in OCULTAS
-    pagina(c['slug'], f"{c['nome']} · Mimori", d, corpo, OG_CAT.get(c['slug'], ''), indexar=not oculta)
+    pagina(c['slug'], f"{c['nome']} · Mimori", d, corpo, og_categoria(c, ps), indexar=not oculta)
     open(os.path.join(RAIZ, c['slug'], '.gerada'), 'w').close()
     if not oculta: urls.append(c['slug'])
 

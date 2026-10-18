@@ -255,7 +255,7 @@ function guardaCamposCol() {
   const v = Object.fromEntries(new FormData(f));
   ['titulo', 'texto', 'inicio', 'fim', 'rotulo', 'faixa', 'cta', 'link'].forEach((k) => { if (k in v) E.col[k] = v[k]; });
   E.col.publicado = !!v.publicado;
-  if (E.col.tipo === 'data') { E.col.cor = {}; Object.keys(COR_PADRAO).forEach((k) => { E.col.cor[k] = v['cor_' + k] || COR_PADRAO[k]; }); }
+  if (E.col.tipo === 'data') { E.col.cor = Object.assign({}, E.col.cor || {}); Object.keys(COR_PADRAO).forEach((k) => { E.col.cor[k] = v['cor_' + k] || COR_PADRAO[k]; }); }
 }
 async function salvaColecao() {
   guardaCamposCol(); const c = E.col;
