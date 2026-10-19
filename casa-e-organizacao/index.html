@@ -38,7 +38,7 @@ src="https://www.facebook.com/tr?id=2137822373794053&ev=PageView&noscript=1"
 <!--seo--><link rel="canonical" href="https://mimori3d.com.br/casa-e-organizacao/">
 <meta property="og:title" content="Casa e organização · Mimori">
 <meta property="og:description" content="3 peças de casa e organização feitas em 3D sob encomenda, na cor que você escolhe. Monte a lista e feche no WhatsApp.">
-<meta property="og:image" content="https://mimori3d.com.br/assets/fotos/categoria-religiosos.jpg">
+<meta property="og:image" content="https://mimori3d.com.br/assets/fotos/categoria-casa.jpg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mimori3d.com.br/casa-e-organizacao/">
 <style>.estatico{padding-top:24px;padding-bottom:40px}.estatico ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}.estatico img{display:block;max-width:100%;height:auto;border-radius:12px}.estatico li p{font-size:14px;color:var(--texto2)}</style><!--/seo-->
@@ -331,25 +331,54 @@ body.tema-cna .nav a,body.tema-cna .nav-cat{color:var(--tinta)}
 .add-card svg{width:17px;height:17px}
 
 /* home */
-.hero{display:flex;flex-wrap:wrap;gap:32px 48px;align-items:center}
-.hero .txt{flex:1 1 420px;display:flex;flex-direction:column;gap:18px}
-.hero .txt p{margin:0;font-size:18.5px;max-width:36em}
-.hero .mosaico{flex:1.3 1 480px;display:grid;grid-template-columns:1.35fr 1fr;grid-template-rows:180px 180px;gap:12px}
-.hero .mosaico div{position:relative;border-radius:var(--r2);overflow:hidden;background:var(--suave2)}
-.hero .mosaico div:first-child{grid-row:1/span 2}
-.hero .mosaico img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* hero: slider de banners (17/10/2026). Texto em branco sobre a foto, véu escuro só para leitura */
+.hero{position:relative;height:440px;border-radius:var(--r2);overflow:hidden;background:#1B1528}
+.hero .slide{position:absolute;inset:0;display:flex;align-items:center;opacity:0;visibility:hidden;z-index:1;transition:opacity .7s ease,visibility 0s linear .7s}
+.hero .slide.ativo{opacity:1;visibility:visible;z-index:2;transition:opacity .7s ease}
+.hero .slide.saindo{opacity:0;visibility:visible;z-index:1;transition:opacity .6s ease .25s}
+.hero .bg{position:absolute;inset:0;width:100%;height:100%}
+.hero .bg img{width:100%;height:100%;object-fit:cover;object-position:60% 50%;transform:translateX(4%);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.hero .slide.ativo .bg img{transform:none}
+.hero .slide.saindo .bg img{transform:translateX(-4%)}
+.hero .sombra{position:absolute;inset:0;background:linear-gradient(90deg,rgba(27,21,40,.78) 0%,rgba(27,21,40,.55) 42%,rgba(27,21,40,0) 75%)}
+.hero .txt{position:relative;padding:0 80px;max-width:680px;display:flex;flex-direction:column;align-items:flex-start}
+.hero .txt>*{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
+.hero .slide.ativo .txt>*{opacity:1;transform:none}
+.hero .slide.ativo .txt>:nth-child(1){transition-delay:.25s}
+.hero .slide.ativo .txt>:nth-child(2){transition-delay:.38s}
+.hero .slide.ativo .txt>:nth-child(3){transition-delay:.5s}
+.hero .slide.ativo .txt>:nth-child(4){transition-delay:.62s}
+.hero .slide.saindo .txt>*{opacity:0;transform:translateY(-14px);transition-duration:.3s;transition-delay:0s}
+.hero .titulo{color:#fff;font-weight:700;font-size:44px;line-height:1.05;letter-spacing:-.02em;margin:0 0 10px}
+.hero .txt p{margin:0 0 20px;font-size:16px;line-height:1.5;font-weight:600;color:#fff;max-width:36ch}
+.hero .botoes{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.hero .btn{min-height:44px;padding:0 20px;font-size:15px}
+.hero .btn.claro{border:0;color:var(--titulo)}
+.hero .confianca{color:#fff;font-size:14px;margin:0}
+.hero-seta{position:absolute;top:50%;margin-top:-17px;z-index:4;width:34px;height:34px;border-radius:var(--pilula);border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;opacity:.7;transition:opacity var(--t1) var(--ease),background-color var(--t1) var(--ease)}
+.hero-seta:hover{opacity:1;background:rgba(255,255,255,.24)}
+.hero-seta svg{width:15px;height:15px}
+.hero-seta.ant{left:18px}.hero-seta.prox{right:18px}
+.hero-pontos{position:absolute;left:0;right:0;bottom:6px;z-index:4;display:flex;justify-content:center}
+.hero-pontos button{width:20px;height:20px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center}
+.hero-pontos i{display:block;width:6px;height:6px;border-radius:var(--pilula);background:rgba(255,255,255,.45);transition:width .3s,background-color .3s}
+.hero-pontos button.on i{width:16px;background:rgba(255,255,255,.9)}
 .confianca{margin:0;color:var(--texto2);font-size:14.5px;font-weight:600}
 .categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:16px}
 .categorias a{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--tinta)}
 .categorias img{aspect-ratio:1/1;width:100%;object-fit:cover;border-radius:var(--r2);border:1px solid var(--borda)}
 .categorias b{font-family:var(--f-ui);font-size:17px}
 .categorias span{font-size:13.5px;font-weight:600;color:var(--texto2);margin-top:-6px}
-.tema{border-radius:var(--r2);padding:40px;display:flex;flex-wrap:wrap;gap:28px 40px;align-items:center}
-.tema .txt{flex:1 1 360px;display:flex;flex-direction:column;gap:14px}
+.tema{position:relative;overflow:hidden;border-radius:var(--r2);padding:40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.5fr);gap:28px 40px;align-items:center}
+.tema>*{position:relative;z-index:1}
+.tema>.tema-bg{position:absolute;inset:0;z-index:0}
+.tema-bg img{width:100%;height:100%;object-fit:cover;object-position:right center}
+.tema .txt{display:flex;flex-direction:column;gap:14px}
 .tema .txt p{margin:0;font-size:17px;max-width:34em}
-.tema .vitrine{flex:1.7 1 520px;min-width:0;display:flex;flex-direction:column;gap:10px}
-.tema .vitrine .acoes{display:flex;justify-content:flex-end;gap:8px}
-.tema .trilho{--col:max(190px,calc((100% - 40px)/3))}
+.tema .vitrine{min-width:0;position:relative;container-type:inline-size;width:auto;max-width:none;aspect-ratio:auto;justify-self:stretch}
+.tema .vitrine .acoes{position:absolute;left:-18px;right:-18px;top:calc((100cqw - 60px) / 8 - 18px);z-index:3;display:flex;justify-content:space-between;pointer-events:none}
+.tema .vitrine .seta{pointer-events:auto;width:36px;height:36px;border:0;background:#fff;box-shadow:0 4px 14px -4px rgba(27,21,40,.45)}
+.tema .trilho{--col:calc((100% - 60px)/4)}
 .tema .card{background:#fff;border-radius:var(--r1);padding:10px}
 .tema .pecas a{background:#fff;border-radius:var(--r1);padding:10px;text-decoration:none;color:var(--tinta);display:flex;flex-direction:column;gap:6px}
 .tema .pecas img{aspect-ratio:1/1;width:100%;object-fit:cover;border-radius:10px}
@@ -512,12 +541,20 @@ footer a:hover{text-decoration:underline}
   .menu-cat{padding:12px 0}
   .menu-cat nav{grid-template-columns:1fr;gap:2px}
   .trilho{--col:160px;gap:12px}
-  .hero{gap:20px}
-  .hero .txt{gap:14px}
-  .hero .txt p{font-size:16.5px}
-  .hero .mosaico{flex-basis:100%;grid-template-rows:96px 96px;gap:8px}
-  .hero .mosaico div{border-radius:16px}
-  .hero .btn{min-height:46px;padding:0 14px;font-size:14.5px}
+  .hero{height:640px}
+  .hero .slide{align-items:flex-end}
+  .hero .bg img{object-position:center top}
+  .hero .sombra{background:linear-gradient(0deg,rgba(27,21,40,.85) 0%,rgba(27,21,40,.6) 50%,rgba(27,21,40,0) 85%)}
+  .hero .txt{padding:0 22px 40px}
+  .hero .confianca{display:none}
+  .hero .titulo{font-size:30px}
+  .hero .btn{min-height:44px;padding:0 16px;font-size:14.5px}
+  .hero-seta{display:none}
+  .tema{grid-template-columns:minmax(0,1fr)}
+  .tema .trilho{--col:62%}
+  .tema .vitrine{order:0}
+  .tema-bg img{object-position:center center}
+  .tema .vitrine .acoes{display:none}
   .confianca{font-size:13.5px}
   .faixa{font-size:12.5px;min-height:32px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:32px;padding:0 12px}
   .tema,.faixa-forte,.orcamento{padding:24px}
@@ -560,12 +597,6 @@ footer a:hover{text-decoration:underline}
 <header class="topo" id="topo">
   <div class="wrap">
     <a class="logo" href="./" data-rota aria-label="Mimori, página inicial"><img src="assets/logo-mimori.svg" alt="Mimori" width="138" height="36"></a>
-    <nav class="nav" aria-label="Menu principal">
-      <button type="button" class="nav-cat" id="abrir-categorias" aria-expanded="false" aria-controls="menu-cat">Catálogo<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-      <a href="datas-especiais" data-rota>Datas especiais</a>
-      <a href="personalizados" data-rota>Personalizados</a>
-      <a href="para-empresas" data-rota class="so-largo">Para empresas</a>
-    </nav>
     <form class="busca" role="search" id="form-busca">
       <label class="sr" for="q">Buscar peça, tema ou cor</label>
       <input id="q" type="search" autocomplete="off" placeholder="Buscar peça, tema ou cor" aria-autocomplete="list" aria-controls="sugestoes">
@@ -587,9 +618,9 @@ footer a:hover{text-decoration:underline}
       <img src="assets/logo-mimori.svg" alt="Mimori" width="130" height="34" style="width:130px">
       <p style="margin:0;font-family:var(--f-marca);font-weight:600;color:var(--marca)">Seu mundo em 3D</p>
       <p class="titulo" style="font-size:24px;max-width:18em;margin-top:10px">Peças com a sua cara, na cor que você escolhe 💜</p>
-      <p style="margin:0;max-width:30em;color:var(--tinta)">A Mimori faz decoração, presentes e personalizados em 3D. Cada peça é feita sob encomenda pra você, e o pedido fecha com a gente no WhatsApp.</p>
+      <p style="margin:0;max-width:30em;color:var(--tinta)">Trabalhamos com peças de decoração, presentes e produtos personalizados em 3D. Cada peça é feita sob encomenda pra você.</p>
     </div>
-    <nav class="col" aria-label="Páginas"><b>Páginas</b><a href="./" data-rota>Início</a><a href="catalogo" data-rota>Catálogo</a><a href="datas-especiais" data-rota>Datas especiais</a><a href="personalizados" data-rota>Personalizados</a><a href="para-empresas" data-rota>Para empresas</a><a href="https://mimori3d.com.br/gamer/" target="_blank" rel="noopener">Gamer</a></nav>
+    <nav class="col" aria-label="Páginas"><b>Páginas</b><a href="./" data-rota>Início</a><a href="catalogo" data-rota>Catálogo</a><a href="datas-especiais" data-rota>Datas especiais</a><a href="personalizados" data-rota>Personalizados</a><a href="para-empresas" data-rota>Para empresas</a><a href="cna" data-rota>Brindes CNA</a><a href="https://mimori3d.com.br/gamer/" target="_blank" rel="noopener">Gamer</a></nav>
     <nav class="col" aria-label="Categorias" id="rodape-categorias"><b>Categorias</b></nav>
     <div class="col"><b>Fale com a gente</b><div class="redes"><a id="rodape-whats" href="https://wa.me/5521975075316" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp" data-whats="rodape"><svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M26.576 5.363c-2.69-2.69-6.406-4.354-10.511-4.354-8.209 0-14.865 6.655-14.865 14.865 0 2.732 0.737 5.291 2.022 7.491l-0.038-0.070-2.109 7.702 7.879-2.067c2.051 1.139 4.498 1.809 7.102 1.809h0.006c8.209-0.003 14.862-6.659 14.862-14.868 0-4.103-1.662-7.817-4.349-10.507l0 0zM16.062 28.228h-0.005c-0 0-0.001 0-0.001 0-2.319 0-4.489-0.64-6.342-1.753l0.056 0.031-0.451-0.267-4.675 1.227 1.247-4.559-0.294-0.467c-1.185-1.862-1.889-4.131-1.889-6.565 0-6.822 5.531-12.353 12.353-12.353s12.353 5.531 12.353 12.353c0 6.822-5.53 12.353-12.353 12.353h-0zM22.838 18.977c-0.371-0.186-2.197-1.083-2.537-1.208-0.341-0.124-0.589-0.185-0.837 0.187-0.246 0.371-0.958 1.207-1.175 1.455-0.216 0.249-0.434 0.279-0.805 0.094-1.15-0.466-2.138-1.087-2.997-1.852l0.010 0.009c-0.799-0.74-1.484-1.587-2.037-2.521l-0.028-0.052c-0.216-0.371-0.023-0.572 0.162-0.757 0.167-0.166 0.372-0.434 0.557-0.65 0.146-0.179 0.271-0.384 0.366-0.604l0.006-0.017c0.043-0.087 0.068-0.188 0.068-0.296 0-0.131-0.037-0.253-0.101-0.357l0.002 0.003c-0.094-0.186-0.836-2.014-1.145-2.758-0.302-0.724-0.609-0.625-0.836-0.637-0.216-0.010-0.464-0.012-0.712-0.012-0.395 0.010-0.746 0.188-0.988 0.463l-0.001 0.002c-0.802 0.761-1.3 1.834-1.3 3.023 0 0.026 0 0.053 0.001 0.079l-0-0.004c0.131 1.467 0.681 2.784 1.527 3.857l-0.012-0.015c1.604 2.379 3.742 4.282 6.251 5.564l0.094 0.043c0.548 0.248 1.25 0.513 1.968 0.74l0.149 0.041c0.442 0.14 0.951 0.221 1.479 0.221 0.303 0 0.601-0.027 0.889-0.078l-0.031 0.004c1.069-0.223 1.956-0.868 2.497-1.749l0.009-0.017c0.165-0.366 0.261-0.793 0.261-1.242 0-0.185-0.016-0.366-0.047-0.542l0.003 0.019c-0.092-0.155-0.34-0.247-0.712-0.434z"/></svg></a><a href="https://instagram.com/mimori3d" target="_blank" rel="noopener" aria-label="Instagram @mimori3d" title="Instagram @mimori3d"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M127.999746,23.06353 C162.177385,23.06353 166.225393,23.1936027 179.722476,23.8094161 C192.20235,24.3789926 198.979853,26.4642218 203.490736,28.2166477 C209.464938,30.5386501 213.729395,33.3128586 218.208268,37.7917319 C222.687141,42.2706052 225.46135,46.5350617 227.782844,52.5092638 C229.535778,57.0201472 231.621007,63.7976504 232.190584,76.277016 C232.806397,89.7746075 232.93647,93.8226147 232.93647,128.000254 C232.93647,162.177893 232.806397,166.225901 232.190584,179.722984 C231.621007,192.202858 229.535778,198.980361 227.782844,203.491244 C225.46135,209.465446 222.687141,213.729903 218.208268,218.208776 C213.729395,222.687649 209.464938,225.461858 203.490736,227.783352 C198.979853,229.536286 192.20235,231.621516 179.722476,232.191092 C166.227425,232.806905 162.179418,232.936978 127.999746,232.936978 C93.8200742,232.936978 89.772067,232.806905 76.277016,232.191092 C63.7971424,231.621516 57.0196391,229.536286 52.5092638,227.783352 C46.5345536,225.461858 42.2700971,222.687649 37.7912238,218.208776 C33.3123505,213.729903 30.538142,209.465446 28.2166477,203.491244 C26.4637138,198.980361 24.3784845,192.202858 23.808908,179.723492 C23.1930946,166.225901 23.0630219,162.177893 23.0630219,128.000254 C23.0630219,93.8226147 23.1930946,89.7746075 23.808908,76.2775241 C24.3784845,63.7976504 26.4637138,57.0201472 28.2166477,52.5092638 C30.538142,46.5350617 33.3123505,42.2706052 37.7912238,37.7917319 C42.2700971,33.3128586 46.5345536,30.5386501 52.5092638,28.2166477 C57.0196391,26.4642218 63.7971424,24.3789926 76.2765079,23.8094161 C89.7740994,23.1936027 93.8221066,23.06353 127.999746,23.06353 M127.999746,0 C93.2367791,0 88.8783247,0.147348072 75.2257637,0.770274749 C61.601148,1.39218523 52.2968794,3.55566141 44.1546281,6.72008828 C35.7374966,9.99121548 28.5992446,14.3679613 21.4833489,21.483857 C14.3674532,28.5997527 9.99070739,35.7380046 6.71958019,44.1551362 C3.55515331,52.2973875 1.39167714,61.6016561 0.769766653,75.2262718 C0.146839975,88.8783247 0,93.2372872 0,128.000254 C0,162.763221 0.146839975,167.122183 0.769766653,180.774236 C1.39167714,194.398852 3.55515331,203.703121 6.71958019,211.845372 C9.99070739,220.261995 14.3674532,227.400755 21.4833489,234.516651 C28.5992446,241.632547 35.7374966,246.009293 44.1546281,249.28042 C52.2968794,252.444847 61.601148,254.608323 75.2257637,255.230233 C88.8783247,255.85316 93.2367791,256 127.999746,256 C162.762713,256 167.121675,255.85316 180.773728,255.230233 C194.398344,254.608323 203.702613,252.444847 211.844864,249.28042 C220.261995,246.009293 227.400247,241.632547 234.516143,234.516651 C241.632039,227.400755 246.008785,220.262503 249.279912,211.845372 C252.444339,203.703121 254.607815,194.398852 255.229725,180.774236 C255.852652,167.122183 256,162.763221 256,128.000254 C256,93.2372872 255.852652,88.8783247 255.229725,75.2262718 C254.607815,61.6016561 252.444339,52.2973875 249.279912,44.1551362 C246.008785,35.7380046 241.632039,28.5997527 234.516143,21.483857 C227.400247,14.3679613 220.261995,9.99121548 211.844864,6.72008828 C203.702613,3.55566141 194.398344,1.39218523 180.773728,0.770274749 C167.121675,0.147348072 162.762713,0 127.999746,0 Z M127.999746,62.2703115 C91.698262,62.2703115 62.2698034,91.69877 62.2698034,128.000254 C62.2698034,164.301738 91.698262,193.730197 127.999746,193.730197 C164.30123,193.730197 193.729689,164.301738 193.729689,128.000254 C193.729689,91.69877 164.30123,62.2703115 127.999746,62.2703115 Z M127.999746,170.667175 C104.435741,170.667175 85.3328252,151.564259 85.3328252,128.000254 C85.3328252,104.436249 104.435741,85.3333333 127.999746,85.3333333 C151.563751,85.3333333 170.666667,104.436249 170.666667,128.000254 C170.666667,151.564259 151.563751,170.667175 127.999746,170.667175 Z M211.686338,59.6734287 C211.686338,68.1566129 204.809755,75.0337031 196.326571,75.0337031 C187.843387,75.0337031 180.966297,68.1566129 180.966297,59.6734287 C180.966297,51.1902445 187.843387,44.3136624 196.326571,44.3136624 C204.809755,44.3136624 211.686338,51.1902445 211.686338,59.6734287 Z"/></svg></a><a href="https://www.tiktok.com/@mimori3d" target="_blank" rel="noopener" aria-label="TikTok @mimori3d" title="TikTok @mimori3d"><svg width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path transform="translate(165 112)" d="M365.014.667C408.68 0 452.011.333 495.342 0c2.667 51 21 102.999 58.33 138.998 37.332 37 89.997 54 141.328 59.666v134.332c-47.998-1.667-96.33-11.667-139.994-32.333-19-8.667-36.665-19.667-53.998-31-.333 97.332.334 194.665-.666 291.663-2.667 46.666-18 93-44.998 131.332-43.665 64-119.328 105.665-196.992 106.999-47.664 2.666-95.329-10.334-135.994-34.333C55.028 725.658 7.696 652.992.697 574.993c-.667-16.667-1-33.333-.334-49.666 6-63.333 37.332-123.999 85.997-165.332 55.33-47.999 132.66-70.999 204.99-57.332.667 49.333-1.332 98.665-1.332 147.998-33-10.667-71.664-7.667-100.663 12.333-20.999 13.667-36.998 34.666-45.331 58.333-7 17-5 35.666-4.667 53.666 8 54.666 60.664 100.665 116.662 95.665 37.332-.333 72.997-22 92.33-53.666 6.332-11 13.332-22.333 13.665-35.333 3.334-59.666 2-118.998 2.334-178.664.333-134.332-.334-268.33.666-402.328"/></svg></a></div></div>
   </div>
@@ -867,20 +898,66 @@ function prateleira(id, titulo, texto, itens, link, linkTxt) {
     <div class="trilho" data-trilho>${itens.map(cardHTML).join('')}</div></section>`;
 }
 
+/* ===== Hero da home: banners em slider (17/10/2026) =====
+   Cada banner tem foto de desktop e de celular, título, texto e dois botões.
+   Para trocar a ordem ou o texto, mexa só nesta lista. Fotos em assets/banners/:
+   desktop 2496 x 880 px, celular 800 x 1430 px, sem texto gravado na imagem. */
+const BANNERS = [
+  { foto: 'assets/banners/contador-natal-desktop.jpg', fotoCel: 'assets/banners/contador-natal-celular.jpg',
+    titulo: 'Contagem regressiva pro Natal', texto: 'Lareira, meias penduradas e o Papai Noel no alto da chaminé, com os 24 dias até a noite de Natal. 🎄',
+    b1: ['Ver o Contador de Natal', () => { const p = S.porNome['Contador de Natal']; return p ? p.categoria + '/' + p.slug : 'natal'; }], b2: ['Ver presentes de Natal', 'natal'] },
+  { foto: 'assets/banners/microfone-desktop.jpg', fotoCel: 'assets/banners/microfone-celular.jpg',
+    titulo: 'Mini microfone com a sua marca', texto: 'Pra gravar conteúdo, dar de brinde ou deixar o estúdio com a sua cara. A gente coloca a logo, o nome ou o @ que você quiser. 🎤',
+    whats: ['Pedir orçamento pelo WhatsApp', 'Oi, Mimori! Quero um orçamento de mini microfone personalizado.\nLogo, nome ou @: \nQuantidade: \nPra quando: '], b2: ['Ver personalizados', 'personalizados'] },
+  { foto: 'assets/fotos/kit-ore-e-confie-com-bandeja-e-porta-vela-1.jpg', h1: true,
+    titulo: 'Seu mundo em 3D', texto: 'Decoração, presentes e personalizados com a sua cara! 💜 Você escolhe aqui e fecha o pedido com a gente no WhatsApp.',
+    b1: ['Ver o catálogo', 'catalogo'], b2: ['Personalizar uma peça', 'personalizados'] },
+  { foto: 'assets/fotos/luminaria-jesus-escada-para-o-ceu-1.jpg',
+    titulo: 'Presente de Natal com significado', texto: 'Luminária, Mini Jesus e peças de fé pra presentear a família toda! 🎄',
+    b1: ['Ver presentes de Natal', 'natal'], b2: ['Ver os religiosos', 'produtos-religiosos'] },
+  { foto: 'assets/fotos/categoria-presentes.jpg',
+    titulo: 'Um presente com a cara de quem você ama', texto: 'Nome, data, frase ou foto na peça. Conta a sua ideia e a gente manda o orçamento! 💜',
+    whats: ['Pedir orçamento pelo WhatsApp', 'Oi, Mimori! Quero um orçamento de presente personalizado.\nOcasião: \nIdeia (nome, data, frase ou foto): \nQuantidade: \nPra quando: '], b2: ['Ver personalizados', 'personalizados'] }
+];
+let heroI = 0, heroT = null;
+function heroHTML() {
+  if (heroI >= BANNERS.length) heroI = 0;
+  const btn = (b, claro) => { const href = typeof b[1] === 'function' ? b[1]() : b[1]; return `<a class="btn${claro ? ' claro' : ''}" href="${esc(href)}" data-rota>${esc(b[0])}</a>`; };
+  const slides = BANNERS.map((b, i) => {
+    const h = b.h1 ? 'h1' : 'h2';
+    const um = b.whats ? `<a class="btn whats" href="${esc(wa(b.whats[1]))}" target="_blank" rel="noopener" data-whats="banner">${IC.whats}${esc(b.whats[0])}</a>` : btn(b.b1);
+    return `<div class="slide${i === heroI ? ' ativo' : ''}" aria-roledescription="banner" aria-label="${i + 1} de ${BANNERS.length}"${i === heroI ? '' : ' aria-hidden="true" inert'}>
+      <picture class="bg">${b.fotoCel ? `<source media="(max-width:760px)" srcset="${esc(b.fotoCel)}">` : ''}<img src="${esc(b.foto)}" alt=""${i ? ' loading="lazy"' : ''}></picture>
+      <div class="sombra"></div>
+      <div class="txt"><${h} class="titulo">${esc(b.titulo)}</${h}><p>${esc(b.texto)}</p><div class="botoes">${um}${btn(b.b2, true)}</div><p class="confianca">Feito sob encomenda · Envio para todo o Brasil · Pagamento por link</p></div>
+    </div>`;
+  }).join('');
+  return `<section class="wrap" aria-label="Destaques"><div class="hero" id="hero" aria-roledescription="carrossel">${slides}
+    <button type="button" class="hero-seta ant" data-hero="-" aria-label="Banner anterior">${IC.ant}</button><button type="button" class="hero-seta prox" data-hero="+" aria-label="Próximo banner">${IC.prox}</button>
+    <div class="hero-pontos">${BANNERS.map((b, i) => `<button type="button" class="${i === heroI ? 'on' : ''}" data-hero="${i}" aria-label="Ir para o banner ${i + 1}"${i === heroI ? ' aria-current="true"' : ''}><i></i></button>`).join('')}</div>
+  </div></section>`;
+}
+function heroIr(n) {
+  const s = Array.from(document.querySelectorAll('#hero .slide')); if (!s.length) return;
+  const de = heroI; heroI = (n + s.length) % s.length; if (de === heroI) return;
+  s.forEach((el, i) => { el.classList.toggle('ativo', i === heroI); el.classList.toggle('saindo', i === de); el.toggleAttribute('inert', i !== heroI); if (i === heroI) el.removeAttribute('aria-hidden'); else el.setAttribute('aria-hidden', 'true'); });
+  document.querySelectorAll('#hero .hero-pontos button').forEach((b, i) => { b.classList.toggle('on', i === heroI); if (i === heroI) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+  clearTimeout(heroIr._t); heroIr._t = setTimeout(() => { if (s[de]) s[de].classList.remove('saindo'); }, 900);
+  heroArma();
+}
+function heroArma() {
+  clearInterval(heroT); heroT = null;
+  if (!document.getElementById('hero') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  heroT = setInterval(() => { if (!document.hidden) heroIr(heroI + 1); }, 7000);
+}
+
 /* ===== Páginas ===== */
 function paginaHome() {
   const t = temaAtivo();
   const C = S.colecoes;
-  const kit = S.porNome['Kit Ore e Confie com Bandeja e Porta Vela'];
   const pr = (id, linkTxt, linkPadrao) => (C[id] ? prateleira(id, C[id].titulo, C[id].texto, pecasDe(C[id]), C[id].link || linkPadrao, linkTxt) : '');
   return `
-  <section class="wrap hero" aria-labelledby="h-hero">
-    <div class="txt"><h1 class="titulo" id="h-hero">Seu mundo em 3D</h1>
-      <p>Decoração, presentes e personalizados com a sua cara! 💜 Você escolhe aqui e fecha o pedido com a gente no WhatsApp.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn" href="catalogo" data-rota>Ver o catálogo</a><a class="btn claro" href="personalizados" data-rota>Personalizar uma peça</a></div>
-      <p class="confianca">Feito sob encomenda · Envio para todo o Brasil · Pagamento por link</p></div>
-    <div class="mosaico" aria-hidden="true"><div><img src="${esc(kit && kit.fotos[0] ? kit.fotos[0].src : 'assets/fotos/kit-ore-e-confie-com-bandeja-e-porta-vela-1.jpg')}" alt=""></div><div><img src="assets/fotos/categoria-vasos.jpg" alt=""></div><div><img src="assets/fotos/categoria-chaveiros.jpg" alt=""></div></div>
-  </section>
+  ${heroHTML()}
   <section class="wrap" aria-labelledby="h-cats"><h2 class="sr" id="h-cats">Categorias</h2><div class="categorias">
     ${S.categorias.map((c) => `<a href="${esc(c.slug)}" data-rota><img src="${esc(c.foto)}" alt="" loading="lazy"><b>${esc(c.nome)}</b></a>`).join('')}
     <a href="personalizados" data-rota><img src="assets/fotos/categoria-presentes.jpg" alt="" loading="lazy"><b>Personalizados</b></a>
@@ -892,7 +969,7 @@ function paginaHome() {
   ${pr('ate35', 'Ver mais até R$ 35', 'catalogo?ate=35')}
   ${comoFunciona()}
   <section class="wrap" aria-label="Orçamento de personalizados"><div class="orcamentos">
-    <div class="orcamento" style="background:var(--marca)"><span class="pilula" style="align-self:flex-start;background:#fff">Presentes personalizados</span><h2 class="titulo">Um presente com a cara de quem você ama</h2><p>Nome, data, frase ou foto na peça. Conta a sua ideia e a gente manda o orçamento! 💜</p>
+    <div class="orcamento" style="background:var(--marca)"><span class="pilula" style="align-self:flex-start;background:#fff">Presentes personalizados</span><h2 class="titulo">Um presente com a cara de quem você ama</h2><p>Nome, data, frase ou foto na peça. Conta a sua ideia que a gente monta juntos pra criar o presente perfeito! 💜</p>
       <a class="btn claro" href="${esc(wa('Oi, Mimori! Quero um orçamento de presente personalizado.\nOcasião: \nIdeia (nome, data, frase ou foto): \nQuantidade: \nPra quando: '))}" target="_blank" rel="noopener" data-whats="personalizado">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
     <div class="orcamento" style="background:var(--titulo)"><span class="pilula" style="align-self:flex-start;background:#fff">Brindes corporativos</span><h2 class="titulo">Brindes com a cara da sua empresa</h2><p>Logo da empresa e nome de cada pessoa. Conta a ocasião, a quantidade e a data e a gente manda o orçamento! 💜</p>
       <a class="btn claro" href="${esc(wa('Oi, Mimori! Quero um orçamento de brindes corporativos.\nEmpresa: \nOcasião: \nQuantidade: \nData de entrega: '))}" target="_blank" rel="noopener" data-whats="brindes">${IC.whats}Pedir orçamento pelo WhatsApp</a></div>
@@ -900,7 +977,8 @@ function paginaHome() {
 }
 function temaHTML(t, semLink) {
   const c = Object.assign({ fundo: '#E7E2F3', texto: '#241F2E', titulo: '#382B55', selo: '#FFFFFF', seloTexto: '#4A396F', cta: '#6E5B98', ctaTexto: '#FFFFFF' }, t.cor || {});
-  return `<section class="wrap" aria-labelledby="h-tema-${esc(t.id)}" data-carrossel id="${esc(t.id)}"><div class="tema" style="background:${c.fundo};color:${c.texto}">
+  const bg = c.imagem ? `<picture class="tema-bg" aria-hidden="true">${c.imagemMob ? `<source media="(max-width:760px)" srcset="${esc(c.imagemMob)}">` : ''}<img src="${esc(c.imagem)}" alt="" loading="lazy"></picture>` : '';
+  return `<section class="wrap" aria-labelledby="h-tema-${esc(t.id)}" data-carrossel id="${esc(t.id)}"><div class="tema" style="background:${c.fundo};color:${c.texto}">${bg}
     <div class="txt">${t.data ? `<span class="pilula" style="align-self:flex-start;background:${c.selo};color:${c.seloTexto}">${esc(t.data)}</span>` : ''}<h2 class="titulo" id="h-tema-${esc(t.id)}" style="color:${c.titulo};font-size:clamp(30px,3.6vw,44px)">${esc(t.titulo)}</h2><p>${esc(t.texto)}</p>
       ${semLink ? '' : `<a class="btn" style="align-self:flex-start;background:${c.cta};color:${c.ctaTexto}" href="${esc(t.link || 'datas-especiais#' + t.id)}" data-rota>${esc(t.cta)}</a>`}</div>
     <div class="vitrine"><div class="acoes"><button type="button" class="seta" data-rolar="-1" aria-label="Ver peças anteriores">${IC.ant}</button><button type="button" class="seta" data-rolar="1" aria-label="Ver próximas peças">${IC.prox}</button></div><div class="trilho" data-trilho>${pecasDe(t).map(cardHTML).join('')}</div></div>
@@ -921,7 +999,7 @@ function paginaTema(t) {
   <div class="wrap" style="padding-top:8px;padding-bottom:40px">${it.length ? `<div class="grade">${it.map(cardHTML).join('')}</div>` : semResultado('As peças desta data entram em breve.')}</div>`;
 }
 function comoFunciona() {
-  const P = [['M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5 M12 11.5v5 M9.5 14h5', 'Monte sua lista', 'Escolha a cor de cada peça e clique em Adicionar.'], ['M4.2 12a7.8 7.8 0 1 1 3.3 6.4L4 19.5l1.1-3.3A7.7 7.7 0 0 1 4.2 12Z', 'Envie pelo WhatsApp', 'A mensagem vai pronta. A gente confirma cor, prazo e frete com você.'], ['M3.5 6.5h17v11h-17Z M3.5 10h17 M7 14.5h4', 'Pague pelo link', 'O pagamento é antes, e a produção leva de 3 a 5 dias úteis.'], ['M3 7h11v9H3Z M14 10h4l3 3v3h-7 M7.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z M18.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z', 'Receba em casa', 'A gente envia pra todo o Brasil, bem embalado.']];
+  const P = [['M5.5 8.5h13l-1 11.5h-11l-1-11.5Z M9 8.5V7a3 3 0 0 1 6 0v1.5 M12 11.5v5 M9.5 14h5', 'Monte sua lista', 'Escolha a cor de cada peça e clique em Adicionar.'], ['M4.2 12a7.8 7.8 0 1 1 3.3 6.4L4 19.5l1.1-3.3A7.7 7.7 0 0 1 4.2 12Z', 'Envie pelo WhatsApp', 'A mensagem vai pronta. A gente confirma cor, prazo e frete com você.'], ['M3.5 6.5h17v11h-17Z M3.5 10h17 M7 14.5h4', 'Pague pelo link', 'Enviamos o link para o pagamento e seu pedido já vai pra produção.'], ['M3 7h11v9H3Z M14 10h4l3 3v3h-7 M7.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z M18.5 18.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0Z', 'Receba em casa', 'A gente envia pra todo o Brasil, bem embalado e com muito carinho.']];
   return `<section class="wrap" aria-labelledby="h-como"><div class="cab-secao"><div><h2 class="titulo" id="h-como">Como funciona</h2><p class="sub">Da escolha da peça até a sua casa, em quatro passos.</p></div></div>
     <ol class="passos">${P.map((x, i) => `<li><span class="ic" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${x[0]}"/></svg><b>${i + 1}</b></span><strong>${x[1]}</strong><span>${x[2]}</span></li>`).join('')}</ol></section>`;
 }
@@ -1276,6 +1354,7 @@ function render() {
   else if (partes.length === 2 && S.porSlug[partes[1]]) { const p = S.porSlug[partes[1]]; html = paginaProduto(p); titulo = p.nome + ' · Mimori'; if (render._ultimo !== p.slug) { registra('produto_visto', { produto: p.slug }); render._ultimo = p.slug; } }
   else { html = `<div class="wrap">${semResultado('Essa página não existe.')}</div>`; titulo = 'Página não encontrada · Mimori'; }
   $('#conteudo').innerHTML = html;
+  heroArma();
   document.title = titulo;
   const reservada = partes.length > 0 && S.ocultas.some((x) => x.slug === partes[0]);
   let rb = document.querySelector('meta[name="robots"]');
@@ -1302,7 +1381,7 @@ function menuLateral(abrir) {
 function menuCategorias(abrir) {
   const b = $('#abrir-categorias'), m = $('#menu-cat');
   const v = abrir == null ? !m.classList.contains('aberto') : abrir;
-  m.classList.toggle('aberto', v); b.setAttribute('aria-expanded', String(v));
+  m.classList.toggle('aberto', v); if (b) b.setAttribute('aria-expanded', String(v));
 }
 const fechaCamada = (fn) => fechaComCalma($('#camadas'), () => { fn(); desenhaCamadas(); });
 /* Todo clique em botão ou link vira evento 'clique' (painel e Analytics), com um rótulo legível. */
@@ -1347,6 +1426,7 @@ document.addEventListener('click', (e) => {
   if (d.addproduto) { const pp = S.porSlug[d.addproduto]; const opp = opProduto || (pp.opcoes.length === 1 ? pp.opcoes[0].nome : ''); if (faltaEscolha(pp, corProduto, opp)) { faltaProduto = true; render(); const c = $('.caixa.erro'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; } gavetaAberta = true; adiciona(d.addproduto, qtdProduto, corProduto, opProduto); return; }
   if (d.remover) { lista = lista.filter((i) => i.chave !== d.remover); salvaLista(); return; }
   if (d.qtd) { const it = lista.find((i) => i.chave === d.qtd); if (it) { it.qtd = Math.max(1, Math.min(999, it.qtd + Number(d.d))); salvaLista(); } return; }
+  if (d.hero) { heroIr(d.hero === '+' ? heroI + 1 : d.hero === '-' ? heroI - 1 : Number(d.hero)); return; }
   if (d.rolar) { const t = el.closest('[data-carrossel]').querySelector('[data-trilho]'); const c = t.firstElementChild; t.scrollBy({ left: Number(d.rolar) * (c ? c.getBoundingClientRect().width + (parseFloat(getComputedStyle(t).columnGap) || 20) : 240), behavior: 'smooth' }); return; }
   if (d.cnam) { cnaM = d.cnam; render(); return; }
   if (d.cnav) { const t = el.closest('[data-ccard]').querySelector('[data-cslides]'); if (t) t.scrollBy({ left: Number(d.cnav) * t.clientWidth, behavior: 'smooth' }); return; }
