@@ -36,8 +36,8 @@ def supabase(caminho):
 
 try:
     cats = supabase('categorias?select=slug,nome,oculta,foto&order=ordem')
-    prods = supabase('produtos?select=slug,nome,descricao,categoria:categorias(slug),produto_fotos(caminho,ordem)&publicado=eq.true')
-    produtos = [{'slug': p['slug'], 'nome': p['nome'], 'descricao': p['descricao'] or '', 'categoria': (p['categoria'] or {}).get('slug', ''),
+    prods = supabase('produtos?select=slug,nome,descricao,categorias_extra,categoria:categorias(slug),produto_fotos(caminho,ordem)&publicado=eq.true')
+    produtos = [{'slug': p['slug'], 'nome': p['nome'], 'descricao': p['descricao'] or '', 'categoria': (p['categoria'] or {}).get('slug', ''), 'extras': p.get('categorias_extra') or [],
                  'foto': (sorted(p['produto_fotos'], key=lambda f: f['ordem']) or [{'caminho': ''}])[0]['caminho']} for p in prods]
     print('Lendo do Supabase:', len(produtos), 'produtos')
 except Exception as e:
@@ -49,6 +49,10 @@ except Exception as e:
     produtos = [{'slug': p['slug'], 'nome': p['nome'], 'descricao': p['descricao'], 'categoria': p['categoria'], 'foto': p['fotos'][0]['src'] if p['fotos'] else ''} for p in d['produtos'] if p.get('publicado', True)]
 
 produtos = [p for p in produtos if p['categoria']]
+
+# produto pode estar em mais de uma categoria (25/10/2026); o endereço segue a categoria principal
+def na_cat(p, slug):
+    return p['categoria'] == slug or slug in p.get('extras', [])
 NOME_CAT = {c['slug']: c['nome'] for c in cats}
 # Categoria oculta (ex.: /cna): ganha página fixa para abrir pelo endereço direto, mas fica fora da home,
 # do catálogo, da lista de categorias e do sitemap, e sai com noindex.
@@ -89,7 +93,7 @@ def src(foto):
 
 # ---------- conteúdo fixo, lido pelo Google sem JavaScript ----------
 def lista_categorias():
-    itens = ''.join(f'<li><a href="{e(c["slug"])}/">{e(c["nome"])}</a> ({sum(1 for p in produtos if p["categoria"] == c["slug"])} peças)</li>' for c in VIS_CATS)
+    itens = ''.join(f'<li><a href="{e(c["slug"])}/">{e(c["nome"])}</a> ({sum(1 for p in produtos if na_cat(p, c["slug"]))} peças)</li>' for c in VIS_CATS)
     return f'<h2>Categorias</h2><ul>{itens}</ul>'
 
 def lista_produtos(ps, titulo='Peças'):
@@ -150,11 +154,11 @@ FIXAS = {'catalogo': ('Catálogo · Mimori', 'Todas as peças da Mimori: decora�
          'para-empresas': ('Brindes para empresas · Mimori', 'Brindes com o logo da empresa e o nome de cada pessoa. Peça o orçamento pelo WhatsApp.')}
 for slug, (t, d) in FIXAS.items():
     corpo = f'<h1>{e(t.split(" · ")[0])}</h1><p>{e(d)}</p>'
-    corpo += ''.join(lista_produtos([p for p in produtos if p['categoria'] == c['slug']], c['nome']) for c in VIS_CATS) if slug == 'catalogo' else lista_categorias()
+    corpo += ''.join(lista_produtos([p for p in produtos if na_cat(p, c['slug'])], c['nome']) for c in VIS_CATS) if slug == 'catalogo' else lista_categorias()
     pagina(slug, t, d, corpo, og_arquivo(slug)); open(os.path.join(RAIZ, slug, '.gerada'), 'w').close(); urls.append(slug)
 
 for c in cats:
-    ps = [p for p in produtos if p['categoria'] == c['slug']]
+    ps = [p for p in produtos if na_cat(p, c['slug'])]
     d = f"{len(ps)} peças de {c['nome'].lower()} feitas em 3D sob encomenda, na cor que você escolhe. Monte a lista e feche no WhatsApp."
     corpo = f'<p><a href="./">Início</a> › {e(c["nome"])}</p><h1>{e(c["nome"])}</h1><p>{e(d)}</p>' + lista_produtos(ps) + lista_categorias()
     oculta = c['slug'] in OCULTAS
